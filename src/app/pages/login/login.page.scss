@@ -1,0 +1,133 @@
+ion-row.centered-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Genişlik ayarı */
+.panel-grid {
+  width: 40%;
+  max-width: 400px;
+}
+/* Genişlik ayarı */
+.user-input {
+  width: 90%;
+  font-family: 'Inter var', sans-serif, normal;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-size: 1rem;
+  color: #69707a;
+  background: #ffffff;
+  padding-left: 5px !important;
+  border: 1px solid #d4d6d9;
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s;
+  appearance: none;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border-color: #c1c3c4 !important;
+  background-color: #f2f4f6 !important;
+  box-sizing: border-box;
+  min-height: 46px !important;
+  --highlight-color-valid: initial;
+}
+.user-input:focus {
+  /* Focus olduğunda border rengi */
+  border-width: 3px !important;
+  border-style: solid !important;
+  border-color: #65abcb !important;
+  color: #69707a;
+}
+
+.has-focus {
+  border-width: 2px !important;
+  border-style: solid !important;
+  border-color: #65abcb !important;
+}
+/* Genişlik ayarı */
+.footer-md {
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+.remember-me {
+  padding-left: 5% !important;
+  font-family: 'Inter var', sans-serif, normal;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-size: 1rem;
+  color: #69707a;
+
+  padding-left: 5% !important;
+
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  box-sizing: border-box;
+}
+
+/* Telefon boyutu için genişlik ayarı */
+@media (max-width: 767px) {
+  .panel-grid {
+    width: 100%;
+  }
+  .user-input {
+    width: 90%;
+  }
+  .remember-me {
+  }
+}
+
+/* Ortalama hizalaması */
+.centered-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1em;
+}
+.spinnerGoster {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+}
+.spinnerGizle {
+  display: none;
+}
+.myborder {
+  position: relative;
+}
+
+.myborder::before {
+  --angle: 0deg;
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5em;
+  padding: 1em;
+  margin: -1em;
+  border: 1.5vmin solid transparent;
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  border-image: conic-gradient(from var(--angle), orange, teal, blue, red, orange) 1;
+
+  animation: 5s rotate linear infinite;
+}
+
+@keyframes rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}

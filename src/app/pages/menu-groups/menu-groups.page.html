@@ -1,0 +1,13 @@
+<!--menu groups-->
+<ion-header>
+  <ion-toolbar color="white">
+    <ion-segment (ionChange)="segmentChanged($event)" class="home-header">
+        @for (menuGroup of this.menuGroups(); track $index) {
+          <ion-segment-button [value]="menuGroup.id">
+            <ion-icon [name]="menuGroup.iconPath"></ion-icon>
+            <ion-label>{{ menuGroup.title }}</ion-label>
+          </ion-segment-button>
+        }
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>

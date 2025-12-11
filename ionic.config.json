@@ -1,0 +1,7 @@
+{
+  "name": "bosphoremobile",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

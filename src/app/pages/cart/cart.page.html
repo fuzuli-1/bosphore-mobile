@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Sepetim</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  @if (cartItems.length > 0) {
+    <ion-list>
+      @for (item of cartItems; track item) {
+        <ion-item>
+          <ion-thumbnail slot="start">
+            <img alt="" [src]="item.resim" />
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ item.ad }}</h2>
+            <p>{{ item.boyut }} - {{ item.hamur }}</p>
+            <p>Adet: {{ item.adet }}</p>
+            <p>Ekstra: {{ item.malzemeler.join(', ') }}</p>
+            <ion-badge color="success">{{ item.fiyat * item.adet | currency:'TRY' }}</ion-badge>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+  }
+
+  @if (cartItems.length === 0) {
+    <ion-item>
+      <ion-label>Sepetiniz boş.</ion-label>
+    </ion-item>
+  }
+
+  @if (cartItems.length > 0) {
+    <ion-footer>
+      <ion-toolbar>
+        <ion-title>Toplam: {{ toplam | currency:'TRY' }}</ion-title>
+        <ion-button expand="block" color="success">Siparişi Tamamla</ion-button>
+      </ion-toolbar>
+    </ion-footer>
+  }
+</ion-content>

@@ -1,0 +1,44 @@
+.menu-card {
+  border-radius: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background: #fafaff;
+}
+
+.menu-img {
+  width: 100%;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+ion-card-title {
+  font-size: 1.1rem;
+  color: #333;
+  margin-top: 6px;
+}
+
+.desc {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 6px 0 12px;
+}
+
+.menu-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu {
+  color: #b88a00;
+  margin: 0;
+}
+
+ion-button {
+  border-radius: 20px;
+  font-weight: 500;
+}
+ion-button:hover {
+  background-color: #0055ff;
+  color: #fff;
+}

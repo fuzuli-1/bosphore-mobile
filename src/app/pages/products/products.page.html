@@ -1,0 +1,37 @@
+<ion-content>
+  <!---- Segment for category filtering ---->
+  <ion-segment [(ngModel)]="selectedGroupId" (ionChange)="filterByMenuGroupId()">
+    @for(menu of menuGrups;track menu.id){
+    <ion-segment-button [value]="menu.id"> {{ (menu.title || 'tr') |translate }} </ion-segment-button>
+    }
+  </ion-segment>
+
+  <!--category'e bagli itemlar-->
+  <ion-content class="ion-padding">
+    <ion-grid>
+      <ion-row>
+        @for(subMenu of subMenuItems; track subMenu.id){
+        <ion-col size="6" size-md="3">
+          <ion-card class="menu-card">
+            <img [src]="'assets/menus/' + subMenu.iconPath+'.png'" alt="{{subMenu.label}}" class="menu-img" />
+            <ion-card-header>
+              <ion-card-title>{{ subMenu.label }}</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <p class="desc">{{ subMenu.label }}</p>
+              <div class="menu-row">
+                <div>
+                  <h3 class="menu">{{ subMenu.label }} TL</h3>
+                  <small>'den başlayan fiyatlarla</small>
+                </div>
+                <ion-button fill="outline" size="small" (click)="openDetail(subMenu)"> Sipariş Ver </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  </ion-content>
+</ion-content>

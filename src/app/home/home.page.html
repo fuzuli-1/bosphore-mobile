@@ -1,0 +1,24 @@
+<app-menu-groups (selectedGroupChange)="onSelectedGroupChange($event)"></app-menu-groups>
+
+<ion-content>
+  <!--adress secimi-->
+  <div class="location-bar">
+    <ion-breadcrumbs>
+      <ion-breadcrumb href="#home">
+        <ion-icon slot="start" class="getir"></ion-icon>
+        Adrese Teslim
+      </ion-breadcrumb>
+      <ion-breadcrumb href="#electronics">
+        Adrese Teslim - Ankara Etimesgut Bahçekapı
+        <ion-icon slot="end" class="home-addres-yaz"></ion-icon>
+      </ion-breadcrumb>
+    </ion-breadcrumbs>
+  </div>
+
+<ion-content>
+  <!--swiper-->
+ <!-- Swiper Slider -->
+<app-category-swiper-component [menuGroupId]="selectedGroupId"></app-category-swiper-component>
+
+ 
+</ion-content>

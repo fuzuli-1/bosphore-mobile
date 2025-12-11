@@ -1,0 +1,23 @@
+<div class="category-wrapper">
+  <swiper
+    [slidesPerView]="'auto'"
+    [spaceBetween]="40"
+    [navigation]="{
+      nextEl: '.next-btn',
+      prevEl: '.prev-btn'
+    }"
+    class="mySwiper"
+  >
+    <ng-template swiperSlide *ngFor="let c of categories">
+      <div class="cat-item">{{ c }}</div>
+    </ng-template>
+  </swiper>
+
+  <div class="nav-btn prev-btn">
+    <span>&lt;</span>
+  </div>
+
+  <div class="nav-btn next-btn">
+    <span>&gt;</span>
+  </div>
+</div>
