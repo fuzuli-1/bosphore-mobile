@@ -1,37 +1,31 @@
-<ion-content>
-  <!---- Segment for category filtering ---->
-  <ion-segment [(ngModel)]="selectedGroupId" (ionChange)="filterByMenuGroupId()">
-    @for(menu of menuGrups;track menu.id){
-    <ion-segment-button [value]="menu.id"> {{ (menu.title || 'tr') |translate }} </ion-segment-button>
-    }
-  </ion-segment>
+ <ion-content>
+  <ion-grid fixed>
+    <ion-row>
+      @for(product of products();track product.id){
 
-  <!--category'e bagli itemlar-->
-  <ion-content class="ion-padding">
-    <ion-grid>
-      <ion-row>
-        @for(subMenu of subMenuItems; track subMenu.id){
-        <ion-col size="6" size-md="3">
-          <ion-card class="menu-card">
-            <img [src]="'assets/menus/' + subMenu.iconPath+'.png'" alt="{{subMenu.label}}" class="menu-img" />
-            <ion-card-header>
-              <ion-card-title>{{ subMenu.label }}</ion-card-title>
-            </ion-card-header>
+      <ion-col size="12" size-md="6" size-lg="4" size-xl="3">
+        
+        <ion-card class="product-card">
+          <img [src]="'assets/products/' + product.imageUrl + '.png'" />
 
-            <ion-card-content>
-              <p class="desc">{{ subMenu.label }}</p>
-              <div class="menu-row">
-                <div>
-                  <h3 class="menu">{{ subMenu.label }} TL</h3>
-                  <small>'den başlayan fiyatlarla</small>
-                </div>
-                <ion-button fill="outline" size="small" (click)="openDetail(subMenu)"> Sipariş Ver </ion-button>
-              </div>
-            </ion-card-content>
-          </ion-card>
-        </ion-col>
-        }
-      </ion-row>
-    </ion-grid>
-  </ion-content>
+
+          <ion-card-content>
+            <h2>{{ product.name }}</h2>
+            <p class="desc">{{ product.description }}</p>
+
+            <div class="price-row">
+              <span class="price">{{ product.price }} TL</span>
+              <ion-button size="small" fill="outline">
+                Sipariş Ver
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+      </ion-col>
+
+      }
+
+    </ion-row>
+  </ion-grid>
 </ion-content>

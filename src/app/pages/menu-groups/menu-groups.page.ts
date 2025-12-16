@@ -44,7 +44,7 @@ export class MenuGroupsPage implements OnInit {
   subscription: Subscription | null = null;
   menuGroups = signal<IMenuGroup[]>([]);
   isLoading = false;
-
+  selectedSegment!: number;
   sortState = sortStateSignal({});
 
   itemsPerPage = ITEMS_PER_PAGE;
@@ -68,14 +68,15 @@ export class MenuGroupsPage implements OnInit {
   }
 
   segmentChanged(event: any) {
-    const selectedSegment = event.detail.value;
-    this.selectedGroupChange.emit(selectedSegment);
+    this.selectedSegment = event.detail.value;
+    this.selectedGroupChange.emit(this.selectedSegment);
   }
 
   load(): void {
     this.queryBackend().subscribe({
       next: (res: EntityArrayResponseType) => {
         this.onResponseSuccess(res);
+         this.selectedSegment=1;
       },
     });
   }
@@ -97,6 +98,10 @@ export class MenuGroupsPage implements OnInit {
     this.fillComponentAttributesFromResponseHeader(response.headers);
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
     this.menuGroups.set(dataFromBody);
+      if(dataFromBody.length>0){
+         this.selectedGroupChange.emit(dataFromBody[0].id);
+        
+      }
   }
 
   protected fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {

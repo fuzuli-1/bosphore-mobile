@@ -1,5 +1,5 @@
  
- import { Component, inject, Input, NgZone, OnChanges, OnInit, signal } from '@angular/core';
+ import { Component, EventEmitter, inject, Input, NgZone, OnChanges, OnInit, Output, signal } from '@angular/core';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
  import * as iface from '../../interfaces/interfaces';
 import { combineLatest, Observable, Subscription, tap } from 'rxjs';
@@ -15,9 +15,9 @@ import { HttpHeaders } from '@angular/common/http';
  
 
 @Component({
-  selector: 'app-category-swiper-component',
-  templateUrl: './category-swiper-component.component.html',
-  styleUrls: ['./category-swiper-component.component.scss'],
+  selector: 'app-menu-groups-item',
+  templateUrl: './menu-group-item.page.html',
+  styleUrls: ['./menu-group-item.page.scss'],
   standalone: true,
   imports: [], 
    schemas: [CUSTOM_ELEMENTS_SCHEMA]  // özel elementlere izin için
@@ -25,7 +25,14 @@ import { HttpHeaders } from '@angular/common/http';
  
 })
 export class CategorySwiperComponent implements OnInit ,OnChanges{
-   subscription: Subscription | null = null;
+
+
+  @Output() selectedGroupItemChange = new EventEmitter<iface.IMenuGroupItem>();
+
+  selected: iface.IMenuGroupItem | null = null;
+
+  subscription: Subscription | null = null;
+ 
    menuGroupItems = signal<iface.IMenuGroupItem[]>([]);
    isLoading = false;
    sortState = sortStateSignal({});
@@ -41,6 +48,11 @@ export class CategorySwiperComponent implements OnInit ,OnChanges{
     protected ngZone = inject(NgZone);
     trackId = (item: iface.IMenuGroupItem): number => this.menuGroupItemService.getMenuGroupItemIdentifier(item);
     
+    selectCategory(_t2: iface.IMenuGroupItem) {
+      this.selected=_t2;
+      this.selectedGroupItemChange.emit(_t2);
+    }
+
      ngOnChanges() {
       if (this.menuGroupId) {
 

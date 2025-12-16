@@ -16,9 +16,13 @@
   </div>
 
 <ion-content>
-  <!--swiper-->
- <!-- Swiper Slider -->
-<app-category-swiper-component [menuGroupId]="selectedGroupId"></app-category-swiper-component>
+ 
+ <!--swipper -->
+<app-menu-groups-item [menuGroupId]="selectedGroupId"
+ (selectedGroupItemChange)="onSelectedGroupItemChange($event)"
 
+></app-menu-groups-item>
+
+<app-products [selectedGroupItemId]="selectedGroupItemId"></app-products>
  
 </ion-content>

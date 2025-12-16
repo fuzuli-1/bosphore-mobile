@@ -34,4 +34,9 @@ export const routes: Routes = [
     path: 'menu-groups',
     loadComponent: () => import('./pages/menu-groups/menu-groups.page').then( m => m.MenuGroupsPage)
   },
+  {
+    path: 'register',
+    loadComponent: () => import('../app/account/register/register.page').then( m => m.RegisterPage)
+  },
+ 
 ];

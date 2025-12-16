@@ -1,0 +1,77 @@
+<ion-content class="ion-padding">
+  <form [formGroup]="registerForm">
+  <div class="register-wrapper">
+
+    <h2>{{'becameMember'|translate}}</h2>
+
+    <!-- Telefon -->
+    <ion-item
+      [class.ion-invalid]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
+      <ion-label position="stacked">{{'phoneNumber'|translate}}</ion-label>
+      <ion-input
+        type="tel"
+        maxlength="10"
+        formControlName="phone">
+      </ion-input>
+    </ion-item>
+    <ion-text color="danger" *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid">
+      <small>{{'telephoneWarning1'|translate}}</small>
+    </ion-text>
+
+    <!-- Ad Soyad -->
+    <div class="row">
+      <ion-item>
+        <ion-label position="stacked">{{'name'|translate}}</ion-label>
+        <ion-input formControlName="firstName"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">{{'surname'|translate}}</ion-label>
+        <ion-input formControlName="lastName"></ion-input>
+      </ion-item>
+    </div>
+
+    <!-- Email -->
+    <ion-item>
+      <ion-label position="stacked">{{'e-mail'|translate}}</ion-label>
+      <ion-input type="email" formControlName="email"
+        placeholder="{{'ePhostaWarning1'|translate}}">
+      </ion-input>
+    </ion-item>
+
+    <!-- KVKK -->
+    <ion-item lines="none">
+      <ion-checkbox formControlName="kvkk"></ion-checkbox>
+      <ion-label class="checkbox-text">
+        Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini kabul ediyorum.
+         Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini kabul ediyorum.
+     
+      </ion-label>
+    </ion-item>
+
+    <!-- Kampanya -->
+    <ion-item lines="none">
+      <ion-checkbox formControlName="campaign"></ion-checkbox>
+      <ion-label class="checkbox-text">
+        Domino's sadakat programı ve iletişim izni
+         Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini kabul ediyorum.
+  
+      </ion-label>
+    </ion-item>
+
+    <!-- Submit -->
+    <ion-button
+      expand="block"
+      class="submit-btn"
+      [disabled]="registerForm.invalid"
+      (click)="submit()">
+     {{'becameMember'|translate}}
+    </ion-button>
+
+    <ion-button fill="clear" expand="block">
+      Hesabınız Var mı? <b>Üye Girişi</b>
+    </ion-button>
+
+  </div>
+ </form>
+</ion-content>

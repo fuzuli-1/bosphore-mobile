@@ -30,7 +30,7 @@ export class ProductService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/products');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/products');
 
   create(product: NewProduct): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(product);

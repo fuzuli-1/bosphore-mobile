@@ -1,0 +1,45 @@
+
+
+<swiper-container
+  slides-per-view="auto"
+  navigation="true"
+  space-between="10"
+  loop="false"
+  class="category-swiper"
+>
+@for (item of this.menuGroupItems(); track item.id) {
+  
+  <swiper-slide class="category-slide"
+   (click)="selectCategory(item)"
+   [class.active]="selected?.id === item.id"
+  >
+    <div class="category-card">
+      <div class="category-image-wrapper"> 
+      </div>
+      <div class="category-title">{{ item.label }}</div>
+    </div>
+  </swiper-slide>
+}
+
+</swiper-container>
+
+ <!-- 
+<swiper-container
+  slides-per-view="auto"
+  navigation="true"
+  space-between="0"
+  class="category-swiper"
+>
+  <swiper-slide
+    class="category-slide"
+    *ngFor="let item of menuGroupItems(); trackBy: trackId"
+    (click)="selectCategory(item)"
+    [class.active]="selected?.id === item.id"
+  >
+    <div class="category-label">
+      {{ item.name }}
+    </div>
+  </swiper-slide>
+</swiper-container>
+
+ -->

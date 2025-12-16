@@ -33,3 +33,12 @@ export let GeneralSettings: {
   title: '',
   logo: null,
 };
+
+export const Langs: any = [
+  { lang: 'Türkçe', flag: './assets/img/turk.png', code: 'tr' },
+  { lang: 'English', flag: './assets/img/english.png', code: 'en' },
+  { lang: 'French', flag: './assets/img/russia.png', code: 'fr' },
+  { lang: 'German', flag: './assets/img/kazakhistan.png', code: 'gm' },
+  { lang: 'عربى', flag: './assets/img/arabia.png', code: 'ar' },
+];
+

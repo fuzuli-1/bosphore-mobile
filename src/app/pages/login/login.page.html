@@ -1,105 +1,82 @@
-<ion-content>
-  <ion-grid class="panel-grid">
-    <div class="myborder">
-      <!-- Logo -->
-      <ion-row class="centered-row">
-        <img src="/assets/logo.png" alt="Şirket logosu" style="width: 150px; height: auto" />
-      </ion-row>
+<ion-content class="login-content">
+  <div class="center-wrapper">
+    <div class="login-card">
+      <h2>{{'login'|translate}}</h2>
 
-      <!-- Dil seçimi -->
-      <ion-row>
-        <ion-col size-xs="10" size-md="5" size-lg="4">
-          <ion-select
-            [(ngModel)]="loginData.lang"
-            name="lang"
-            interface="popover"
-            placeholder="English(EN)"
-            [cancelText]="'LOGIN.CANCEL' | translate"
-            [okText]="'LOGIN.CHOOSE' | translate"
-            (ionChange)="changeLanguege()"
-            >
-            @for (language of languages; track language) {
+      <!--segment-->
+      <ion-segment [(ngModel)]="loginType">
+ 
+
+        <ion-segment-button value="phone">
+          {{'phoneNumber'|translate}}
+        </ion-segment-button>
+        <ion-segment-button value="email">
+          {{'e-mail'|translate}}
+        </ion-segment-button>
+      </ion-segment>
+      <!-- e-mail-->
+      @if(loginType==='email'){
+      <div class="form-group">
+        <ion-label>{{'emailAddress'|translate}}</ion-label>
+        <ion-input
+          type="e-mail"
+          placeholder="xxx@gmail.com"
+          [(ngModel)]="loginData.username"
+        >
+        </ion-input>
+      </div>
+      } 
+      <!-- telefon-->
+      @if(loginType==="phone"){
+      <div class="form-group">
+        <ion-label>{{'phoneNumber'|translate}}</ion-label>
+        <ion-input
+          type="tel"
+          placeholder="xxx.xxx.xx.xx"
+          [(ngModel)]="loginData.username"
+        >
+        </ion-input>
+      </div>
+      }
+      <!--password-->
+      <div class="form-group">
+        <ion-label>{{'password'|translate}}</ion-label>
+        <ion-item class="password-item">
+          <ion-input
+            [type]="showPassword?'text':'password'"
+            [(ngModel)]="loginData.password"
+          ></ion-input>
+          <ion-icon name="eye" slot="end" (click)="togglePassword()">
+          </ion-icon>
+        </ion-item>
+      </div>
+
+      <div class="forgot">
+        <a href="#">{{'forgotPassword'|translate}}</a>
+      </div>
+
+      <ion-button expand="block" class="login-btn" (click)="login()">
+        {{'login'|translate}}
+      </ion-button>
+
+      <ion-button expand="block" fill="outline" class="register-btn" (click)="register()">
+        {{'Hesabiniz Yok Mu'|translate}} <span>{{'yeniUye'|translate}}</span>
+      </ion-button>
+      <div class="form-group">
+        <ion-select
+        [(ngModel)]="langKey"
+        name="lang"
+         interface="popover"
+         placeholder="English(EN)"
+         [cancelText]="'LOGIN.CANCEL' | translate"
+         [okText]="'LOGIN.CHOOSE' | translate"
+          (ionChange)="changeLanguege()"          
+        >
+          @for (language of languages; track language) {
               <ion-select-option [value]="language.code"> {{ language.lang }} </ion-select-option>
             }
-          </ion-select>
-        </ion-col>
-      </ion-row>
-
-      <!-- Kullanıcı adı -->
-      <ion-row class="centered-row">
-        <ion-input
-          maxlength="150"
-          class="userNameText user-input"
-          labelPlacement="stacked"
-          [(ngModel)]="loginData.username"
-          name="username"
-          [placeholder]="'LOGIN.USERNAME' | translate"
-          >
-          <ion-icon slot="start" name="mail-outline" aria-hidden="true"></ion-icon>
-        </ion-input>
-      </ion-row>
-
-      <!-- Şifre -->
-      <ion-row class="centered-row">
-        <ion-input
-          id="ion-input-1"
-          name="password"
-          type="password"
-          [placeholder]="'LOGIN.PASSWORD' | translate"
-          maxlength="150"
-          autocapitalize="off"
-          autocomplete="off"
-          autocorrect="off"
-          spellcheck="false"
-          #myinput
-          class="userNameText user-input"
-          labelPlacement="stacked"
-          [(ngModel)]="loginData.password"
-          >
-          <ion-icon slot="start" name="lock-closed" aria-hidden="true"></ion-icon>
-          <ion-button fill="clear" slot="end" aria-label="show/hide" (click)="showPasswords(myinput)">
-            <ion-icon slot="icon-only" name="eye" aria-hidden="true"></ion-icon>
-          </ion-button>
-        </ion-input>
-      </ion-row>
-
-      <!-- Beni Hatırla -->
-      <ion-row>
-        <ion-checkbox class="remember-me" [(ngModel)]="loginData.rememberMe" name="rememberMe" labelPlacement="end">
-          {{ 'LOGIN.REMEMBER_ME' | translate }}
-        </ion-checkbox>
-      </ion-row>
-
-      <!-- Giriş Butonu -->
-      <ion-row>
-        <ion-button expand="block" style="width: 100%" shape="round" [disabled]="isButtonDisabled" (click)="login()">
-          {{ 'LOGIN.LOGIN' | translate }}
-          <ion-icon size="large" slot="end" name="arrow-forward-outline"></ion-icon>
-        </ion-button>
-      </ion-row>
-
-      <!-- Şifremi Unuttum -->
-      <ion-row class="centered-row">
-        <ion-text color="medium" style="margin-top: 15px"> {{ 'LOGIN.FORGET_PASSWORD' | translate }} </ion-text>
-      </ion-row>
+        </ion-select>
+      </div>
     </div>
-  </ion-grid>
+  </div>
 </ion-content>
-
-<ion-footer>
-  <span
-    style="
-      text-align: center;
-      width: 100%;
-      font-weight: normal;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 5px;
-      padding-bottom: 15px;
-    "
-    >
-    <b>Bosphore</b> &nbsp;&nbsp; Copyright © MainTech Technology
-    <sup>v{{ appVersion }}</sup>
-  </span>
-</ion-footer>
