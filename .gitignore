@@ -139,3 +139,26 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+
+# Angular
+.angular/
+dist/
+tmp/
+*.tsbuildinfo
+
+# Angular build cache
+.angular/cache/
+.angular/.vscode/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# .gitignore dosyanızda şu satırlar olsun:
+.angular/
+node_modules/
+dist/
+*.log 
