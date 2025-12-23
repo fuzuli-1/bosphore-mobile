@@ -1,0 +1,113 @@
+<ion-content class="ion-padding">
+  <form [formGroup]="registerForm">
+    <div class="register-wrapper">
+      <h2>{{'becameMember'|translate}}</h2>
+
+      <!-- Telefon -->
+      <ion-list>
+        <ion-item>
+          <ion-label position="floating" color="primary"
+            >{{'phoneNumber'|translate}}</ion-label
+          >
+          <ion-input
+            type="text"
+            maxlength="15"
+            id="login"
+            name="login"
+            formControlName="login"
+            clearInput="true"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating" color="primary"
+            >{{'name'|translate}}</ion-label
+          >
+          <ion-input
+            type="text"
+            maxlength="150"
+            id="firstName"
+            name="firstName"
+            formControlName="firstName"
+            clearInput="true"
+          >
+          </ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating" color="primary"
+            >{{'surname'|translate}}</ion-label
+          >
+          <ion-input
+            type="text"
+            maxlength="150"
+            id="lastName"
+            id="lastName"
+            formControlName="lastName"
+            clearInput="true"
+          >
+          </ion-input>
+        </ion-item>
+       <ion-item>
+        <ion-label position="floating">{{'e-mail'|translate}}</ion-label>
+        <ion-input
+          type="email"
+          formControlName="email"
+        >
+        </ion-input>
+      </ion-item>
+      <ion-item class="register-ion-input">       
+        <ion-label position="floating">{{'password'|translate}}</ion-label>
+        <ion-input
+        
+          type="password"
+          maxlength="15"
+          id="password"
+          name="password"
+          formControlName="password"
+        >
+        </ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">{{'confirmPassword'|translate}}</ion-label>
+        <ion-input
+          type="password"
+          maxlength="15"
+          id="confirmPassword"
+          name="confirmPassword"
+          formControlName="confirmPassword"
+        >
+        </ion-input>
+      </ion-item>
+       <ion-item lines="none">
+        <ion-checkbox formControlName="kvkk"></ion-checkbox>
+        <ion-label class="checkbox-text">
+          Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini kabul
+          ediyorum. Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini
+          kabul ediyorum.
+        </ion-label>
+      </ion-item>      
+      <ion-item lines="none">
+        <ion-checkbox formControlName="campaign"></ion-checkbox>
+        <ion-label class="checkbox-text">
+          Domino's sadakat programı ve iletişim izni Açık Rıza Metni kapsamında
+          kişisel verilerimin işlenmesini kabul ediyorum.
+        </ion-label>
+      </ion-item>  
+            
+      <ion-button
+        expand="block"
+        class="submit-btn"
+        [disabled]="registerForm.invalid"
+        (click)="register()"
+      >
+        {{'becameMember'|translate}}
+      </ion-button>
+
+      <ion-button fill="clear" expand="block">
+        Hesabınız Var mı? <b>Üye Girişi</b>
+      </ion-button>       
+      </ion-list>
+    </div>
+  </form>
+ 
+</ion-content>
