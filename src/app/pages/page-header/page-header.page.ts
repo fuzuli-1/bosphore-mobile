@@ -6,19 +6,32 @@ import { IonicModule } from '@ionic/angular';
 import { fontAwesomeIcons } from 'src/app/config/font-awesome-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { MenuGroupsPage } from '../menu-groups/menu-groups.page';
+import { TranslationService } from 'src/app/services/translation-service';
+import { TranslatePipe } from "../../services/TranslatePipe";
  
 @Component({
   selector: 'app-page-header',
   templateUrl: './page-header.page.html',
   styleUrls: ['./page-header.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule,IonicModule],
+  imports: [CommonModule, FormsModule, IonicModule, TranslatePipe],
    schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
  
 export class PageHeaderPage implements OnInit {
+goToDrinks() {
+throw new Error('Method not implemented.');
+}
+goToHome // Kategori değişti, içeriği güncelle
+() {
+throw new Error('Method not implemented.');
+}
   private readonly iconLibrary = inject(FaIconLibrary);
-  constructor() {
+
+  
+   constructor(private translate: TranslationService) {
+ 
+   
     this.iconLibrary.addIcons(...fontAwesomeIcons);
    }
   hasActiveCampaign = signal(true);
@@ -26,14 +39,7 @@ export class PageHeaderPage implements OnInit {
   currentLocation = signal('Kadıköy, İstanbul');
   cartItemCount = signal(3);
   
-  // Kategoriler
-  categories = signal([
-    { id: 'kampanyalar', label: '🔥 Kampanyalar', icon: 'flame' },
-    { id: 'pizzalar', label: '🍕 Pizzalar', icon: 'pizza' },
-    { id: 'ekstralar', label: '🥤 Ekstralar & İçecekler', icon: 'fast-food' },
-    { id: 'firsatlar', label: '🎯 Fırsatlar', icon: 'diamond' },
-    { id: 'ayarlar', label: '⚙️ Ayarlar', icon: 'settings' }
-  ]);
+ 
 
   ngOnInit() {
     // Lokasyon bilgisini al
