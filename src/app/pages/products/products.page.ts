@@ -49,10 +49,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './products.page.html',
   styleUrls: ['./products.page.scss'],
   standalone: true,
-  imports: [
-    IonicModule,
-     CommonModule,
-     FormsModule, TranslatePipe],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hata mesajını bastırır
   providers: [
     FooterService,
@@ -60,9 +57,8 @@ import { CommonModule } from '@angular/common';
     // Diğer servisler...
   ],
 })
-export class ProductsPage implements OnInit,OnChanges {
-  
-  @Input() selectedGroupItemId: number = 0;
+export class ProductsPage implements OnInit, OnChanges {
+  @Input() selectedGroupId: number = 0;
 
   subscription: Subscription | null = null;
   products = signal<IProduct[]>([]);
@@ -82,43 +78,45 @@ export class ProductsPage implements OnInit,OnChanges {
 
   constructor() {}
 
-     ngOnChanges() {
-        if (this.selectedGroupItemId) {
-  
-          this.subscription = combineLatest([
-            this.activatedRoute.paramMap,
-            this.activatedRoute.queryParamMap,
-            this.activatedRoute.data
-          ])
-            .pipe(
-              tap(([params]) => {
-                const id = Number(params.get('id'));
-                console.log('Route ID:', id);
-              }),
-              tap(() => {
-                      const { page } = this;
-                        this.isLoading = true;
-                        const pageToLoad: number = page;
-                        const queryObject: any = {
-                          menuGroupItemId: this.selectedGroupItemId,
-                          page: pageToLoad - 1,
-                          size: this.itemsPerPage,
-                          sort: this.sortService.buildSortParam(this.sortState()),
-                        };
-                        
-                        this.productService.query(queryObject).pipe(tap(() => (this.isLoading = false))).subscribe({
-                          next: (res: EntityArrayResponseType) => {
-                            this.totalItems = Number(res.headers.get(TOTAL_COUNT_RESPONSE_HEADER));
-                            this.products.set(res.body ?? []);
-                          },
-                        }); 
-              })
-            ).subscribe();
-  
-         
-        }
-    }
+  ngOnChanges() {
+    if (this.selectedGroupId) {
+      this.subscription = combineLatest([
+        this.activatedRoute.paramMap,
+        this.activatedRoute.queryParamMap,
+        this.activatedRoute.data,
+      ])
+        .pipe(
+          tap(([params]) => {
+            const id = Number(params.get('id'));
+            console.log('Route ID:', id);
+          }),
+          tap(() => {
+            const { page } = this;
+            this.isLoading = true;
+            const pageToLoad: number = page;
+            const queryObject: any = {
+              menuGroupId: this.selectedGroupId,
+              page: pageToLoad - 1,
+              size: this.itemsPerPage,
+              sort: this.sortService.buildSortParam(this.sortState()),
+            };
 
+            this.productService
+              .query(queryObject)
+              .pipe(tap(() => (this.isLoading = false)))
+              .subscribe({
+                next: (res: EntityArrayResponseType) => {
+                  this.totalItems = Number(
+                    res.headers.get(TOTAL_COUNT_RESPONSE_HEADER)
+                  );
+                  this.products.set(res.body ?? []);
+                },
+              });
+          })
+        )
+        .subscribe();
+    }
+  }
 
   ngOnInit(): void {
     this.subscription = combineLatest([
@@ -210,6 +208,12 @@ export class ProductsPage implements OnInit,OnChanges {
         relativeTo: this.activatedRoute,
         queryParams: queryParamsObj,
       });
+    });
+  }
+
+  openProductDetail(productId: number): void {
+    this.ngZone.run(() => {
+      this.router.navigate(['/app-product-detail', productId]);
     });
   }
 }

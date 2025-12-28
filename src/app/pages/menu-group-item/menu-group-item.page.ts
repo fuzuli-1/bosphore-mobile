@@ -26,7 +26,7 @@ import { HttpHeaders } from '@angular/common/http';
 })
 export class CategorySwiperComponent implements OnInit ,OnChanges{
 
-
+  @Input() menuGroupId: number|null = null;
   @Output() selectedGroupItemChange = new EventEmitter<iface.IMenuGroupItem>();
 
   selected: iface.IMenuGroupItem | null = null;
@@ -39,7 +39,7 @@ export class CategorySwiperComponent implements OnInit ,OnChanges{
    itemsPerPage = ITEMS_PER_PAGE;
    totalItems = 0;
    page = 1;
-    @Input() menuGroupId: number = 2;
+
     public readonly router = inject(Router);
     protected readonly menuGroupItemService = inject(MenuGroupItemService);
     protected readonly activatedRoute = inject(ActivatedRoute);

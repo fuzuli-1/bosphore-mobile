@@ -1,6 +1,7 @@
-<app-menu-groups (selectedGroupChange)="onSelectedGroupChange($event)"></app-menu-groups>
 
 <ion-content>
+  <app-page-header></app-page-header>
+
   <!--adress secimi-->
   <div class="location-bar">
     <ion-breadcrumbs>
@@ -15,14 +16,10 @@
     </ion-breadcrumbs>
   </div>
 
-<ion-content>
+  <!--menu gruplari-->
+ <app-menu-groups (selectedGroupChange)="onSelectedGroupChange($event)"></app-menu-groups>
  
- <!--swipper -->
-<app-menu-groups-item [menuGroupId]="selectedGroupId"
- (selectedGroupItemChange)="onSelectedGroupItemChange($event)"
-
-></app-menu-groups-item>
-
-<app-products [selectedGroupItemId]="selectedGroupItemId"></app-products>
+ <!--urunler -->
+<app-products [selectedGroupId]="selectedGroupId"></app-products>
  
 </ion-content>

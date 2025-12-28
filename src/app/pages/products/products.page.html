@@ -15,8 +15,8 @@
 
             <div class="price-row">
               <span class="price">{{ product.price }} TL</span>
-              <ion-button size="small" fill="outline">
-                Sipariş Ver
+              <ion-button size="small" fill="outline" (click)="openProductDetail(product.id)">
+               {{ 'bos-3009' | translate }}
               </ion-button>
             </div>
           </ion-card-content>

@@ -2,6 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Moment } from 'moment';
 import dayjs from 'dayjs/esm';
+import { OrderStatus } from '../pages/enumerations/order-status.model';
+import { PaymentMethod } from '../pages/enumerations/payment-method.model';
+import { PaymentStatus } from '../pages/enumerations/payment-status.model';
 
 
 export interface IMenuGroup {
@@ -103,7 +106,7 @@ export type NewCompanyMaster = Omit<ICompanyMaster, 'id'> & { id: null };
   productId?: number | null;
   name?: string | null;
   description?: string | null;
-  price?: string | null;
+  price?: number | null;
   imageUrl?: string | null;
   isActive?: boolean | null;
   isAvailable?: boolean | null;
@@ -165,3 +168,91 @@ export interface ICategory {
 }
 
 export type NewCategory = Omit<ICategory, 'id'> & { id: null };
+ 
+export interface IPersonnel {
+  id: number;
+  userId?: number | null;
+  email?: string | null;
+  passwordHash?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+  phone?: string | null;
+  createdAt?: dayjs.Dayjs | null;
+  isActive?: boolean | null;
+  isAppUser?: boolean | null;
+  title?: string | null;
+  login?: string | null;
+  passwordDate?: string | null;
+  passwordPeriod?: number | null;
+  isChangePass?: boolean | null;
+  isLimitedSession?: boolean | null;
+  lastSessionDate?: string | null;
+  sessionCount?: number | null;
+  wrongPassCount?: number | null;
+  notifyToken?: string | null;
+  identityNo?: string | null;
+  personType?: number | null;
+  isOther?: boolean | null;
+  otherNote?: string | null;
+  authGroupId?: number | null;
+  phoneNumber?: string | null;
+  pictureId?: number | null;
+  birthDate?: string | null;
+  birthPlace?: string | null;
+  gender?: string | null;
+  documentTypeId?: number | null;
+  isWorking?: boolean | null;
+  branchCode?: string | null;
+  isVibration?: boolean | null;
+  isSound?: boolean | null;
+  isNotify?: boolean | null;
+  isCanAllPatients?: boolean | null;
+  isManager?: boolean | null;
+  isDriver?: boolean | null;
+  isDoctor?: boolean | null;
+  specializationId?: number | null;
+  passivedBy?: string | null;
+  passivedDate?: string | null;
+  createdBy?: string | null;
+  createdDate?: string | null;
+  updatedBy?: string | null;
+  updatedDate?: string | null;
+}
+
+export type NewPersonnel = Omit<IPersonnel, 'id'> & { id: null };
+
+
+export interface IOrder {
+  id: number;
+  orderId?: number | null;
+  orderDate?: dayjs.Dayjs | null;
+  totalAmount?: string | null;
+  status?: keyof typeof OrderStatus | null;
+  paymentMethod?: keyof typeof PaymentMethod | null;
+  paymentStatus?: keyof typeof PaymentStatus | null;
+  estimatedDeliveryTime?: dayjs.Dayjs | null;
+  actualDeliveryTime?: dayjs.Dayjs | null;
+  notes?: string | null;
+  createdAt?: dayjs.Dayjs | null;
+  updatedAt?: dayjs.Dayjs | null;
+  customerName?: string | null;
+  customerAddress?: string | null;
+  customerPhone?: string | null;
+  personnel?: Pick<IPersonnel, 'id'> | null;
+}
+
+export type NewOrder = Omit<IOrder, 'id'> & { id: null };
+
+
+export interface IOrderItem {
+  id: number;
+  orderItemId?: number | null;
+  quantity?: number | null;
+  price?: number | null;
+  note?: string | null;
+  createdAt?: dayjs.Dayjs | null;
+  product?: Pick<IProduct, 'id'> | null;
+  order?: Pick<IOrder, 'id'> | null;
+}
+
+export type NewOrderItem = Omit<IOrderItem, 'id'> & { id: null };

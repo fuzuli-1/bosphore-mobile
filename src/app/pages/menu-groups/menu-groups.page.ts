@@ -1,4 +1,4 @@
-import { Component, EventEmitter, NgZone, OnInit, Output, inject, signal } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, Component, EventEmitter, NgZone, OnInit, Output, inject, signal } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
@@ -16,17 +16,21 @@ import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'src/ap
 import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'src/app/config/navigation.constants';
 import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal }  from 'src/app/shared/sort';
  import * as iface from '../../interfaces/interfaces';
+import Swiper from 'swiper';
 
 @Component({
   selector: 'app-menu-groups',
   templateUrl: './menu-groups.page.html',
   styleUrls: ['./menu-groups.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class MenuGroupsPage implements OnInit {
-@Output() selectedGroupChange = new EventEmitter<number>();
 
+  spaceBetween = 10;
+@Output() selectedGroupChange = new EventEmitter<iface.IMenuGroup>();
+ selected: iface.IMenuGroup | null = null;
 
  private translateService = inject(TranslationService);
    
@@ -50,7 +54,7 @@ export class MenuGroupsPage implements OnInit {
   itemsPerPage = ITEMS_PER_PAGE;
   totalItems = 0;
   page = 1;
- subGroups: iface.IMenuGroupItem[] = [];
+  
   protected readonly menuGroupService = inject(MenuGroupService);
   protected readonly activatedRoute = inject(ActivatedRoute);
  
@@ -58,6 +62,15 @@ export class MenuGroupsPage implements OnInit {
 
   trackId = (item: IMenuGroup): number => this.menuGroupService.getMenuGroupIdentifier(item);
 
+    onProgress(event: CustomEvent<[Swiper, number]>) {
+    const [swiper, progress] = event.detail;
+    console.log(progress);
+  }
+
+  onSlideChange() {
+    console.log('slide changed');
+  }
+  
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
@@ -65,11 +78,6 @@ export class MenuGroupsPage implements OnInit {
         tap(() => this.load()),
       )
       .subscribe();
-  }
-
-  segmentChanged(event: any) {
-    this.selectedSegment = event.detail.value;
-    this.selectedGroupChange.emit(this.selectedSegment);
   }
 
   load(): void {
@@ -99,7 +107,7 @@ export class MenuGroupsPage implements OnInit {
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
     this.menuGroups.set(dataFromBody);
       if(dataFromBody.length>0){
-         this.selectedGroupChange.emit(dataFromBody[0].id);
+         this.selectedGroupChange.emit(dataFromBody[0]);
         
       }
   }
@@ -199,6 +207,11 @@ export class MenuGroupsPage implements OnInit {
       await toast.present();
     }
   }
+
+  selectMenuGroup(menuGroup: IMenuGroup) {
+      this.selected=menuGroup;
+      this.selectedGroupChange.emit(menuGroup);
+}
 }
 
  

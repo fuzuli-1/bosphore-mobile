@@ -6,7 +6,7 @@
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-
+<i class="fas fa-spinner fa-spin"></i>
     <ion-title class="logo-title">
       <img
         src="../../../assets/img/home_bosphore_logo.png"
@@ -14,14 +14,7 @@
         class="logo"
       />
     </ion-title>
-    <ion-segment>
-      <ion-segment-button value="home" (click)="goToHome()">
-        <ion-label>{{"Yiyecekler"|translate}}</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="drinks" (click)="goToDrinks()">
-        <ion-label>{{"İçecekler"|translate}}</ion-label> 
-      </ion-segment-button>
-    </ion-segment>
+ 
     <ion-buttons slot="end">
       <ion-button (click)="openSearch()">
         <ion-icon slot="icon-only" name="search-outline"></ion-icon>

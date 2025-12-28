@@ -1,46 +1,80 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>{{ pizza?.ad }}</ion-title>
+    <ion-title>{{ this.product?.name }}</ion-title>
   </ion-toolbar>
 </ion-header>
+<ion-content>
+  <div class="page">
+    <!--addres bar-->
+    <div class="top-bar-address-bar">
+      <ion-segment>
+        <ion-segment-button selected>
+          <ion-icon name="location-outline"></ion-icon>
+          <ion-label>Teslimat Adresi</ion-label>
+        </ion-segment-button>
+        <ion-segment-button>
+          <ion-icon name="storefront-outline"></ion-icon>
+          <ion-label>Mağazadan Al</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+    <!--dynamic menu bar-->
+    <div class="pd-dynamic-menu-bar">
+      <ion-breadcrumbs>
+        <ion-breadcrumb href="/home">Ana Sayfa</ion-breadcrumb>
+        <ion-breadcrumb href="/pizzalar">Tüm Pizzalar</ion-breadcrumb>
+        <ion-breadcrumb href="/pizzalar/bol-malzemeli">
+          Bol Malzeme Pizzalar
+        </ion-breadcrumb>
+        <ion-breadcrumb active>{{ this.product?.name }}</ion-breadcrumb>
+      </ion-breadcrumbs>
+    </div>
+    <!--product detail content-->
+    <div class="product-area">
+      <div class="product-image">
+        <!-- Yemek Adı -->
+        <ion-text class="product-title">
+          <h2>{{ this.product?.name }}</h2>
+        </ion-text>
+        <!-- Ürün Görseli -->
+        <div class="image-wrapper">
+          <img
+            [src]="this.product?.imageUrl"
+            alt="{{ this.product?.name }}"
+            loading="lazy"
+          />
+        </div>
+        <!-- Fiyat + Adet -->
+        <div class="price-qty">
+          <!-- Fiyat -->
+          <div color="dark" class="price">
+            <ion-text color="primary">
+              <h3>
+                {{ this.product?.price | currency:'TRY':'symbol':'1.2-2' }}
+              </h3>
+            </ion-text>
+          </div>
 
-@if (pizza) {
-  <ion-content>
-    <ion-img [src]="pizza.resim"></ion-img>
-    <ion-card>
-      <ion-card-content>
-        <h2>{{ pizza.ad }}</h2>
-        <p>{{ pizza.aciklama }}</p>
-        <ion-item>
-          <ion-label>Boyut</ion-label>
-          <ion-select [(ngModel)]="secimler.boyut">
-            @for (b of boyutlar; track b) {
-              <ion-select-option [value]="b">{{ b }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label>Hamur</ion-label>
-          <ion-select [(ngModel)]="secimler.hamur">
-            @for (h of hamurlar; track h) {
-              <ion-select-option [value]="h">{{ h }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label>Ekstra Malzeme</ion-label>
-          <ion-select multiple [(ngModel)]="secimler.malzemeler">
-            @for (m of malzemeler; track m) {
-              <ion-select-option [value]="m">{{ m }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-        <ion-item>
-          <ion-label>Adet</ion-label>
-          <ion-input type="number" [(ngModel)]="secimler.adet" min="1"></ion-input>
-        </ion-item>
-        <ion-button expand="block" color="success" (click)="sepeteEkle()">Sepete Ekle</ion-button>
-      </ion-card-content>
-    </ion-card>
-  </ion-content>
-}
+          <!-- Adet -->
+          <div class="quantity">
+            <ion-button fill="outline" size="small" (click)="decrease()">
+              <ion-icon name="remove-outline"></ion-icon>
+            </ion-button>
+            <ion-text class="qty"> {{ orderItem.quantity }} </ion-text>
+            <ion-text class="price">
+              {{ orderItem.price | currency:'TRY':'symbol':'1.0-0' }}
+            </ion-text>
+            <ion-button fill="outline" size="small" (click)="increase()">
+              <ion-icon name="add-outline"></ion-icon>
+            </ion-button>
+          </div>
+          <div class="product-options"></div>
+        </div>
+        <div class="add-to-cart">
+          <ion-button expand="block" color="primary">Sepete Ekle</ion-button>
+        </div>
+        <div class="footer-info"></div>
+      </div>
+    </div>
+  </div>
+</ion-content>

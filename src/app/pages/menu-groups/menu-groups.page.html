@@ -1,17 +1,34 @@
-<!--menu groups-->
-<ion-header>
-  <ion-toolbar color="white">
-    <ion-segment (ionChange)="segmentChanged($event)" [(ngModel)]="selectedSegment" class="home-header">
-        @for (menuGroup of this.menuGroups(); track $index) {
-          <ion-segment-button
-           [value]="menuGroup.id"
+ 
+  <swiper-container
+      slides-per-view="auto"
+      space-between="10"
+      loop="false"
+      navigation="true"
+      class="category-swiper"
+      
+      [breakpoints]="{
+        '768': {
+          slidesPerView: 3,
+        },
+      }"
+      (swiperprogress)="onProgress($any($event))"
+      (swiperslidechange)="onSlideChange()"
+    >
+  @for (menuGroup of this.menuGroups(); track $index) {
+  
+  <swiper-slide class="category-slide"
+   (click)="selectMenuGroup(menuGroup)"
+   [class.active]="selected?.id === menuGroup.id"
+  >
+    <div class="category-card">
+      <div class="category-image-wrapper"> 
+      </div>
+      <div class="category-title">{{ menuGroup.title }}</div>
+    </div>
+  </swiper-slide>
+}
+    </swiper-container>
 
-           
-           >
-            <ion-icon [name]="menuGroup.iconPath"></ion-icon>
-            <ion-label>{{ menuGroup.title }}</ion-label>
-          </ion-segment-button>
-        }
-    </ion-segment>
-  </ion-toolbar>
-</ion-header>
+
+
+ 

@@ -41,13 +41,14 @@ import { CategorySwiperComponent } from '../pages/menu-group-item/menu-group-ite
 import { AccountService } from '../core/auth/account.service';
 import { MenuGroupsPage } from '../pages/menu-groups/menu-groups.page';
 import { ProductsPage } from "../pages/products/products.page";
+import { PageHeaderPage } from '../pages/page-header/page-header.page';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule, CategorySwiperComponent, MenuGroupsPage, ProductsPage],
+  imports: [IonicModule, FormsModule, CategorySwiperComponent, MenuGroupsPage, ProductsPage,PageHeaderPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hata mesajını bastırır
   providers: [
     FooterService,
@@ -102,13 +103,10 @@ export class HomePage implements OnInit, AfterViewInit {
     throw new Error('Method not implemented.');
   }
 
-  onSelectedGroupChange(id: number) {
-    this.selectedGroupId = id;
+  onSelectedGroupChange(menuGroup: iface.IMenuGroup) {
+    this.selectedGroupId = menuGroup.id;
   }
-
-  onSelectedGroupItemChange(item:iface.IMenuGroupItem) {
-      this.selectedGroupItemId=item.id;
-  }
+ 
 
  
 

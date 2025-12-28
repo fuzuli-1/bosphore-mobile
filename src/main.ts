@@ -16,8 +16,10 @@ import { routes } from './app/app.routes';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
+  addOutline,
   airplaneOutline,
   arrowForwardOutline,
+  cartOutline,
   chatbubbleEllipsesSharp,
   checkmarkDoneCircleOutline,
   cloudOutline,
@@ -34,6 +36,7 @@ import {
   key,
   keyOutline,
   listOutline,
+  locationOutline,
   lockClosed,
   mailOutline,
   menu,
@@ -41,8 +44,12 @@ import {
   notifications,
   personAddOutline,
   personCircleOutline,
+  personOutline,
   refresh,
   refreshCircleOutline,
+  remove,
+  removeOutline,
+  searchOutline,
   settingsOutline,
   storefrontOutline,
 } from 'ionicons/icons';
@@ -60,7 +67,7 @@ addIcons({
   'arrow-forward-outline': arrowForwardOutline,
   'mail-outline': mailOutline,
   'lock-closed': lockClosed,
-  eye: eye,
+  "eye": eye,
   'checkmark-done-outline': checkmarkDoneCircleOutline,
   'information-outline': informationOutline,
   'storefront-outline': storefrontOutline,
@@ -76,7 +83,7 @@ addIcons({
   'home-outline': home,
   'list-outline': listOutline,
   'menu-outline': menuOutline,
-  notifications: notifications,
+  "notifications": notifications,
   'chatbubble-ellipses-sharp': chatbubbleEllipsesSharp,
   'person-add-outline': personAddOutline,
   'images-outline': imagesOutline,
@@ -84,11 +91,18 @@ addIcons({
   'airplane-outline': airplaneOutline,
   'chevron-forward-outline': arrowForwardOutline,
   'chevron-back-outline': arrowForwardOutline,
+  "search-outline": searchOutline,
+  'cart-outline':cartOutline,
+  "person-outline":personOutline,
+  'location-outline':locationOutline,
+  'remove-outline':removeOutline,
+  "add-outline":addOutline,
 });
 
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TranslationService } from './app/services/translation-service';
+import { add } from 'ngx-bootstrap/chronos';
 bootstrapApplication(AppComponent, {
   providers: [
     provideZoneChangeDetection(), // ServiceManager'ı providers'a ekleyin
