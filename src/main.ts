@@ -22,6 +22,8 @@ import {
   cartOutline,
   chatbubbleEllipsesSharp,
   checkmarkDoneCircleOutline,
+  chevronBack,
+  chevronForward,
   cloudOutline,
   cloudUploadOutline,
   documentOutline,
@@ -32,6 +34,7 @@ import {
   helpCircleOutline,
   home,
   imagesOutline,
+  informationCircleOutline,
   informationOutline,
   key,
   keyOutline,
@@ -97,6 +100,9 @@ addIcons({
   'location-outline':locationOutline,
   'remove-outline':removeOutline,
   "add-outline":addOutline,
+  'chevron-forward':chevronForward,
+  'chevron-back':chevronBack,
+  'information-circle-outline':informationCircleOutline,
 });
 
 import { Observable, of } from 'rxjs';

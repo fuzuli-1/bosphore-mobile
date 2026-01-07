@@ -3,12 +3,13 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApplicationConfigService } from 'src/app/core/config/application-config.service';
 import { isPresent } from 'src/app/core/util/operators';
-import { IMenuGroupItem } from 'src/app/interfaces/interfaces';
+import { IMenuGroupItem, IOptionGroupWithItems } from 'src/app/interfaces/interfaces';
 import { createRequestOption } from '../../core/request/request-util';
 export type PartialUpdateMenuGroupItem = Partial<IMenuGroupItem> & Pick<IMenuGroupItem, 'id'>;
 
 export type EntityResponseType = HttpResponse<IMenuGroupItem>;
 export type EntityArrayResponseType = HttpResponse<IMenuGroupItem[]>;
+
 
 @Injectable({
   providedIn: 'root',
@@ -48,6 +49,7 @@ export class MenuGroupItemService {
     const options = createRequestOption(req);
     return this.http.get<IMenuGroupItem[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
+
 
     delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });

@@ -1,10 +1,9 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>{{ this.product?.name }}</ion-title>
-  </ion-toolbar>
-</ion-header>
+
+    <app-page-header></app-page-header>
 <ion-content>
+  
   <div class="page">
+
     <!--addres bar-->
     <div class="top-bar-address-bar">
       <ion-segment>
@@ -21,8 +20,8 @@
     <!--dynamic menu bar-->
     <div class="pd-dynamic-menu-bar">
       <ion-breadcrumbs>
-        <ion-breadcrumb href="/home">Ana Sayfa</ion-breadcrumb>
-        <ion-breadcrumb href="/pizzalar">Tüm Pizzalar</ion-breadcrumb>
+        <ion-breadcrumb href="/siparisler">Ana Sayfa</ion-breadcrumb>
+        <ion-breadcrumb href="/siparisler">Tüm Pizzalar</ion-breadcrumb>
         <ion-breadcrumb href="/pizzalar/bol-malzemeli">
           Bol Malzeme Pizzalar
         </ion-breadcrumb>
@@ -39,7 +38,7 @@
         <!-- Ürün Görseli -->
         <div class="image-wrapper">
           <img
-            [src]="this.product?.imageUrl"
+            [src]="'assets/products/' + product?.imageUrl + '.png'"
             alt="{{ this.product?.name }}"
             loading="lazy"
           />
@@ -49,32 +48,32 @@
           <!-- Fiyat -->
           <div color="dark" class="price">
             <ion-text color="primary">
-              <h3>
-                {{ this.product?.price | currency:'TRY':'symbol':'1.2-2' }}
-              </h3>
+              <h3>{{ orderItem.price | currency:'':'symbol':'1.2-4' }}</h3>
             </ion-text>
           </div>
 
           <!-- Adet -->
-          <div class="quantity">
+          <div class="qty-control">
             <ion-button fill="outline" size="small" (click)="decrease()">
               <ion-icon name="remove-outline"></ion-icon>
-            </ion-button>
-            <ion-text class="qty"> {{ orderItem.quantity }} </ion-text>
-            <ion-text class="price">
-              {{ orderItem.price | currency:'TRY':'symbol':'1.0-0' }}
+            </ion-button>          
+            <ion-text class="qty">
+              {{ orderItem.quantity| number }}
             </ion-text>
             <ion-button fill="outline" size="small" (click)="increase()">
               <ion-icon name="add-outline"></ion-icon>
             </ion-button>
           </div>
-          <div class="product-options"></div>
+         
         </div>
-        <div class="add-to-cart">
-          <ion-button expand="block" color="primary">Sepete Ekle</ion-button>
-        </div>
-        <div class="footer-info"></div>
+      </div>
+      <div class="product-options">
+        <app-option-group [productId]="product?.id"></app-option-group>
       </div>
     </div>
+    <div class="add-to-cart">
+      <ion-button expand="block" color="primary">Sepete Ekle</ion-button>
+    </div>
+    <div class="footer-info"></div>
   </div>
 </ion-content>

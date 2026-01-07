@@ -256,3 +256,46 @@ export interface IOrderItem {
 }
 
 export type NewOrderItem = Omit<IOrderItem, 'id'> & { id: null };
+
+ 
+
+export interface IOptionGroup {
+  id: number;
+  name?: string | null;
+  minSelect?: number | null;
+  maxSelect?: number | null;
+  isActive?: boolean | null;
+  createdAt?: dayjs.Dayjs | null;
+  requiredGroup?: boolean | null;
+  product?: Pick<IProduct, 'id'> | null;
+  language?: Pick<ILanguage, 'id'> | null;
+ 
+}
+
+export type NewOptionGroup = Omit<IOptionGroup, 'id'> & { id: null };
+ 
+
+export interface IOptionItem {
+  id: number;
+  name?: string | null;
+  additionalPrice?: string | null;
+  isActive?: boolean | null;
+  isDefault?: boolean | null;
+  createdAt?: dayjs.Dayjs | null;
+  optionGroup?: Pick<IOptionGroup, 'id'> | null;
+  language?: Pick<ILanguage, 'id'> | null;
+  imageUrl?: string | null;
+  selected?: boolean | null;
+  selectedItemId?: number;
+}
+
+export type NewOptionItem = Omit<IOptionItem, 'id'> & { id: null };
+
+export interface IOptionGroupWithItems extends IOptionGroup {
+  selectedItemId?: number;
+  selected?:boolean|null;
+  items: IOptionItem[];
+}
+
+
+ 

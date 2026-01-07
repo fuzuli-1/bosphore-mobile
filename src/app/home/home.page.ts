@@ -106,13 +106,7 @@ export class HomePage implements OnInit, AfterViewInit {
   onSelectedGroupChange(menuGroup: iface.IMenuGroup) {
     this.selectedGroupId = menuGroup.id;
   }
- 
-
- 
-
- 
- 
-
+  
   ngAfterViewInit() {
     let x = 0;
   }

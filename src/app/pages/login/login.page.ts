@@ -122,51 +122,44 @@ export class LoginPage implements OnInit {
   }
 
   kullanimSozlesmesi() {}
+  
+login() {
+  if (this.loginData.username && this.loginData.password) {
+    const loginData = new Login(
+      this.loginData.username,
+      this.loginData.password,
+      false,
+      '',
+      '',
+      ''
+    );
 
-  login() {
-    if (this.loginData.username && this.loginData.password) {
-      const loginData = new Login(
-        this.loginData.username,
-        this.loginData.password,
-        false,
-        '',
-        '',
-        ''
-      );
-
-      this.loginService.login(loginData).subscribe({
-        next: (res: any) => {
-          console.log(this.router.config);
-          this.navCtrl
-            .navigateRoot('/home')
-            .then((r) => console.log('NAV RESULT:', r));
+    this.loginService.login(loginData).subscribe({
+      next: () => {
+        // 🔴 EN KRİTİK SATIR
+        this.accountService.identity(true).subscribe(() => {
           this.navCtrl.navigateRoot('/home');
-        },
-        error: async (error: any) => {
-          let alert = this.alertCtrl.create({
-            header: error.error.error
-              ? error.error.error
-              : this.translateService.instant('ERROR.NOT_CONNECT_SERVER'),
-            cssClass: 'custom-alert',
-            buttons: [
-              {
-                text: 'OK',
-                cssClass: 'alert-button-cancel',
-                handler: () => {},
-              },
-            ],
-          });
-          (await alert).present();
-        },
-      });
-    } else {
-      this.presentToast(
-        0,
-        'top',
-        this.translateService.instant('ERROR.USERPASS')
-      );
-    }
+        });
+      },
+      error: async (error: any) => {
+        const alert = await this.alertCtrl.create({
+          header: error.error?.error
+            ?? this.translateService.instant('ERROR.NOT_CONNECT_SERVER'),
+          cssClass: 'custom-alert',
+          buttons: ['OK'],
+        });
+        alert.present();
+      },
+    });
+  } else {
+    this.presentToast(
+      0,
+      'top',
+      this.translateService.instant('ERROR.USERPASS')
+    );
   }
+}
+
 
   changeLangue() {
     this.navCtrl.navigateRoot('/select-language');

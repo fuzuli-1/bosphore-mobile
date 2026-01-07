@@ -1,42 +1,40 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth-guard';
+//app.routes.ts
+ export const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-export const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'login',
-    pathMatch: 'full',
-  },
   {
     path: 'login',
-    loadComponent: () => import('./pages/login/login.page').then(m => m.LoginPage),
+    loadComponent: () =>
+      import('./pages/login/login.page').then(m => m.LoginPage),
   },
+
   {
-    path: 'home',
+    path: '',
     canActivate: [AuthGuard],
-    loadComponent: () => import('./home/home.page').then(m => m.HomePage),
     children: [
       {
-        path: 'siparisler',
-        loadComponent: () => import('./pages/products/products.page').then(m => m.ProductsPage),
+        path: 'home',
+        loadChildren: () =>
+          import('./home/home.routes').then(m => m.default),
+      },
+      {
+        path: 'products',
+        loadChildren: () =>
+          import('./pages/products/products.routes').then(m => m.default),
+      },
+      {
+        path: 'menus',
+        loadChildren: () =>
+          import('./pages/menu/menu.routes').then(m => m.default),
+      },
+      {
+        path: 'payments',
+        loadChildren: () =>
+          import('./pages/payments/payments.routes').then(m => m.default),
       },
     ],
   },
-  {
-    path: 'app-product-detail/:id',
-    loadComponent: () => import('./pages/product-detail/product-detail.page').then(m => m.ProductDetailPage),
-  },
-  {
-    path: 'cart',
-    loadComponent: () => import('./pages/cart/cart.page').then(m => m.CartPage),
-  },
-  {
-    path: 'menu-groups',
-    loadComponent: () => import('./pages/menu-groups/menu-groups.page').then( m => m.MenuGroupsPage)
-  },
-  {
-    path: 'register',
-    loadComponent: () => import('../app/account/register/register.page').then( m => m.RegisterPage)
-  },
- 
 ];
+

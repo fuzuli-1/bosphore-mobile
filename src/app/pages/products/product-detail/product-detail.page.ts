@@ -15,7 +15,7 @@ import { IOrderItem, IProduct } from 'src/app/interfaces/interfaces';
 import {
   EntityArrayResponseType,
   ProductService,
-} from '../products/product-service';
+} from '../../products/product-service';
 import { SortService, sortStateSignal } from 'src/app/shared/sort';
 import {
   ITEMS_PER_PAGE,
@@ -26,19 +26,32 @@ import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
 import { HttpHeaders } from '@angular/common/http';
 import dayjs from 'dayjs/esm';
 import { CommonModule } from '@angular/common';
+import { PageHeaderPage } from '../../page-header/page-header.page';
+import { OptionGroupPage } from '../../option-group/option-group.page';
 
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-detail.page.html',
   styleUrls: ['./product-detail.page.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule,CommonModule],
+  imports: [
+    IonicModule,
+    FormsModule,
+    CommonModule,
+    PageHeaderPage,
+    OptionGroupPage,
+  ],
 })
 export class ProductDetailPage implements OnInit {
-
   subscription: Subscription | null = null;
   product: IProduct | null = null;
-  orderItem!: IOrderItem;
+  orderItem: IOrderItem = {
+    id: 0,
+    quantity: 1,
+    price: 0,
+    createdAt: dayjs(),
+    product: { id: 0 },
+  };
   isLoading = false;
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly productService = inject(ProductService);
@@ -75,7 +88,6 @@ export class ProductDetailPage implements OnInit {
         this.product = res.body;
         this.isLoading = false;
         if (this.product) {
-
           this.orderItem = {
             id: 0, // yeni kayıt
             quantity: 1,
@@ -84,7 +96,6 @@ export class ProductDetailPage implements OnInit {
             product: { id: this.product.id },
           };
         }
-
       },
       error: () => {
         this.isLoading = false;
@@ -95,38 +106,40 @@ export class ProductDetailPage implements OnInit {
   increase() {
     if (!this.orderItem.quantity) {
       this.orderItem.quantity = 0;
-    } 
-  this.orderItem.quantity++;
-  this.calculateTotal();
-}
-
-decrease() {  
-  if (!this.orderItem.quantity) {
-    this.orderItem.quantity = 0;
-  }
-
-  if (this.orderItem.quantity > 1) {
-    this.orderItem.quantity--;
+    }
+    this.orderItem.quantity++;
     this.calculateTotal();
   }
-}
 
-calculateTotal() {
+  decrease() {
+    if (!this.orderItem.quantity) {
+      this.orderItem.quantity = 0;
+    }
 
-  if (!this.orderItem.quantity) {
-    this.orderItem.quantity = 0;
+    if (this.orderItem.quantity > 1) {
+      this.orderItem.quantity--;
+      this.calculateTotal();
+    }
   }
-  if (!this.orderItem.price) {
-    this.orderItem.price = 0;
-  }
 
-  this.totalPrice =
-    this.orderItem.quantity * this.orderItem.price;
-}
+  calculateTotal() {
+    if (!this.orderItem.quantity) {
+      this.orderItem.quantity = 0;
+    }
+    if (!this.orderItem.price) {
+      this.orderItem.price = 0;
+    }
+
+    this.totalPrice = this.orderItem.quantity * this.orderItem.price;
+  }
 
   sepeteEkle() {
     /*const siparis = { ...this.pizza, ...this.secimler };
     localStorage.setItem('cart', JSON.stringify(siparis));
     this.navCtrl.navigateForward('/cart');*/
+  }
+
+  naviHome(url:any){
+    this.navCtrl.navigateRoot(url);
   }
 }

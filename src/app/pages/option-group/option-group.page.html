@@ -1,0 +1,121 @@
+<ion-content fullscreen>
+
+
+ @for (group of optionGroups(); track group.id) {
+
+  <section class="option-group">
+
+    <div class="group-header">
+      <h2>{{ group.name }}</h2>
+
+      <div class="arrows">
+        @if(canGoLeft(group)){
+                  <ion-button
+          fill="clear"         
+          (click)="prev(group)"
+        >
+          <ion-icon name="chevron-back"></ion-icon>
+        </ion-button>
+        }
+        @if(canGoRight(group)){
+                  <ion-button
+          fill="clear"
+         
+          (click)="next(group)"
+        >
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-button>
+        }
+
+
+      </div>
+    </div>
+
+    <div class="carousel-viewport">
+      <div
+        class="carousel-track"
+        [style.transform]="getTransform(group)"
+      >
+        @for (item of group.items; track item.id) {
+          <ion-card 
+          class="option-card"
+          [class.selected]="isSelected(group, item)"
+           (click)="selectItem(group, item)"
+          >
+            <img
+             class="option-img"
+              width="60"
+              height="60"
+              [src]="'assets/img/options/' + item.imageUrl + '.jpg'"
+            />
+
+      @if(bospUtil.getValue(item,"additionalPrice")>0) {
+              <ion-badge class="price-badge">
+                +{{ item.additionalPrice }} 
+              </ion-badge>
+            } 
+            <span class="option-name"> {{ item.name }} </span>
+          </ion-card>
+        }
+      </div>
+    </div>
+
+  </section>
+
+}
+
+<h3 class="section-title">
+  Standart Malzemeler / Ekstra Malzemeler
+  <ion-icon name="information-circle-outline"></ion-icon>
+</h3>
+
+<div class="chips">
+  @for (item of this.extraOptions(); track item.id) {
+    @if (item.selected) {
+      <ion-chip>
+        <ion-label>{{ item.name }}</ion-label>
+        <ion-icon
+          name="close-circle"
+          (click)="removeExtra(item)"
+        ></ion-icon>
+      </ion-chip>
+    }
+  }
+</div>
+<ion-item lines="none" class="search-box">
+  <ion-input
+    placeholder="Malzeme Ara..."
+    [(ngModel)]="searchText"
+  ></ion-input>
+  <ion-icon name="search-outline"></ion-icon>
+</ion-item>
+
+<div class="extras-grid">
+
+  @for (item of filteredExtras(); track item.id) {
+     
+    <div
+      class="extra-card"
+      [class.selected]="item.selected"
+      (click)="toggleExtra(item)"
+    >
+      <div class="left">
+        <ion-radio
+          [checked]="item.selected"
+        ></ion-radio>
+        <span>{{ item.name }}</span>
+      </div>
+
+      <div class="price">+{{ item.additionalPrice }} TL</div>
+    </div>
+
+  }
+</div>
+
+
+</ion-content>
+
+ 
+ 
+
+ 

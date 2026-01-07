@@ -211,9 +211,9 @@ export class ProductsPage implements OnInit, OnChanges {
     });
   }
 
-  openProductDetail(productId: number): void {
+  openProductDetail(id: number): void {
     this.ngZone.run(() => {
-      this.router.navigate(['/app-product-detail', productId]);
+      this.router.navigate(['/products', id]);      
     });
   }
 }

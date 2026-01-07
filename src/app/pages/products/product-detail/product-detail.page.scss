@@ -55,12 +55,26 @@
 .product-area {
   flex: 1;               /* Kalan alanın TAMAMI */
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 24px;
   padding: 16px;
   overflow: hidden;
 }
+/*
+    En doğru oran yönetimi
+% yerine flex-basis
 
+Scroll gereken yere overflow-y: auto
+*/
+//Sağ taraf (scroll olan alan)
+.product-options {
+  flex: 1;         /* Kalan alanın TAMAMI */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: hidden; /* Dikey kaydırma */
+}
+/*Ürün görseli alanı*/
 .product-image {
   flex: 0 0 45%;   /* %45 kapla */
 }
@@ -74,10 +88,10 @@
 .image-wrapper{
   width: 100%;
   height: auto;
-   aspect-ratio: 1 / 1;   /* Kare pizza */
-   border-radius: 8px;
+  // aspect-ratio: 1 / 1;   /* Kare pizza */
+  border-radius: 8px;
   overflow: hidden;
-   background: #f5f5f5;
+  background: #f5f5f5;
   
 }
 
@@ -90,8 +104,9 @@
 /* Fiyat + Adet */
 .price-qty{
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: center; 
+  justify-content:  space-between;
+  width: 100%;
  
 }
 
@@ -106,26 +121,15 @@
 .qty-control{
   display: flex;
   align-items: center;
-  gap: 8px;
+ 
 }
 
-
-
-//Sağ taraf (scroll olan alan)
-.product-options {
-  flex: 1;         /* Kalan alanın TAMAMI */
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  overflow-y: auto; /* Dikey kaydırma */
+.qty {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 700;
+  color: #1db954;
 }
-
-/*
-    En doğru oran yönetimi
-% yerine flex-basis
-
-Scroll gereken yere overflow-y: auto
-*/
 
 .add-to-cart {
   height: 72px;

@@ -6,7 +6,15 @@
       <ion-col size="12" size-md="6" size-lg="4" size-xl="3">
         
         <ion-card class="product-card">
-          <img [src]="'assets/products/' + product.imageUrl + '.png'" />
+        
+          
+          <img
+  [src]="product?.imageUrl
+    ? 'assets/products/' + product.imageUrl + '.png'
+    : 'assets/products/default.png'"
+  alt="product"
+/>
+
 
 
           <ion-card-content>
