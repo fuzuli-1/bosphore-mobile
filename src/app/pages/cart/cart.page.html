@@ -1,41 +1,55 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Sepetim</ion-title>
-  </ion-toolbar>
+  <app-page-header></app-page-header>
 </ion-header>
-
 <ion-content>
-  @if (cartItems.length > 0) {
-    <ion-list>
-      @for (item of cartItems; track item) {
-        <ion-item>
-          <ion-thumbnail slot="start">
-            <img alt="" [src]="item.resim" />
-          </ion-thumbnail>
-          <ion-label>
-            <h2>{{ item.ad }}</h2>
-            <p>{{ item.boyut }} - {{ item.hamur }}</p>
-            <p>Adet: {{ item.adet }}</p>
-            <p>Ekstra: {{ item.malzemeler.join(', ') }}</p>
-            <ion-badge color="success">{{ item.fiyat * item.adet | currency:'TRY' }}</ion-badge>
-          </ion-label>
-        </ion-item>
-      }
-    </ion-list>
-  }
+  <div class="page-wrapper">
+    <div class="address-bar"></div>
+    <div class="page">
+      <div class="sepet-urun">
+        <div class="secilen-urunler">
+          <ion-list>
+            @for(item of cartItems;track item.uuid){
+            <ion-item>
+              <div class="urun">
+                <div class="urun-name">
+                  <ion-label slot="start">{{item.productName}}</ion-label>
+                  <ion-label slot="end"> {{item.totalPrice|currency}}</ion-label>
+                </div>
+                <div class="urun-islem">
+                  <div class="urun-button">
+                    <ion-button fill="outline" size="small">
+                      <ion-icon name="remove-outline"></ion-icon>
+                    </ion-button>
+                    <ion-text class="qty">1</ion-text>
+                    <ion-button fill="outline" size="small">
+                      <ion-icon name="add-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                  <div class="urun-sil">
+                    <ion-button>
+                      <ion-icon name="remove-outline"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+              </div>
+            </ion-item>
+            }
+          </ion-list>
+        </div>
+        <div class="birlikte-iyi-gider">
+           <app-extra-option-group 
+        [productId]="this.productId"
+        [optionType]=7
+        (optionChange)="onExtraOptionsChange($event)" 
+        ></app-extra-option-group> 
 
-  @if (cartItems.length === 0) {
-    <ion-item>
-      <ion-label>Sepetiniz boş.</ion-label>
-    </ion-item>
-  }
+        </div>
+        <div class="soslar"></div>
+      </div>
+      <div class="sepet-ozet">
 
-  @if (cartItems.length > 0) {
-    <ion-footer>
-      <ion-toolbar>
-        <ion-title>Toplam: {{ toplam | currency:'TRY' }}</ion-title>
-        <ion-button expand="block" color="success">Siparişi Tamamla</ion-button>
-      </ion-toolbar>
-    </ion-footer>
-  }
+      </div>
+    </div>
+  </div>
 </ion-content>
+

@@ -1,71 +1,33 @@
-import {
-  AfterViewInit,
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  ElementRef,
-  EventEmitter,
-  inject,
-  Input,
-  input,
-  NgZone,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  signal,
-  SimpleChanges,
-  ViewChild,
-} from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, inject, Input, NgZone, OnInit, Output, signal, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import {
-  BehaviorSubject,
-  combineLatest,
-  Observable,
-  Subscription,
-  tap,
-} from 'rxjs';
-import { IOptionGroup, IOptionGroupWithItems, IOptionItem } from 'src/app/interfaces/interfaces';
-import {
-  ITEMS_PER_PAGE,
-  PAGE_HEADER,
-  TOTAL_COUNT_RESPONSE_HEADER,
-} from 'src/app/config/pagination.constants';
-import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
-
-import { SortService, SortState, sortStateSignal } from 'src/app/shared/sort';
-import { IonicModule } from '@ionic/angular';
-import { ModalController } from '@ionic/angular';
-import { EntityArrayResponseType } from '../menu-group-item/menu-group-item-service';
-import { HttpHeaders } from '@angular/common/http';
-import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
-import { IOptionGroupWithItemsResponseType, OptionGroupService } from './option-group-service';
-import Swiper from 'swiper';
-import { Navigation, Pagination, Autoplay, Thumbs, Scrollbar } from 'swiper/modules';
-import { SwiperOptions } from 'swiper/types';
-import { Bosp } from 'src/app/shared/utils/Bosp';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonChip, IonLabel, IonIcon, IonRadio } from '@ionic/angular/standalone';
 import { SelectedOption } from 'src/app/interfaces/ui-model';
-
-// Swiper modüllerini kaydet
-Swiper.use([Navigation, Pagination, Scrollbar]);
+import { Subscription } from 'rxjs';
+import { IOptionGroup, IOptionGroupWithItems, IOptionItem } from 'src/app/interfaces/interfaces';
+import { SortService, SortState, sortStateSignal } from 'src/app/shared/sort';
+import { Bosp } from 'src/app/shared/utils/Bosp';
+import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'src/app/config/pagination.constants';
+import { IOptionGroupWithItemsResponseType, OptionGroupService } from '../../option-group/option-group-service';
+import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
+import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
+import { HttpHeaders } from '@angular/common/http';
+import { ModalController } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
-  selector: 'app-option-group',
-  templateUrl: './option-group.page.html',
-  styleUrls: ['./option-group.page.scss'],
+  selector: 'app-extra-option-group',
+  templateUrl: './extra-group.page.html',
+  styleUrls: ['./extra-group.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+    imports: [IonicModule, CommonModule, FormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
-export class OptionGroupPage implements OnChanges {
+export class ExtraOptionGroupPage implements OnInit {
 
   @Input() productId?: number;
+  @Input() optionType?:number;
+
   @Output() optionChange = new EventEmitter<SelectedOption[]>();
   subscription: Subscription | null = null;
   optionGroups = signal<IOptionGroupWithItems[]>([]);
@@ -90,6 +52,11 @@ export class OptionGroupPage implements OnChanges {
   constructor() {
     
   }
+
+
+  ngOnInit(): void {
+    
+  }
   
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['productId'] && this.productId != null) {
@@ -102,7 +69,7 @@ export class OptionGroupPage implements OnChanges {
       this.isLoading = true; 
     this.optionGroupService.queryWithItems({
       productId: this.productId,
-      optionType:1,
+      optionType:this.optionType,
       page: 0,
       size: this.itemsPerPage,
     }).subscribe({
@@ -312,3 +279,4 @@ emitSelections() {
 
  
 }
+

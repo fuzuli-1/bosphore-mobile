@@ -118,9 +118,9 @@ export type NewCompanyMaster = Omit<ICompanyMaster, 'id'> & { id: null };
   productSellingName?: string | null;
   note?: string | null;
   unitId?: number | null;
-  lastInSum?: string | null;
-  wholesaleSum?: string | null;
-  retailSum?: string | null;
+  lastInSum?: number | null;
+  wholesaleSum?: number | null;
+  retailSum?: number | null;
   passivedPersonnel?: string | null;
   passivedUserId?: number | null;
   passiveDate?: string | null;
@@ -226,7 +226,7 @@ export interface IOrder {
   id: number;
   orderId?: number | null;
   orderDate?: dayjs.Dayjs | null;
-  totalAmount?: string | null;
+  totalAmount?: number | null;
   status?: keyof typeof OrderStatus | null;
   paymentMethod?: keyof typeof PaymentMethod | null;
   paymentStatus?: keyof typeof PaymentStatus | null;
@@ -278,7 +278,7 @@ export type NewOptionGroup = Omit<IOptionGroup, 'id'> & { id: null };
 export interface IOptionItem {
   id: number;
   name?: string | null;
-  additionalPrice?: string | null;
+  additionalPrice?: number | null;
   isActive?: boolean | null;
   isDefault?: boolean | null;
   createdAt?: dayjs.Dayjs | null;
@@ -297,5 +297,13 @@ export interface IOptionGroupWithItems extends IOptionGroup {
   items: IOptionItem[];
 }
 
+ export interface ICart {
+  id: number;
+  cartId?: number | null;
+  createdAt?: dayjs.Dayjs | null;
+  updatedAt?: dayjs.Dayjs | null;
+}
 
- 
+export type NewCart = Omit<ICart, 'id'> & { id: null };
+
+

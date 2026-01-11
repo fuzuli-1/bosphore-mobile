@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule, RouterOutlet } from '@angular/router';
 import { ApplicationConfigService } from './core/config/application-config.service';
@@ -10,20 +10,20 @@ import { registerLocaleData } from '@angular/common';
 import locale from '@angular/common/locales/tr';
 import { fontAwesomeIcons } from './config/font-awesome-icons';
 import dayjs from 'dayjs/esm';
- 
+
 import { GeneralSettings } from './page';
+import { CartUtils } from './shared/utils/CartUtils';
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [IonicModule, RouterModule],
   templateUrl: './app.component.html',
 })
-export class AppComponent {
-  
+export class AppComponent implements OnInit {
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly iconLibrary = inject(FaIconLibrary);
   private readonly trackerService = inject(TrackerService);
-   
+
   private readonly dpConfig = inject(BsDatepickerConfig);
 
   constructor() {
@@ -31,14 +31,25 @@ export class AppComponent {
     this.applicationConfigService.setEndpointPrefix(GeneralSettings.url);
     registerLocaleData(locale);
     this.iconLibrary.addIcons(...fontAwesomeIcons);
-        // ✔️ Artık datepicker config ayarlayabilirsin:
-this.dpConfig.minDate = new Date(
-  dayjs().subtract(100, 'year').year(),
-  0, // Ocak
-  1  // Birinci gün
-);
-
+    // ✔️ Artık datepicker config ayarlayabilirsin:
+    this.dpConfig.minDate = new Date(
+      dayjs().subtract(100, 'year').year(),
+      0, // Ocak
+      1 // Birinci gün
+    );
   }
-
  
+  ngOnInit() {
+    this.cleanInvalidCart();
+  }
+  
+  private cleanInvalidCart(): void {
+    try {
+      CartUtils.clearCart();
+      
+    } catch (error) {
+      console.warn('Invalid JSON in cart, clearing...');
+      localStorage.removeItem('cart');
+    }  
+ }
 }

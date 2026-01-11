@@ -11,7 +11,12 @@ import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
 import { combineLatest, Observable, Subscription, tap } from 'rxjs';
-import { IOrderItem, IProduct } from 'src/app/interfaces/interfaces';
+import {
+  IOptionItem,
+  IOrderItem,
+  IProduct,
+
+} from 'src/app/interfaces/interfaces';
 import {
   EntityArrayResponseType,
   ProductService,
@@ -28,6 +33,9 @@ import dayjs from 'dayjs/esm';
 import { CommonModule } from '@angular/common';
 import { PageHeaderPage } from '../../page-header/page-header.page';
 import { OptionGroupPage } from '../../option-group/option-group.page';
+import { Bosp } from 'src/app/shared/utils/Bosp';
+import { CartItem, OrderItemDraft, SelectedOption } from 'src/app/interfaces/ui-model';
+import { CartUtils } from 'src/app/shared/utils/CartUtils';
 
 @Component({
   selector: 'app-product-detail',
@@ -43,20 +51,26 @@ import { OptionGroupPage } from '../../option-group/option-group.page';
   ],
 })
 export class ProductDetailPage implements OnInit {
-  subscription: Subscription | null = null;
-  product: IProduct | null = null;
-  orderItem: IOrderItem = {
+  totalPrice = 0;
+  selectedOptions: SelectedOption[] = [];
+
+  orderDraft: OrderItemDraft = {
     id: 0,
     quantity: 1,
-    price: 0,
-    createdAt: dayjs(),
-    product: { id: 0 },
+    basePrice: 0,
+    optionPrice: 0,
+    totalPrice: 0,
+    productId: 0,
+    productName: '',
+    options: [],
   };
+
+  subscription: Subscription | null = null;
+  product: IProduct | null = null;
+
   isLoading = false;
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly productService = inject(ProductService);
-
-  totalPrice: number = 0;
 
   sortState = sortStateSignal({});
   itemsPerPage = ITEMS_PER_PAGE;
@@ -88,12 +102,16 @@ export class ProductDetailPage implements OnInit {
         this.product = res.body;
         this.isLoading = false;
         if (this.product) {
-          this.orderItem = {
+          this.orderDraft = {
             id: 0, // yeni kayıt
             quantity: 1,
-            price: this.product?.price, // string
+            basePrice: 0, // string
+            optionPrice: 0,
+            totalPrice: Bosp.getValue(this.product, 'price'),
+            productName: Bosp.valueFrom(this.product, 'name'),
             createdAt: dayjs(),
-            product: { id: this.product.id },
+            productId: this.product.id,
+            options: [],
           };
         }
       },
@@ -104,42 +122,87 @@ export class ProductDetailPage implements OnInit {
   }
 
   increase() {
-    if (!this.orderItem.quantity) {
-      this.orderItem.quantity = 0;
+    if (!this.orderDraft.quantity) {
+      this.orderDraft.quantity = 0;
     }
-    this.orderItem.quantity++;
+    this.orderDraft.quantity++;
     this.calculateTotal();
   }
 
   decrease() {
-    if (!this.orderItem.quantity) {
-      this.orderItem.quantity = 0;
+    if (!this.orderDraft.quantity) {
+      this.orderDraft.quantity = 0;
     }
 
-    if (this.orderItem.quantity > 1) {
-      this.orderItem.quantity--;
+    if (this.orderDraft.quantity > 1) {
+      this.orderDraft.quantity--;
       this.calculateTotal();
     }
   }
 
   calculateTotal() {
-    if (!this.orderItem.quantity) {
-      this.orderItem.quantity = 0;
-    }
-    if (!this.orderItem.price) {
-      this.orderItem.price = 0;
-    }
+    const base =Bosp.getValue(this.product,"price");
 
-    this.totalPrice = this.orderItem.quantity * this.orderItem.price;
+    const optionTotal = this.selectedOptions.reduce(
+      (sum, opt) => sum + Number(opt.price || 0),
+      0
+    );
+
+    this.orderDraft.basePrice = base;
+    this.orderDraft.optionPrice = optionTotal;
+
+    const singleItemTotal = base + optionTotal;
+
+    this.totalPrice = singleItemTotal * this.orderDraft.quantity;
+    this.orderDraft.totalPrice = this.totalPrice;
   }
 
-  sepeteEkle() {
-    /*const siparis = { ...this.pizza, ...this.secimler };
-    localStorage.setItem('cart', JSON.stringify(siparis));
-    this.navCtrl.navigateForward('/cart');*/
+ sepeteEkle() {
+  if (!this.product) return;
+
+  const order: CartItem = {
+    uuid: crypto.randomUUID(),
+
+    productId: this.product.id,
+    productName: Bosp.valueFrom(this.product, 'name'),
+
+    quantity: this.orderDraft.quantity,
+    basePrice: this.orderDraft.basePrice,
+    optionPrice: this.orderDraft.optionPrice,
+    totalPrice: this.orderDraft.totalPrice,
+
+    options: this.selectedOptions,
+
+    createdAt:  dayjs().toISOString()
+  };
+
+  const cart = CartUtils.getSafeCart();
+  cart.push(order);
+
+  CartUtils.saveCart(cart);
+
+  this.navCtrl.navigateForward('/payments/cart');
+}
+
+
+  go(path: string) {
+    this.router.navigateByUrl(path);
   }
 
-  naviHome(url:any){
-    this.navCtrl.navigateRoot(url);
+  onOptionsChange(options: SelectedOption[]) {
+    this.selectedOptions = options;
+    this.calculateTotal();
   }
+
+  /*
+  toOrderItemEntity(draft: OrderItemDraft): IOrderItem {
+    return {
+      id: 0,
+      quantity: draft.quantity,
+      price: draft.totalPrice,
+      createdAt: dayjs(),
+      product: { id: draft.productId },
+      
+    }; 
+  }*/
 }

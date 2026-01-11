@@ -1,5 +1,7 @@
 
-    <app-page-header></app-page-header>
+   <ion-header>
+     <app-page-header></app-page-header>
+   </ion-header>
 <ion-content>
   
   <div class="page">
@@ -20,9 +22,9 @@
     <!--dynamic menu bar-->
     <div class="pd-dynamic-menu-bar">
       <ion-breadcrumbs>
-        <ion-breadcrumb href="/siparisler">Ana Sayfa</ion-breadcrumb>
-        <ion-breadcrumb href="/siparisler">Tüm Pizzalar</ion-breadcrumb>
-        <ion-breadcrumb href="/pizzalar/bol-malzemeli">
+        <ion-breadcrumb  (click)="go('/home')">Ana Sayfa</ion-breadcrumb>
+        <ion-breadcrumb routerLink="/siparisler">Tüm Pizzalar</ion-breadcrumb>
+        <ion-breadcrumb routerLink="/pizzalar/bol-malzemeli">
           Bol Malzeme Pizzalar
         </ion-breadcrumb>
         <ion-breadcrumb active>{{ this.product?.name }}</ion-breadcrumb>
@@ -48,7 +50,7 @@
           <!-- Fiyat -->
           <div color="dark" class="price">
             <ion-text color="primary">
-              <h3>{{ orderItem.price | currency:'':'symbol':'1.2-4' }}</h3>
+              <h3>{{ orderDraft.totalPrice | currency:'':'symbol':'1.2-4' }}</h3>
             </ion-text>
           </div>
 
@@ -58,7 +60,7 @@
               <ion-icon name="remove-outline"></ion-icon>
             </ion-button>          
             <ion-text class="qty">
-              {{ orderItem.quantity| number }}
+              {{ orderDraft.quantity| number }}
             </ion-text>
             <ion-button fill="outline" size="small" (click)="increase()">
               <ion-icon name="add-outline"></ion-icon>
@@ -68,11 +70,14 @@
         </div>
       </div>
       <div class="product-options">
-        <app-option-group [productId]="product?.id"></app-option-group>
+        <app-option-group 
+        [productId]="product?.id"
+        (optionChange)="onOptionsChange($event)" 
+        ></app-option-group>
       </div>
     </div>
     <div class="add-to-cart">
-      <ion-button expand="block" color="primary">Sepete Ekle</ion-button>
+      <ion-button expand="block" color="primary" (click)="sepeteEkle()">Sepete Ekle</ion-button>
     </div>
     <div class="footer-info"></div>
   </div>

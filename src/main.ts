@@ -24,6 +24,7 @@ import {
   checkmarkDoneCircleOutline,
   chevronBack,
   chevronForward,
+  closeCircle,
   cloudOutline,
   cloudUploadOutline,
   documentOutline,
@@ -103,6 +104,7 @@ addIcons({
   'chevron-forward':chevronForward,
   'chevron-back':chevronBack,
   'information-circle-outline':informationCircleOutline,
+  'close-circle':closeCircle,
 });
 
 import { Observable, of } from 'rxjs';

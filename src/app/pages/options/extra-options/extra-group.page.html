@@ -1,0 +1,75 @@
+ <ion-content fullscreen>
+
+
+ @for (group of optionGroups(); track group.id) {
+
+  <section class="option-group">
+
+    <div class="group-header">
+      <h2>{{ group.name }}</h2>
+
+      <div class="arrows">
+        @if(canGoLeft(group)){
+                  <ion-button
+          fill="clear"         
+          (click)="prev(group)"
+        >
+          <ion-icon name="chevron-back"></ion-icon>
+        </ion-button>
+        }
+        @if(canGoRight(group)){
+                  <ion-button
+          fill="clear"
+         
+          (click)="next(group)"
+        >
+          <ion-icon name="chevron-forward"></ion-icon>
+        </ion-button>
+        }
+
+
+      </div>
+    </div>
+
+    <div class="carousel-viewport">
+      <div
+        class="carousel-track"
+        [style.transform]="getTransform(group)"
+      >
+        @for (item of group.items; track item.id) {
+          <ion-card 
+          class="option-card"
+          [class.selected]="isSelected(group, item)"
+           (click)="selectItem(group, item)"
+          >
+            <img
+             class="option-img"
+              width="60"
+              height="60"
+              [src]="'assets/img/options/' + item.imageUrl + '.jpg'"
+            />
+
+      @if(bospUtil.getValue(item,"additionalPrice")>0) {
+              <ion-badge class="price-badge">
+                +{{ item.additionalPrice }} 
+              </ion-badge>
+            } 
+            <span class="option-name"> {{ item.name }} </span>
+          </ion-card>
+        }
+      </div>
+    </div>
+
+  </section>
+
+}
+
+ 
+
+
+</ion-content>
+
+ 
+ 
+
+ 

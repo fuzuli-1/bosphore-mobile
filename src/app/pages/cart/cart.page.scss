@@ -1,0 +1,60 @@
+.page-wrapper{
+    width: 100%;
+}
+
+.page{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    max-width: 1200px;/*desktop icin sinir*/
+    margin: 0 auto;/*sagdan soldan ortalar*/
+    padding-left: clamp(16px,3vw,24px);
+    padding-right: clamp(16px,3vw,24px);
+
+}
+
+.address-bar{
+    display: flex;
+    height: 56px;
+    flex-shrink: 0;
+    align-items: start;
+    justify-content: flex-start;
+    font-size: 14px;
+    color:#757575;
+}
+
+.sepet-urun{
+    flex: 0 0 45%;
+    display: flex;
+    flex-direction: column;
+    
+}
+.birlikte-iyi-gider{
+    height: 100px;
+    
+}
+
+.urun{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+}
+
+.urun-name{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0 30px 0;
+     
+}
+
+.urun-islem{
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.sepet-ozet{
+    flex:1;
+}
+

@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-
+//payment.routes.ts
 const routes: Routes = [
   {
     path: 'cart',

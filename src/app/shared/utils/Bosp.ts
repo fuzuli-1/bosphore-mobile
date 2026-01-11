@@ -72,6 +72,37 @@ public static getValue(obj: any, propertyPath: string): number {
 }
 
 
+ public static valueFrom(
+  obj: Record<string, any> | null | undefined,
+  propertyPath: string
+): string {
+  if (!obj || !propertyPath) {
+    return '';
+  }
+
+  const properties = propertyPath.split('.');
+  let currentValue: any = obj;
+
+  for (const prop of properties) {
+    if (
+      currentValue == null ||
+      !Object.prototype.hasOwnProperty.call(currentValue, prop)
+    ) {
+      return '';
+    }
+    currentValue = currentValue[prop];
+  }
+
+  if (currentValue == null || currentValue === '') {
+    return '';
+  }
+
+  return String(currentValue);
+}
+
+
+
+
   public static getSearcCriters(data: any): any {
     let mykeys = Object.keys(data);
     let myvalues: any = Object.values(data);
@@ -99,4 +130,5 @@ public static getValue(obj: any, propertyPath: string): number {
     }
     return params;
   }
+
 }
