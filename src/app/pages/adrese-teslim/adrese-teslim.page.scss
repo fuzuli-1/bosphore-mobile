@@ -1,0 +1,41 @@
+.modal-container{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+ 
+}
+
+    .baslik{
+        text-align: center;       
+        color:#030888;
+        font-size: 25px;
+        font-weight: bold;
+        margin-top: 3px;
+        margin-bottom: 3px;
+    }
+
+    .baslik-aciklama{
+        text-align: center;       
+        color:#333;
+        font-size: 15px;
+    }
+
+    .gel-al{
+        height: 50px !important;
+        width: 50px !important  ;
+    }
+
+
+    .delivery-selection-modal {
+  --border-radius: 20px;
+  --width: 500px;
+  --height: auto;
+  --max-height: 80%;
+  
+  // Mobil cihazlarda aşağıdan yukarı açılan bir sheet gibi görünmesini isterseniz:
+  @media (max-width: 768px) {
+    --width: 100%;
+    --border-radius: 20px 20px 0 0;
+    align-items: flex-end;
+  }
+}

@@ -8,9 +8,7 @@ import { AuthGuard } from './guards/auth-guard';
     path: 'login',
     loadComponent: () =>
       import('./pages/login/login.page').then(m => m.LoginPage),
-  },
-
-  {
+  }, {
     path: '',
     canActivate: [AuthGuard],
     children: [
@@ -36,7 +34,12 @@ import { AuthGuard } from './guards/auth-guard';
       },
     ],
   },
- 
+  {
+    path: 'address',
+    loadComponent: () => import('./pages/address/address.page').then( m => m.AddressPage)
+  },
+
+
 
 ];
 

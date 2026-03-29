@@ -91,7 +91,7 @@ export class LoginPage implements OnInit {
   @ViewChild('modall', { static: true }) modall!: IonModal;
   myerror: string = '';
  
-  private translateService = inject(TranslationService);
+  private ts = inject(TranslationService);
   private footerService = inject(FooterService);
   private loadingCtrl = inject(LoadingService);
   private router = inject(Router);
@@ -142,9 +142,22 @@ login() {
         });
       },
       error: async (error: any) => {
+        let errorMessage = '';
+        if (error==null) {
+          errorMessage = this.ts.instant('ERROR.NOT_CONNECT_SERVER');
+        } else{
+           if(error.status === 401) {
+            errorMessage = this.ts.instant('user-bag-hata');
+          } else if (error.status === 403) {
+            errorMessage = this.ts.instant('user-engelleme-hata');
+          } else {
+            errorMessage = this.ts.instant('ERROR.NOT_CONNECT_SERVER');
+          }
+        }
+ 
+   
         const alert = await this.alertCtrl.create({
-          header: error.error?.error
-            ?? this.translateService.instant('ERROR.NOT_CONNECT_SERVER'),
+          header: errorMessage,
           cssClass: 'custom-alert',
           buttons: ['OK'],
         });
@@ -155,7 +168,7 @@ login() {
     this.presentToast(
       0,
       'top',
-      this.translateService.instant('ERROR.USERPASS')
+      this.ts.instant('ERROR.USERPASS')
     );
   }
 }
@@ -171,7 +184,7 @@ login() {
   forgotPassword() {}
 
   changeLanguege() {   
-    this.translateService.use(this.langKey||'fr');
+    this.ts.use(this.langKey||'fr');
     if (this.loginData.lang === 'ar') {
       document.documentElement.dir = 'rtl';
     } else {

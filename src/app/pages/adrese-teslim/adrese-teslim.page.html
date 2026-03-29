@@ -1,0 +1,22 @@
+ <ion-content class="ion-padding">
+  <div class="modal-container">
+    <h2 class="baslik">{{ welcomeMessage() }}!</h2>
+    <p class="baslik-aciklama">Siparişini nasıl almak istersin?</p>
+
+    <ion-item button detail="true" (click)="selectType('delivery')" lines="none" class="delivery-item">
+     <ion-img src="assets/adress-picker.png"></ion-img>
+      <ion-label>
+        <h3  class="baslik">Adrese Teslim</h3>
+        <p class="baslik-aciklama">Siparişini adresine getirelim.</p>
+      </ion-label>
+    </ion-item>
+
+    <ion-item button detail="true" (click)="selectType('pickup')" lines="none" class="pickup-item">
+      <ion-img class="gel-al" src="assets/hastane.png"></ion-img>
+      <ion-label>
+        <h3  class="baslik">Beklemeden Gel Al</h3>
+        <p class="baslik-aciklama">Sıra beklemeden şubeden teslim al.</p>
+      </ion-label>
+    </ion-item>
+  </div>
+</ion-content>

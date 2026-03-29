@@ -58,8 +58,8 @@ import { CommonModule } from '@angular/common';
   ],
 })
 export class ProductsPage implements OnInit, OnChanges {
-  @Input() selectedGroupId: number = 0;
 
+  @Input() selectedGroupId: number = 0;
   subscription: Subscription | null = null;
   products = signal<IProduct[]>([]);
   isLoading = false;

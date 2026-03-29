@@ -1,0 +1,47 @@
+<ion-header lines="none">
+  <ion-toolbar>
+    <ion-title style="text-align: center;">{{ 'adreslerim' | translate }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon  slot="icon-only" name="remove-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-button expand="block" fill="outline" class="new-address-btn ion-margin-bottom"
+  (click)="openAddressModal()">
+    {{ 'yeni_adres_ekle' | translate }}
+  </ion-button>
+ 
+    
+ <ion-radio-group [(ngModel)]="selectedAddressId">
+  <div *ngFor="let addr of addresses" class="address-card" [class.selected]="selectedAddressId === addr.id">
+    <ion-item lines="none">
+      <ion-radio slot="start" [value]="addr.id"></ion-radio>
+      <ion-label>
+        <h3>{{ addr.title }}</h3>
+        <p>{{ addr.addressText }}</p>
+      </ion-label>
+      <ion-button slot="end" fill="clear" (click)="editAddress(addr)">
+        <ion-icon slot="icon-only" name="pencil-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </div>
+</ion-radio-group>
+ 
+
+  <div class="info-note ion-margin-top">
+    <ion-icon name="information-circle-outline" color="warning"></ion-icon>
+    <p>Şube değişikliğiyle birlikte fiyatlar da güncellenecektir.</p>
+  </div>
+</ion-content>
+
+<ion-footer lines="none">
+  <ion-toolbar>
+    <ion-button expand="block" color="success" (click)="confirmAddress()" [disabled]="!selectedAddressId">
+      Seçili Adres ile Devam Et
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

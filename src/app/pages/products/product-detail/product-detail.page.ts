@@ -36,6 +36,7 @@ import { OptionGroupPage } from '../../option-group/option-group.page';
 import { Bosp } from 'src/app/shared/utils/Bosp';
 import { CartItem, OrderItemDraft, SelectedOption } from 'src/app/interfaces/ui-model';
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
+import { OrderStateService } from 'src/app/services/order-state-service';
 
 @Component({
   selector: 'app-product-detail',
@@ -64,24 +65,19 @@ export class ProductDetailPage implements OnInit {
     productName: '',
     options: [],
   };
-
-  subscription: Subscription | null = null;
+ 
   product: IProduct | null = null;
-
-  isLoading = false;
+  isLoading = false; 
+  public readonly router = inject(Router);
+ 
+  
+  private navCtrl = inject(NavController);
+  protected modalService = inject(NavController);
+  // 1. Servisi public olarak inject et (HTML'den erişebilmek için)
+  public orderService = inject(OrderStateService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly productService = inject(ProductService);
 
-  sortState = sortStateSignal({});
-  itemsPerPage = ITEMS_PER_PAGE;
-  totalItems = 0;
-  page = 1;
-  public readonly router = inject(Router);
-
-  protected readonly sortService = inject(SortService);
-  protected modalService = inject(NavController);
-  private navCtrl = inject(NavController);
-  protected ngZone = inject(NgZone);
   trackId = (item: IProduct): number =>
     this.productService.getProductIdentifier(item);
 
@@ -159,31 +155,55 @@ export class ProductDetailPage implements OnInit {
 
  sepeteEkle() {
   if (!this.product) return;
+// 2. Cephelerden gelen bilgileri topla
+    const selectedAddress = this.orderService.selectedAddress(); // Signal'den oku
+    const deliveryType = this.orderService.deliveryType();
 
-  const order: CartItem = {
+  if (deliveryType === 'delivery' && !selectedAddress) {
+    // Kullanıcıya adres seçmesi için uyarı göster veya modalı aç
+   return;
+  }
+
+
+  const basePrice = Number(Bosp.getValue(this.product, 'price'));
+
+  const optionTotal = this.selectedOptions.reduce(
+    (sum, opt) => sum + Number(opt.price || 0),
+    0
+  );
+
+  const singleItemTotal = basePrice + optionTotal;
+  const totalPrice = singleItemTotal * this.orderDraft.quantity;
+
+  const cartItem: CartItem = {
     uuid: crypto.randomUUID(),
 
-    productId: this.product.id,
-    productName: Bosp.valueFrom(this.product, 'name'),
+    product: {
+      productId: this.product.id,
+      name: Bosp.valueFrom(this.product, 'name'),
+      basePrice: basePrice,
+      options: this.selectedOptions
+    },
 
     quantity: this.orderDraft.quantity,
-    basePrice: this.orderDraft.basePrice,
-    optionPrice: this.orderDraft.optionPrice,
-    totalPrice: this.orderDraft.totalPrice,
 
-    options: this.selectedOptions,
+    // şimdilik child yok (extra sonradan cart’ta eklenecek)
+    children: [],
 
-    createdAt:  dayjs().toISOString()
+    totalPrice: totalPrice,
+
+    createdAt: new Date().toISOString(),
+    // Savaşın sonucu: Bu sipariş nereye ve nasıl gidecek?
+      address: selectedAddress
+      
   };
 
   const cart = CartUtils.getSafeCart();
-  cart.push(order);
-
+  cart.push(cartItem);
   CartUtils.saveCart(cart);
 
   this.navCtrl.navigateForward('/payments/cart');
 }
-
 
   go(path: string) {
     this.router.navigateByUrl(path);
@@ -192,17 +212,5 @@ export class ProductDetailPage implements OnInit {
   onOptionsChange(options: SelectedOption[]) {
     this.selectedOptions = options;
     this.calculateTotal();
-  }
-
-  /*
-  toOrderItemEntity(draft: OrderItemDraft): IOrderItem {
-    return {
-      id: 0,
-      quantity: draft.quantity,
-      price: draft.totalPrice,
-      createdAt: dayjs(),
-      product: { id: draft.productId },
-      
-    }; 
-  }*/
+  } 
 }

@@ -1,0 +1,37 @@
+ <ion-header>
+  <ion-toolbar>    
+    <ion-buttons slot="end">
+      <ion-button (click)="close()">
+        <ion-icon  slot="icon-only" name="remove-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Yeni Adres Ekle</ion-title>
+  </ion-toolbar>
+  <ion-searchbar
+   placeholder="Adres arayın" 
+  debounce="500" showCancelButton="focus" 
+   [(ngModel)]="currentAddressText"
+  (ionInput)="searchAddress($event)"></ion-searchbar>
+ </ion-header>
+
+ <ion-content>
+    <div id="map" style="height: 100%; width: 100%;"></div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="ion-margin-bottom">
+      <ion-fab-button size="small" color="light" (click)="locateUser()">
+        <ion-icon name="locate-outline" color="primary"></ion-icon>
+        <small style="font-size: 8px; color: var(--ion-color-primary);">Konumumu Bul</small>
+      </ion-fab-button>
+    </ion-fab>
+ </ion-content>
+
+ <ion-footer  class="ion-padding">
+  <div class="info-box">
+    <ion-icon name="information-circle" color="warning"></ion-icon>
+    <p>Siparişiniz seçtiğiniz adrese teslim edilecektir.</p>
+  </div>
+  <ion-button expand="block" color="success" (click)="saveAndContinue()">
+    Bu Adresle Devam Et
+  </ion-button>
+</ion-footer>
+ 

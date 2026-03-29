@@ -25,6 +25,18 @@
         >
         </ion-input>
       </div>
+            <!--password-->
+      <div class="form-group">
+        <ion-label>{{'password'|translate}}</ion-label>
+        <ion-item class="password-item">
+          <ion-input
+            [type]="showPassword?'text':'password'"
+            [(ngModel)]="loginData.password"
+          ></ion-input>
+          <ion-icon name="eye" slot="end" (click)="togglePassword()">
+          </ion-icon>
+        </ion-item>
+      </div>
       } 
       <!-- telefon-->
       @if(loginType==="phone"){
@@ -38,18 +50,7 @@
         </ion-input>
       </div>
       }
-      <!--password-->
-      <div class="form-group">
-        <ion-label>{{'password'|translate}}</ion-label>
-        <ion-item class="password-item">
-          <ion-input
-            [type]="showPassword?'text':'password'"
-            [(ngModel)]="loginData.password"
-          ></ion-input>
-          <ion-icon name="eye" slot="end" (click)="togglePassword()">
-          </ion-icon>
-        </ion-item>
-      </div>
+
 
       <div class="forgot">
         <a href="#">{{'forgotPassword'|translate}}</a>

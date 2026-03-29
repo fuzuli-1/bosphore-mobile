@@ -19,6 +19,7 @@ import {
   addOutline,
   airplaneOutline,
   arrowForwardOutline,
+  bicycleOutline,
   cartOutline,
   chatbubbleEllipsesSharp,
   checkmarkDoneCircleOutline,
@@ -40,12 +41,15 @@ import {
   key,
   keyOutline,
   listOutline,
+  locate,
+  locateOutline,
   locationOutline,
   lockClosed,
   mailOutline,
   menu,
   menuOutline,
   notifications,
+  pencilOutline,
   personAddOutline,
   personCircleOutline,
   personOutline,
@@ -56,6 +60,7 @@ import {
   searchOutline,
   settingsOutline,
   storefrontOutline,
+  trashOutline,
 } from 'ionicons/icons';
  
 import { TokenInterceptor } from './app/interceptors/token.interceptor.ts';
@@ -105,6 +110,11 @@ addIcons({
   'chevron-back':chevronBack,
   'information-circle-outline':informationCircleOutline,
   'close-circle':closeCircle,
+  'trash-outline':trashOutline,
+  'pencil-outline':pencilOutline,
+  'bicycle-outline':bicycleOutline,
+  'locate-outline': locateOutline,
+  'information-circle': informationCircleOutline,
 });
 
 import { Observable, of } from 'rxjs';

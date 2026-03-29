@@ -1,60 +1,133 @@
-.page-wrapper{
-    width: 100%;
+/* 1. Tüm sayfayı sarmalayan ana CSS (Daha önce paylaştığınız .page yapısı) */
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;         /* Ekranın tamamı */
+  gap: clamp(12px, 2vw, 16px);
+  max-width: 900px;     /* Sepet için biraz daha dar bir sınır */
+  margin: 0 auto;       /* Sağdan-soldan ortalar */
+  padding: clamp(16px, 3vw, 24px);
+  border: 1px solid #e0e0e0; /* Hafif bir çerçeve */
+  overflow: hidden;
 }
 
-.page{
-    display: flex;
-    flex-direction: row;
-    height: 100vh;
-    max-width: 1200px;/*desktop icin sinir*/
-    margin: 0 auto;/*sagdan soldan ortalar*/
-    padding-left: clamp(16px,3vw,24px);
-    padding-right: clamp(16px,3vw,24px);
+/* 2. Adres Kartı (Temiz Hiyerarşi) */
+.delivery-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #eee;
 
+  .address-text {
+    flex: 1; /* Metin kalan alanı kaplasın */
+    
+    h3 { margin: 0; font-size: 16px; font-weight: 600; color: #333; }
+    p { margin: 4px 0 0; font-size: 13px; color: #666; font-weight: 400; }
+  }
+
+  .change-btn {
+    --padding-start: 12px; --padding-end: 12px;
+    font-size: 13px; font-weight: 500; text-transform: none;
+  }
 }
 
-.address-bar{
-    display: flex;
-    height: 56px;
-    flex-shrink: 0;
-    align-items: start;
-    justify-content: flex-start;
-    font-size: 14px;
-    color:#757575;
+/* 3. Ürün Listesi (Scroll Olabilen Alan) */
+.cart-items {
+  flex: 1;               /* Kalan alanın TAMAMI */
+  overflow-y: auto;       /* Dikey kaydırma */
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.sepet-urun{
-    flex: 0 0 45%;
+/* Ürün Kartı (Temiz Tasarım) */
+.item-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #eee;
+
+  .item-details {
+    flex: 1; /* Ürün bilgisi sol tarafa */
+    
+    h4 { margin: 0; font-size: 16px; font-weight: 600; color: #333; }
+    .options { margin: 4px 0 0; font-size: 12px; color: #888; font-weight: 400; line-height: 1.4; }
+  }
+
+  .item-actions {
     display: flex;
     flex-direction: column;
+    align-items: flex-end; /* Sağ tarafa yasla */
+    gap: 8px;
+    flex-basis: 120px; /* Fiyat ve adet için sabit alan */
+
+    .price { font-size: 18px; font-weight: 700; color: #1db954; }
     
-}
-.birlikte-iyi-gider{
-    height: 100px;
-    
+    /* Adet Kontrolü (Bakkal defterindeki mavi okları düzelttik) */
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      padding: 2px 4px;
+
+      ion-button { --padding-start: 6px; --padding-end: 6px; }
+      .qty { font-size: 14px; font-weight: 600; color: #333; min-width: 20px; text-align: center; }
+    }
+  }
 }
 
-.urun{
+/* 4. Özet ve Buton (Alt Taraf) */
+.cart-footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #eee;
+
+  .summary-area {
     display: flex;
     flex-direction: column;
-    width: 100%;
+    gap: 8px;
 
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #777;
+
+      &.grand-total {
+        font-size: 18px;
+        font-weight: 700;
+        color: #333;
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: 1px solid #eee;
+      }
+    }
+  }
+
+  /* Markanızın rengi: Yeşil buton */
+  .pay-btn {
+    --background: #1db954; 
+    --border-radius: 12px;
+    height: 52px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+  }
 }
-
-.urun-name{
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0 30px 0;
-     
-}
-
-.urun-islem{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.sepet-ozet{
-    flex:1;
-}
-

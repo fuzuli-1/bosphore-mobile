@@ -1,0 +1,13 @@
+/* Haritayı içeren div'in ID'si */
+#map {
+  height: 100%; /* İçeriğin tamamını kaplasın */
+  width: 100%;
+  display: block; /* Flexbox sorunlarını engeller */
+}
+
+/* Modalın ion-content kısmının tam ekran olmasını sağlamak için (isteğe bağlı) */
+ion-content {
+  --background: transparent;
+  display: flex;
+  flex-direction: column;
+}

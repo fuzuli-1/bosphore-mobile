@@ -1,55 +1,50 @@
-<ion-header>
-  <app-page-header></app-page-header>
-</ion-header>
-<ion-content>
-  <div class="page-wrapper">
-    <div class="address-bar"></div>
-    <div class="page">
-      <div class="sepet-urun">
-        <div class="secilen-urunler">
-          <ion-list>
-            @for(item of cartItems;track item.uuid){
-            <ion-item>
-              <div class="urun">
-                <div class="urun-name">
-                  <ion-label slot="start">{{item.productName}}</ion-label>
-                  <ion-label slot="end"> {{item.totalPrice|currency}}</ion-label>
-                </div>
-                <div class="urun-islem">
-                  <div class="urun-button">
-                    <ion-button fill="outline" size="small">
-                      <ion-icon name="remove-outline"></ion-icon>
-                    </ion-button>
-                    <ion-text class="qty">1</ion-text>
-                    <ion-button fill="outline" size="small">
-                      <ion-icon name="add-outline"></ion-icon>
-                    </ion-button>
-                  </div>
-                  <div class="urun-sil">
-                    <ion-button>
-                      <ion-icon name="remove-outline"></ion-icon>
-                    </ion-button>
-                  </div>
-                </div>
-              </div>
-            </ion-item>
-            }
-          </ion-list>
-        </div>
-        <div class="birlikte-iyi-gider">
-           <app-extra-option-group 
-        [productId]="this.productId"
-        [optionType]=7
-        (optionChange)="onExtraOptionsChange($event)" 
-        ></app-extra-option-group> 
-
-        </div>
-        <div class="soslar"></div>
+<ion-content class="ion-padding">
+  <div class="page">
+    
+    <div class="delivery-card">
+      <div class="address-text">
+        <h3>Teslimat Adresi</h3>
+        <p>{{ orderService.selectedAddress()?.fullAddress || 'Adres Seçilmedi' }}</p>
       </div>
-      <div class="sepet-ozet">
+      <ion-button fill="clear" color="primary" class="change-btn" (click)="changeAddress()">
+        Değiştir
+      </ion-button>
+    </div>
 
+    <div class="cart-items">
+      <div class="item-card" *ngFor="let item of cartItems">
+        <div class="item-details">
+          <h4>{{ item.product.name }}</h4>
+          <p class="options">
+            <span *ngFor="let opt of item.product.options">{{ opt.groupName }}, </span>
+          </p>
+        </div>
+        <div class="item-actions">
+          <div class="price">{{ item.totalPrice | currency:'TRY':'symbol-narrow' }}</div>
+          <div class="qty-control">
+             <ion-button size="small" fill="clear" (click)="decrease(item)">-</ion-button>
+             <span class="qty">{{ item.quantity }}</span>
+             <ion-button size="small" fill="clear" (click)="increase(item)">+</ion-button>
+          </div>
+        </div>
       </div>
     </div>
+
+    <div class="cart-footer">
+      <div class="summary-area">
+        <div class="summary-row">
+          <span>Ara Toplam</span>
+          <span>{{ total | currency:'TRY' }}</span>
+        </div>
+        <div class="summary-row grand-total">
+          <span>Toplam</span>
+          <span>{{ total | currency:'TRY' }}</span>
+        </div>
+      </div>
+      <ion-button expand="block" (click)="confirmOrder()" color="success" class="pay-btn">
+        ÖDEME ADIMINA GEÇ
+      </ion-button>
+    </div>
+
   </div>
 </ion-content>
-

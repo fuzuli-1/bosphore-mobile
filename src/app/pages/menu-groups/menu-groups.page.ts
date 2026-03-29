@@ -40,7 +40,7 @@ export class MenuGroupsPage implements OnInit {
   private activeRoute = inject(ActivatedRoute);
   private navCtrl = inject(NavController);
   private sanitizer = inject(DomSanitizer);
-   protected readonly sortService = inject(SortService);
+  protected readonly sortService = inject(SortService);
   private modalService = inject(ModalController);
 
   private toastController = inject(ToastController);
@@ -107,33 +107,13 @@ export class MenuGroupsPage implements OnInit {
     const dataFromBody = this.fillComponentAttributesFromResponseBody(response.body);
     this.menuGroups.set(dataFromBody);
       if(dataFromBody.length>0){
-         this.selectedGroupChange.emit(dataFromBody[0]);
-        
+         this.selectedGroupChange.emit(dataFromBody[0]);        
       }
   }
 
   protected fillComponentAttributesFromResponseHeader(headers: HttpHeaders): void {
     this.totalItems = Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER));
   }
-  /*
-    getSubGroups(menuGroupId: number) {
-      let params = {
-        page: 0,
-        size: 20,
-        sort: 'orderNo,asc',
-      };
-      this.service.menuGroupItems.list(params).subscribe({
-        next: (res: any) => {
-          this.subGroups = res;
-        },
-        error: (err: any) => {
-          this.presentToast(0, 'top', this.translateService.instant('ERROR.INTERNAL_SERVER_ERROR'));
-        },
-      });
-    }*/
-
-
-
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(this.page, event);
@@ -153,7 +133,6 @@ export class MenuGroupsPage implements OnInit {
     return data ?? [];
   }
 
-
   protected handleNavigation(page: number, sortState: SortState): void {
     const queryParamsObj = {
       page,
@@ -169,49 +148,31 @@ export class MenuGroupsPage implements OnInit {
     });
   }
 
-  /* getMenuGruplari() {
-    let params = {
-      page: 0,
-      size: 20,
-      sort: 'orderNo,asc',
-    };
-    this.service.menuGroups.list(params).subscribe({
-      next: (res: any) => {
-        this.menuGroups = res;
-      },
-      error: (err: any) => {
-        this.presentToast(0, 'top', this.translateService.instant('ERROR.INTERNAL_SERVER_ERROR'));
-      },
-    });
-  }*/
-
     async presentToast(type: any, position: 'top' | 'middle' | 'bottom', mesaj: string) {
     //type 1 success , 0   error
-    const toast = await this.toastController.create({
-      message: mesaj,
-      duration: 2500,
-      cssClass: 'custom-toast-success',
-      icon: 'checkmark-done-outline',
-      position: position,
-    });
+        const toast = await this.toastController.create({
+          message: mesaj,
+          duration: 2500,
+          cssClass: 'custom-toast-success',
+          icon: 'checkmark-done-outline',
+          position: position,
+        });
 
-    const toast0 = await this.toastController.create({
-      message: mesaj,
-      duration: 2500,
-      cssClass: 'custom-toast-warning',
-      icon: 'information-outline',
-      position: position,
-    });
+        const toast0 = await this.toastController.create({
+          message: mesaj,
+          duration: 2500,
+          cssClass: 'custom-toast-warning',
+          icon: 'information-outline',
+          position: position,
+        });
 
-    if (type === 1) {
-      await toast.present();
-    }
+        if (type === 1) {
+          await toast.present();
+        }
   }
 
   selectMenuGroup(menuGroup: IMenuGroup) {
       this.selected=menuGroup;
       this.selectedGroupChange.emit(menuGroup);
+  }
 }
-}
-
- 

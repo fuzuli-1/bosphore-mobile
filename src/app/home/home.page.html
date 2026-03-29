@@ -5,14 +5,15 @@
   <!--adress secimi-->
   <div class="location-bar">
     <ion-breadcrumbs>
-      <ion-breadcrumb href="#home">
-        <ion-icon slot="start" class="getir"></ion-icon>
-        Adrese Teslim
+    <ion-breadcrumb (click)="presentOrderTypeModal()">
+        <ion-icon slot="start" [name]="orderService.deliveryType() === 'delivery' ? 'bicycle-outline' : 'storefront-outline'"></ion-icon>
+        {{ orderService.deliveryType() === 'delivery' ? 'Adrese Teslim' : 'Gel Al' }}
       </ion-breadcrumb>
-      <ion-breadcrumb href="#electronics">
-        Adrese Teslim - Ankara Etimesgut Bahçekapı
-        <ion-icon slot="end" class="home-addres-yaz"></ion-icon>
-      </ion-breadcrumb>
+
+    <ion-breadcrumb (click)="openAddressList()">
+          <ion-icon slot="start" name="location-outline"></ion-icon>
+          {{ orderService.selectedAddress()?.addressText || 'Adres Seçiniz' }}
+        </ion-breadcrumb>
     </ion-breadcrumbs>
   </div>
 

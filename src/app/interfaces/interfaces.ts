@@ -6,7 +6,6 @@ import { OrderStatus } from '../pages/enumerations/order-status.model';
 import { PaymentMethod } from '../pages/enumerations/payment-method.model';
 import { PaymentStatus } from '../pages/enumerations/payment-status.model';
 
-
 export interface IMenuGroup {
   id: number;
   title?: string | null;
@@ -15,7 +14,6 @@ export interface IMenuGroup {
   targetPage?: string | null;
   language?: Pick<ILanguage, 'id'> | null;
 }
-
 export type NewMenuGroup = Omit<IMenuGroup, 'id'> & { id: null };
 
 export interface IMenuGroupItem {
@@ -28,7 +26,6 @@ export interface IMenuGroupItem {
   translateCode?: string | null;
   menuGroup?: Pick<IMenuGroup, 'id'> | null;
 }
-
 export type NewMenuGroupItem = Omit<IMenuGroupItem, 'id'> & { id: null };
 
 export interface AppJwtPayload {
@@ -46,7 +43,6 @@ export interface ITax {
   rowNo?: number | null;
   isActive?: boolean | null;
 }
-
 export type NewTax = Omit<ITax, 'id'> & { id: null };
 
 export interface ICompanyBranch {
@@ -73,7 +69,6 @@ export interface ICompanyBranch {
   updatedDate?: string | null;
   companymaster?: Pick<ICompanyMaster, 'id'> | null;
 }
-
 export type NewCompanyBranch = Omit<ICompanyBranch, 'id'> & { id: null };
 
 export interface ICompanyMaster {
@@ -97,11 +92,9 @@ export interface ICompanyMaster {
   updatedBy?: number | null;
   updatedDate?: string | null;
 }
-
 export type NewCompanyMaster = Omit<ICompanyMaster, 'id'> & { id: null };
 
-
- export interface IProduct {
+export interface IProduct {
   id: number;
   productId?: number | null;
   name?: string | null;
@@ -132,7 +125,6 @@ export type NewCompanyMaster = Omit<ICompanyMaster, 'id'> & { id: null };
   category?: Pick<ICategory, 'id'> | null;
   language?: Pick<ILanguage, 'id'> | null;
 }
-
 export type NewProduct = Omit<IProduct, 'id'> & { id: null };
 
 export interface ILanguage {
@@ -151,7 +143,6 @@ export interface ILanguage {
   updatedBy?: string | null;
   updatedDate?: string | null;
 }
-
 export type NewLanguage = Omit<ILanguage, 'id'> & { id: null };
 
 export interface ICategory {
@@ -166,9 +157,8 @@ export interface ICategory {
   icon: String;
   active: boolean;
 }
-
 export type NewCategory = Omit<ICategory, 'id'> & { id: null };
- 
+
 export interface IPersonnel {
   id: number;
   userId?: number | null;
@@ -218,9 +208,7 @@ export interface IPersonnel {
   updatedBy?: string | null;
   updatedDate?: string | null;
 }
-
 export type NewPersonnel = Omit<IPersonnel, 'id'> & { id: null };
-
 
 export interface IOrder {
   id: number;
@@ -240,9 +228,7 @@ export interface IOrder {
   customerPhone?: string | null;
   personnel?: Pick<IPersonnel, 'id'> | null;
 }
-
 export type NewOrder = Omit<IOrder, 'id'> & { id: null };
-
 
 export interface IOrderItem {
   id: number;
@@ -254,10 +240,7 @@ export interface IOrderItem {
   product?: Pick<IProduct, 'id'> | null;
   order?: Pick<IOrder, 'id'> | null;
 }
-
 export type NewOrderItem = Omit<IOrderItem, 'id'> & { id: null };
-
- 
 
 export interface IOptionGroup {
   id: number;
@@ -269,11 +252,8 @@ export interface IOptionGroup {
   requiredGroup?: boolean | null;
   product?: Pick<IProduct, 'id'> | null;
   language?: Pick<ILanguage, 'id'> | null;
- 
 }
-
 export type NewOptionGroup = Omit<IOptionGroup, 'id'> & { id: null };
- 
 
 export interface IOptionItem {
   id: number;
@@ -288,22 +268,58 @@ export interface IOptionItem {
   selected?: boolean | null;
   selectedItemId?: number;
 }
-
 export type NewOptionItem = Omit<IOptionItem, 'id'> & { id: null };
 
 export interface IOptionGroupWithItems extends IOptionGroup {
   selectedItemId?: number;
-  selected?:boolean|null;
+  selected?: boolean | null;
   items: IOptionItem[];
 }
 
- export interface ICart {
+export interface ICart {
   id: number;
   cartId?: number | null;
   createdAt?: dayjs.Dayjs | null;
   updatedAt?: dayjs.Dayjs | null;
 }
-
 export type NewCart = Omit<ICart, 'id'> & { id: null };
 
+export interface IAddress {
+  id: number;
+  addressId?: number | null;
+  title?: string | null;
+  addressText?: string | null;
 
+  buildingNo?: string | null;
+  floorAndApartment?: string | null;
+  description?: string | null;
+  city?: string | null;
+  district?: string | null;
+  latitude?: string | null;
+  longitude?: string | null;
+  isDefault?: boolean | null;
+  createdAt?: dayjs.Dayjs | null;
+  IUser?: Pick<IUser, 'id'> | null;
+}
+export type NewAddress = Omit<IAddress, 'id'> & { id: null };
+
+export class Address implements IAddress {
+  id = 0;
+  street = '';
+  city = '';
+  country = '';
+}
+
+export interface IAuthority {
+  name: string;
+  isPersisted?: boolean | null;
+  users?: Pick<IUser, 'id'>[] | null;
+}
+
+export type NewAuthority = Omit<IAuthority, 'name'> & { name: null };
+
+export interface IUser {
+  id: number;
+  login?: string | null;
+  authorities?: Pick<IAuthority, 'name'>[] | null;
+}
