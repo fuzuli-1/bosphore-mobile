@@ -1,6 +1,5 @@
 // src/app/home/home.routes.ts
 import { Routes } from '@angular/router';
-import { AuthGuard } from '../guards/auth-guard';
 
 const routes: Routes = [
   {
@@ -35,6 +34,8 @@ const routes: Routes = [
             (m) => m.AdresMapDetailPage,
           ),
       },
+
+
     ],
   },
 ];

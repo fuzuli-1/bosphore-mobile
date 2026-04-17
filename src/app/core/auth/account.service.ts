@@ -75,12 +75,21 @@ export class AccountService {
     return this.userIdentity() !== null;
   }
 
+  hasRole(role: string): boolean {
+    let hasRole = false;
+    const userIdentity = this.userIdentity();
+    if (userIdentity) {
+      hasRole = userIdentity.authorities.includes(role);
+    }
+    return hasRole;
+  }
+
   getAuthenticationState(): Observable<Account | null> {
     return this.authenticationState.asObservable();
   }
 
   private fetch(): Observable<Account> {
-    return this.http.get<Account>(this.applicationConfigService.getEndpointFor('/account'));
+    return this.http.get<Account>(this.applicationConfigService.getEndpointFor('/api/account'));
   }
 
   private navigateToStoredUrl(): void {

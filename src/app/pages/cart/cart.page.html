@@ -1,49 +1,67 @@
 <ion-content class="ion-padding">
   <div class="page">
     
-    <div class="delivery-card">
-      <div class="address-text">
-        <h3>Teslimat Adresi</h3>
-        <p>{{ orderService.selectedAddress()?.fullAddress || 'Adres Seçilmedi' }}</p>
+    <div class="delivery-header">
+      <div class="info">
+        <ion-icon name="bicycle" color="success"></ion-icon>
+        <div>
+          <h3>{{ orderStateService.deliveryType() === 'delivery' ? 'Adrese Teslimat' : 'Gel Al' }}</h3>
+          <p>{{ orderStateService.selectedAddress()?.addressText || 'Adres seçilmedi...' }}</p>
+        </div>
       </div>
-      <ion-button fill="clear" color="primary" class="change-btn" (click)="changeAddress()">
-        Değiştir
-      </ion-button>
+      <ion-button fill="clear" (click)="changeAddress()">Değiştir</ion-button>
     </div>
 
-    <div class="cart-items">
+    <div class="cart-scroll-area">
       <div class="item-card" *ngFor="let item of cartItems">
-        <div class="item-details">
+        <div class="item-main">
           <h4>{{ item.product.name }}</h4>
-          <p class="options">
-            <span *ngFor="let opt of item.product.options">{{ opt.groupName }}, </span>
+          <p class="options-summary">
+            <span *ngFor="let opt of item.product.options">{{ opt.optionName }} (+{{ opt.price | currency:'TRY' }})</span>
           </p>
         </div>
-        <div class="item-actions">
-          <div class="price">{{ item.totalPrice | currency:'TRY':'symbol-narrow' }}</div>
-          <div class="qty-control">
-             <ion-button size="small" fill="clear" (click)="decrease(item)">-</ion-button>
-             <span class="qty">{{ item.quantity }}</span>
-             <ion-button size="small" fill="clear" (click)="increase(item)">+</ion-button>
+        <div class="item-right">
+          <span class="item-price">{{ item.totalPrice | currency:'TRY' }}</span>
+          <div class="qty-stepper">
+            <button (click)="decrease(item)">-</button>
+            <span>{{ item.quantity }}</span>
+            <button (click)="increase(item)">+</button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="cart-footer">
-      <div class="summary-area">
-        <div class="summary-row">
-          <span>Ara Toplam</span>
-          <span>{{ total | currency:'TRY' }}</span>
-        </div>
-        <div class="summary-row grand-total">
-          <span>Toplam</span>
-          <span>{{ total | currency:'TRY' }}</span>
-        </div>
+    <div class="checkout-section">
+      <div class="payment-methods">
+        <p class="section-title">Ödeme Yöntemi Seçin</p>
+        <ion-radio-group [(ngModel)]="selectedPayment">
+          <div class="method-box" [class.active]="selectedPayment() === 'CASH'">
+            <ion-radio value="CASH"></ion-radio>
+            <ion-icon name="cash-outline"></ion-icon>
+            <ion-label>Kapıda Nakit</ion-label>
+          </div>
+          <div class="method-box" [class.active]="selectedPayment() === 'CREDIT_CARD'">
+            <ion-radio value="CARD"></ion-radio>
+            <ion-icon name="card-outline"></ion-icon>
+            <ion-label>Kapıda Kredi Kartı</ion-label>
+          </div>
+          <div class="method-box" [class.active]="selectedPayment() === 'ONLINE'">
+            <ion-radio value="ONLINE"></ion-radio>
+            <ion-icon name="globe-outline"></ion-icon>
+            <ion-label>Online Ödeme</ion-label>
+          </div>
+        </ion-radio-group>
       </div>
-      <ion-button expand="block" (click)="confirmOrder()" color="success" class="pay-btn">
-        ÖDEME ADIMINA GEÇ
-      </ion-button>
+
+      <div class="total-box">
+        <div class="row">
+          <span>Toplam Tutar</span>
+          <span class="amount">{{ total | currency:'TRY' }}</span>
+        </div>
+        <ion-button expand="block" class="confirm-btn" (click)="completeOrder()">
+          SİPARİŞİ ONAYLA
+        </ion-button>
+      </div>
     </div>
 
   </div>

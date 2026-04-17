@@ -13,18 +13,38 @@ import dayjs from 'dayjs/esm';
 
 import { GeneralSettings } from './page';
 import { CartUtils } from './shared/utils/CartUtils';
+import { CommonModule } from '@angular/common';
+import { AccountService } from './core/auth/account.service';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [IonicModule, RouterModule],
+  imports: [IonicModule, CommonModule, RouterModule],
   templateUrl: './app.component.html',
 })
 export class AppComponent implements OnInit {
   private readonly applicationConfigService = inject(ApplicationConfigService);
   private readonly iconLibrary = inject(FaIconLibrary);
   private readonly trackerService = inject(TrackerService);
-
+  private readonly account = inject(AccountService);
   private readonly dpConfig = inject(BsDatepickerConfig);
+
+  public appPages: { title: string; url: string; icon: string }[] = [];
+
+  public adminPages = [
+    { title: 'Ana Sayfa', url: '/home', icon: 'home' },
+    { title: 'Siparişlerim', url: '/order-history', icon: 'receipt' }, // Müşteri için
+    { title: 'Adreslerim', url: '/address', icon: 'location' },
+    // Mutfak Paneli - Şimdilik herkes görsün, sonra sadece admin yaparız
+    { title: 'Mutfak Paneli', url: '/kitchen', icon: 'restaurant' },
+     { title: 'Menu Tanim', url: '/menu-management', icon: 'grid-outline' },
+  ];
+
+  public userPages = [
+    { title: 'Ana Sayfa', url: '/home', icon: 'home' },
+    { title: 'Siparişlerim', url: '/order-history', icon: 'receipt' }, // Müşteri için
+    { title: 'Adreslerim', url: '/address', icon: 'location' },
+ 
+  ];
 
   constructor() {
     //this.trackerService.setup();
@@ -35,21 +55,24 @@ export class AppComponent implements OnInit {
     this.dpConfig.minDate = new Date(
       dayjs().subtract(100, 'year').year(),
       0, // Ocak
-      1 // Birinci gün
+      1, // Birinci gün
     );
   }
- 
+
   ngOnInit() {
     this.cleanInvalidCart();
+
+   this.account.identity().subscribe((identity) => {
+        this.appPages= identity?.authorities?.includes('ROLE_ADMIN') ? this.adminPages : this.userPages;
+      });
   }
-  
+
   private cleanInvalidCart(): void {
     try {
       CartUtils.clearCart();
-      
     } catch (error) {
       console.warn('Invalid JSON in cart, clearing...');
       localStorage.removeItem('cart');
-    }  
- }
+    }
+  }
 }

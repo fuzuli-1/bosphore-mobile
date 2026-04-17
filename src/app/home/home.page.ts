@@ -18,36 +18,22 @@ import {
   RefresherEventDetail,
 } from '@ionic/angular';
 
-import { Subscription, timer } from 'rxjs';
-import { filter, map, switchMap } from 'rxjs/operators';
-import { DomSanitizer } from '@angular/platform-browser';
-import { DOCUMENT } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
 import { IonRefresherCustomEvent } from '@ionic/core';
-
 import { FooterService } from '../services/footer-service';
 import { MenuService } from '../services/menu-service';
-import { LoadingService } from '../services/loading-service';
-
 import { Langs } from '../pages/lang';
-
-import { IMenuGroup } from '../interfaces/interfaces';
 import * as iface from '../interfaces/interfaces';
 import { TranslationService } from '../services/translation-service';
-import { CategorySwiperComponent } from '../pages/menu-group-item/menu-group-item.page';
 import { AccountService } from '../core/auth/account.service';
 import { MenuGroupsPage } from '../pages/menu-groups/menu-groups.page';
 import { ProductsPage } from '../pages/products/products.page';
 import { PageHeaderPage } from '../pages/page-header/page-header.page';
-import { AdreseTeslimPage } from '../pages/adrese-teslim/adrese-teslim.page';
-import { Account } from '../core/auth/account.model';
 import { AdresListPage } from '../pages/adres-list/adres-list.page';
 import { OrderStateService } from '../services/order-state-service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-home',
@@ -60,6 +46,7 @@ import { OrderStateService } from '../services/order-state-service';
     MenuGroupsPage,
     ProductsPage,
     PageHeaderPage,
+    CommonModule,
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hata mesajını bastırır
   providers: [
@@ -69,11 +56,10 @@ import { OrderStateService } from '../services/order-state-service';
   ],
 })
 export class HomePage implements OnInit, AfterViewInit {
- 
   private router = inject(Router);
-  private modalCtrl = inject(ModalController); 
+  private modalCtrl = inject(ModalController);
   private account = inject(AccountService);
-  private translate= inject(TranslationService); 
+  private translate = inject(TranslationService);
   public orderService = inject(OrderStateService); // HTML'den erişmek için public
   constructor() {}
 
@@ -85,19 +71,22 @@ export class HomePage implements OnInit, AfterViewInit {
   selectedGroupId: number = 0;
   selectedGroupItemId: number = 0;
   selectedAddress: iface.IAddress | null = null;
- 
+
+
+
   ngOnInit() {
     if (this.account.isAuthenticated()) {
       this.initAfterLogin();
     }
-    if(this.account.isAuthenticated()) {
+    if (this.account.isAuthenticated()) {
       this.account.getAuthenticationState().subscribe((account) => {
-        if (account) { 
+        if (account) {
           this.orderService.setCurrentUser(account);
         }
       });
-    };
- 
+    }else{
+      this.account.identity().subscribe();
+    }
   }
 
   initAfterLogin() {
@@ -120,7 +109,7 @@ export class HomePage implements OnInit, AfterViewInit {
   }
 
   async presentOrderTypeModal() {
-     this.openAddressList();
+    this.openAddressList();
     /*const currentUser = this.account.trackCurrentAccount()();
     const modal = await this.modalCtrl.create({
       component: AdreseTeslimPage,
@@ -142,7 +131,7 @@ export class HomePage implements OnInit, AfterViewInit {
       if (data && data.type === 'delivery') {
         this.openAddressListModal();
       }
-    }*/  
+    }*/
   }
 
   // Adres Listesi Modalını açan ayrı metod
@@ -150,16 +139,16 @@ export class HomePage implements OnInit, AfterViewInit {
   async openAddressList() {
     const addressModal = await this.modalCtrl.create({
       component: AdresListPage,
-      cssClass: 'address-list-modal' // Görseldeki gibi tam ekran veya geniş modal
+      cssClass: 'address-list-modal', // Görseldeki gibi tam ekran veya geniş modal
     });
-      await addressModal.present();
+    await addressModal.present();
 
-      const { data } = await addressModal.onWillDismiss();
-      if (data) {
-       // Seçilen adresi merkezi servise (Savaş Merkezi) gönderiyoruz
-         this.orderService.setAddress(data);
-          console.log('Seçilen adres:', data);
-          // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
-      }
+    const { data } = await addressModal.onWillDismiss();
+    if (data) {
+      // Seçilen adresi merkezi servise (Savaş Merkezi) gönderiyoruz
+      this.orderService.setAddress(data);
+      console.log('Seçilen adres:', data);
+      // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
+    }
   }
 }

@@ -26,7 +26,7 @@ export let GeneralSettings: {
   title?: string;
   logo?: any;
 } = {
-  url: 'http://localhost:8080/api', // '../akgun-mobile/api'
+  url: 'http://localhost:8080', // '../akgun-mobile/api'
   //couchDB: 'http://ivitaldata.akgun.com.tr/',
   lang: 'tr',
   code: '',

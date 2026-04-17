@@ -1,0 +1,59 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Menü Yönetimi</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openGroupModal()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Yeni Grup
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Menü Grupları</ion-label>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let group of allGroups()">
+      <ion-item (click)="selectGroup(group)" [color]="selectedGroup.id === group.id ? 'light' : ''">
+        <ion-avatar slot="start" *ngIf="group.iconPath">
+          <img [src]="group?.iconPath
+    ? 'assets/menus/' + group?.iconPath + '.png'
+    : 'assets/products/default.png'"
+  alt="product"/>
+        </ion-avatar>
+        <ion-label>
+          <h2>{{ group.title }}</h2>
+          <p>Sıra: {{ group.orderNo }} | Page: {{ group.targetPage }}</p>
+        </ion-label>
+        <ion-badge slot="end" color="secondary">Alt Menü: {{ group.itemCount || 0 }}</ion-badge>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option color="warning" (click)="editGroup(group)">Düzenle</ion-item-option>
+        <ion-item-option color="danger" (click)="deleteGroup(group)">Sil</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <div *ngIf="selectedGroup" class="ion-padding-top">
+    <ion-item lines="none">
+      <ion-label><strong>{{ selectedGroup.title }}</strong> İçeriği</ion-label>
+      <ion-button slot="end" size="small" fill="outline" (click)="openItemModal()">
+        <ion-icon name="add" slot="start"></ion-icon> Item Ekle
+      </ion-button>
+    </ion-item>
+
+    <ion-list>
+      <ion-item *ngFor="let item of selectedCategories()">
+        <ion-label>
+          <h3>{{ item.label }}</h3>
+          <p>Sıra: {{ item.orderNo }} | Kategori ID: {{ item.targetCategoryId }}</p>
+        </ion-label>
+        <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

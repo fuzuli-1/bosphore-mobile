@@ -5,7 +5,7 @@ import dayjs from 'dayjs/esm';
 import { OrderStatus } from '../pages/enumerations/order-status.model';
 import { PaymentMethod } from '../pages/enumerations/payment-method.model';
 import { PaymentStatus } from '../pages/enumerations/payment-status.model';
-import { NewAddress } from './interfaces';
+import { IOrder, NewAddress } from './interfaces';
  
 
 export interface OrderItemDraft {
@@ -112,47 +112,58 @@ export interface Authority {
   isPersisted?: boolean | null;
   users?: Pick<User, 'id'>[] | null;
 }
+
+
+// interfaces/interfaces.ts veya ui-model.ts içine ekle
+export interface IOrderExtended extends IOrder {
+  items?: IOrderItemExtended[]; // Siparişin içindeki ürünler
+}
+
+export interface IOrderItemExtended {
+  productId: number;
+  quantity: number;
+  price: number;
+  options?: IOrderOption[]; // Pizzanın kenarı, sosu vb.
+}
+
+export interface IOrderOption {
+  customName: string;
+  quantity: number;
+}
+
+export interface OrderRequestDTO {
+
+    id?: number;
+    orderId?: number | null;
+    orderDate?: dayjs.Dayjs | null;
+    totalAmount?: number | null;
+    status?: keyof typeof OrderStatus | null;
+    paymentMethod?: keyof typeof PaymentMethod | null;
+    paymentStatus?: keyof typeof PaymentStatus | null;
+    estimatedDeliveryTime?: dayjs.Dayjs | null;
+    actualDeliveryTime?: dayjs.Dayjs | null;
+    notes?: string | null;
+    createdAt?: dayjs.Dayjs | null;
+    updatedAt?: dayjs.Dayjs | null;
+    customerName?: string | null;
+    customerAddress?: string | null;
+    customerPhone?: string | null;
+    items: OrderItemDTO[];
+
+
+}
+
+export interface  OrderItemDTO {
+        productId: number;
+        quantity: number;
+        price: string;
+        options: OrderOptionDTO[];
+    }
+
+export interface OrderOptionDTO {
+        customName: string;
+        quantity: number;
+    }
  
-/*
-[
-  {
-    "uuid": "c1",
-    "quantity": 2,
-    "product": {
-      "productId": 101,
-      "name": "Küçük Boy Bol Malzemos",
-      "basePrice": 345,
-      "options": [
-        { "code": "HAMUR", "value": "İNCE" },
-        { "code": "KENAR", "value": "KLASİK" }
-      ]
-    },
-    "children": [
-      {
-        "uuid": "c1-1",
-        "productId": 201,
-        "name": "Coca-Cola 1L",
-        "type": "DRINK",
-        "quantity": 2,
-        "price": 140
-      },
-      {
-        "uuid": "c1-2",
-        "productId": 301,
-        "name": "Çikolatalı Sufle",
-        "type": "PROMO",
-        "quantity": 1,
-        "price": 115
-      }
-    ],
-    "totalPrice": 690,
-    "createdAt": "2026-01-14T20:30:00Z"
-  }
-]
-
-
-
-
-/**/
-
+ 
 

@@ -29,7 +29,7 @@ export class AddressService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('/addresses');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/addresses');
 
 
   create(address: NewAddress): Observable<EntityResponseType> {

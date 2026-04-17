@@ -31,7 +31,7 @@ export class OptionGroupService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('/option-groups/getRecords');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/option-groups/getRecords');
 
   create(optionGroup: NewOptionGroup): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(optionGroup);

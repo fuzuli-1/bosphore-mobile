@@ -1,0 +1,27 @@
+<ion-content class="ion-padding auth-bg">
+  <div class="otp-container ion-text-center">
+    <h2>Onay Kodu</h2>
+    <p><b>{{ phoneNumber }}</b> numarasına gönderdiğimiz 6 haneli kodu giriniz.</p>
+
+    <div class="otp-input-wrapper">
+      <ion-input 
+        type="number" 
+        placeholder="X X X X X X" 
+        maxlength="6" 
+        class="otp-main-input"
+        [(ngModel)]="otpCode"
+        (ionInput)="checkOtpLength()">
+      </ion-input>
+    </div>
+
+    <ion-button expand="block" color="success" shape="round" class="main-btn" 
+                [disabled]="(otpCode===null || otpCode.length !== 6)" (click)="verifyOtp()">
+      Onayla ve Giriş Yap
+    </ion-button>
+
+    <div class="resend-section">
+      <p>Kod gelmedi mi? <ion-button fill="clear" size="small" (click)="resendCode()">Tekrar Gönder</ion-button></p>
+    </div>
+  </div>
+  <div id="recaptcha-container"></div>
+</ion-content>

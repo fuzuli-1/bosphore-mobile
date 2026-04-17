@@ -1,0 +1,50 @@
+<ion-content class="ion-padding">
+  <div class="status-header ion-text-center">
+    <ion-icon [name]="getCurrentIcon()" color="primary" style="font-size: 64px;"></ion-icon>
+    <h2>{{ getStatusLabel(order?.status) }}</h2>
+    <p>Sipariş No: #{{ order?.id }}</p>
+  </div>
+
+  <div class="stepper-container">
+    <div class="step" [class.active]="isStepActive('PENDING')">
+      <div class="circle">1</div>
+      <div class="label">Sipariş Alındı</div>
+      <div class="line"></div>
+    </div>
+
+    <div class="step" [class.active]="isStepActive('COOKING')">
+      <div class="circle">2</div>
+      <div class="label">Mutfağımızda Pişiyor 🔥</div>
+      <div class="line"></div>
+    </div>
+
+    <div class="step" [class.active]="isStepActive('ON_THE_WAY')">
+      <div class="circle">3</div>
+      <div class="label">Kuryemiz Yolda 🛵</div>
+      <div class="line"></div>
+    </div>
+
+    <div class="step" [class.active]="isStepActive('DELIVERED')">
+      <div class="circle">4</div>
+      <div class="label">Afiyet Olsun!</div>
+    </div>
+  </div>
+
+  <ion-card mode="ios">
+    <ion-card-header>
+      <ion-card-title>Sipariş Özeti</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list lines="none">
+        <ion-item *ngFor="let item of order?.orderItems">
+          <ion-label>{{ item.quantity }}x {{ item.product?.name }}</ion-label>
+          <ion-note slot="end">{{ item.price | currency:'TRY':'symbol-narrow' }}</ion-note>
+        </ion-item>
+      </ion-list>
+      <hr>
+      <div class="ion-text-end">
+        <strong>Toplam: {{ order?.totalAmount | currency:'TRY':'symbol-narrow' }}</strong>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

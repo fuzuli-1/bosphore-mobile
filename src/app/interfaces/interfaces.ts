@@ -13,6 +13,8 @@ export interface IMenuGroup {
   iconPath?: string | null;
   targetPage?: string | null;
   language?: Pick<ILanguage, 'id'> | null;
+  items?:IMenuGroupItem[]|null,
+  itemCount:number;
 }
 export type NewMenuGroup = Omit<IMenuGroup, 'id'> & { id: null };
 
@@ -23,7 +25,7 @@ export interface IMenuGroupItem {
   targetCategoryId?: number | null;
   targetPage?: string | null;
   iconPath?: string | null;
-  translateCode?: string | null;
+  language?: Pick<ILanguage, 'id'> | null;
   menuGroup?: Pick<IMenuGroup, 'id'> | null;
 }
 export type NewMenuGroupItem = Omit<IMenuGroupItem, 'id'> & { id: null };
@@ -216,6 +218,7 @@ export interface IOrder {
   orderDate?: dayjs.Dayjs | null;
   totalAmount?: number | null;
   status?: keyof typeof OrderStatus | null;
+  
   paymentMethod?: keyof typeof PaymentMethod | null;
   paymentStatus?: keyof typeof PaymentStatus | null;
   estimatedDeliveryTime?: dayjs.Dayjs | null;
@@ -226,7 +229,8 @@ export interface IOrder {
   customerName?: string | null;
   customerAddress?: string | null;
   customerPhone?: string | null;
-  personnel?: Pick<IPersonnel, 'id'> | null;
+  personnel?: IPersonnel | null;
+  orderItems?: IOrderItem[] | null;
 }
 export type NewOrder = Omit<IOrder, 'id'> & { id: null };
 
@@ -237,8 +241,9 @@ export interface IOrderItem {
   price?: number | null;
   note?: string | null;
   createdAt?: dayjs.Dayjs | null;
-  product?: Pick<IProduct, 'id'> | null;
+  product?: IProduct | null;
   order?: Pick<IOrder, 'id'> | null;
+  options?: IOptionItem[] | null;
 }
 export type NewOrderItem = Omit<IOrderItem, 'id'> & { id: null };
 
@@ -323,3 +328,5 @@ export interface IUser {
   login?: string | null;
   authorities?: Pick<IAuthority, 'name'>[] | null;
 }
+
+

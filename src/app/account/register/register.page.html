@@ -1,77 +1,77 @@
-<ion-content class="ion-padding">
-  <form [formGroup]="registerForm">
-  <div class="register-wrapper">
+<ion-content class="ion-padding auth-bg">
+  <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+    <div class="register-container">
+      <div class="header-section ion-text-center">
+        <img src="assets/img/bosphore_logo.svg" class="mini-logo" alt="Bosphore Logo" height="100"  />
+        <h1 class="ion-no-margin">Üye Ol</h1>
+      </div>
 
-    <h2>{{'becameMember'|translate}}</h2>
+      <div class="form-content">
+        <div class="input-group">
+          <label>Telefon Numarası</label>
+          <ion-input 
+           formControlName="phoneNumber"
+           type="tel" placeholder="5XXXXXXXXX" mode="md" fill="outline">
 
-    <!-- Telefon -->
-    <ion-item
-      [class.ion-invalid]="registerForm.get('phone')?.invalid && registerForm.get('phone')?.touched">
-      <ion-label position="stacked">{{'phoneNumber'|translate}}</ion-label>
-      <ion-input
-        type="tel"
-        maxlength="10"
-        formControlName="phone">
-      </ion-input>
-    </ion-item>
-    <ion-text color="danger" *ngIf="registerForm.get('phone')?.touched && registerForm.get('phone')?.invalid">
-      <small>{{'telephoneWarning1'|translate}}</small>
-    </ion-text>
+          </ion-input>
+        </div>
 
-    <!-- Ad Soyad -->
-    <div class="row">
-      <ion-item>
-        <ion-label position="stacked">{{'name'|translate}}</ion-label>
-        <ion-input formControlName="firstName"></ion-input>
-      </ion-item>
+        <div class="row">
+          <div class="input-group">
+            <label>Ad</label>
+            <ion-input formControlName="firstName" type="text" placeholder="Adınız" mode="md" fill="outline"></ion-input>
+          </div>
+          <div class="input-group">
+            <label>Soyad</label>
+            <ion-input formControlName="lastName" type="text" placeholder="Soyadınız" mode="md" fill="outline"></ion-input>
+          </div>
+        </div>
 
-      <ion-item>
-        <ion-label position="stacked">{{'surname'|translate}}</ion-label>
-        <ion-input formControlName="lastName"></ion-input>
-      </ion-item>
+        <div class="input-group">
+          <label>E-Posta Adresi (İsteğe Bağlı)</label>
+          <ion-input formControlName="email" type="email" placeholder="E-Posta Adresinizi Giriniz" mode="md" fill="outline"></ion-input>
+        </div>
+        <div class="input-group">
+          <label>Şifre</label>
+          <div class="password-wrapper">
+            <ion-input 
+              formControlName="password" 
+              [type]="showPassword ? 'text' : 'password'" 
+              placeholder="Şifrenizi Belirleyin" 
+              mode="md" 
+              fill="outline">
+              <ion-button slot="end" fill="clear" (click)="showPassword = !showPassword" class="password-toggle">
+                <ion-icon [name]="showPassword ? 'eye-off' : 'eye'" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-input>
+          </div>
+        </div>
+        <div class="agreement-box">
+          <p class="info-text">Kişisel verilerinize dair aydınlatma metnine <a href="#">buradan</a> ulaşabilirsiniz.</p>
+          
+          <ion-item lines="none" class="check-item">
+            <ion-checkbox formControlName="kvkkCheck" slot="start"></ion-checkbox>
+            <ion-label>Açık Rıza Metni kapsamında verilerimin işlenmesini kabul ediyorum.</ion-label>
+          </ion-item>
+
+          <ion-item lines="none" class="check-item">
+            <ion-checkbox formControlName="marketingCheck" slot="start"></ion-checkbox>
+            <ion-label>İletişim izni ve kampanya duyurularını onaylıyorum.</ion-label>
+          </ion-item>
+        </div>
+
+        <ion-button type="submit" [disabled]="!registerForm.valid" expand="block" color="success" class="main-btn" shape="round">
+          Üye Ol
+        </ion-button>
+
+        <div class="footer-links ion-text-center">
+          <p>Hesabınız var mı? <a (click)="goToLogin()">Üye Girişi</a></p>
+        </div>
+      </div>
     </div>
 
-    <!-- Email -->
-    <ion-item>
-      <ion-label position="stacked">{{'e-mail'|translate}}</ion-label>
-      <ion-input type="email" formControlName="email"
-        placeholder="{{'ePhostaWarning1'|translate}}">
-      </ion-input>
-    </ion-item>
 
-    <!-- KVKK -->
-    <ion-item lines="none">
-      <ion-checkbox formControlName="kvkk"></ion-checkbox>
-      <ion-label class="checkbox-text">
-        Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini kabul ediyorum.
-         Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini kabul ediyorum.
-     
-      </ion-label>
-    </ion-item>
+  </form>
 
-    <!-- Kampanya -->
-    <ion-item lines="none">
-      <ion-checkbox formControlName="campaign"></ion-checkbox>
-      <ion-label class="checkbox-text">
-        Domino's sadakat programı ve iletişim izni
-         Açık Rıza Metni kapsamında kişisel verilerimin işlenmesini kabul ediyorum.
-  
-      </ion-label>
-    </ion-item>
-
-    <!-- Submit -->
-    <ion-button
-      expand="block"
-      class="submit-btn"
-      [disabled]="registerForm.invalid"
-      (click)="submit()">
-     {{'becameMember'|translate}}
-    </ion-button>
-
-    <ion-button fill="clear" expand="block">
-      Hesabınız Var mı? <b>Üye Girişi</b>
-    </ion-button>
-
-  </div>
- </form>
 </ion-content>
+ 

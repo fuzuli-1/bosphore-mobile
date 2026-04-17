@@ -1,133 +1,116 @@
-/* 1. Tüm sayfayı sarmalayan ana CSS (Daha önce paylaştığınız .page yapısı) */
 .page {
   display: flex;
   flex-direction: column;
-  height: 100vh;         /* Ekranın tamamı */
-  gap: clamp(12px, 2vw, 16px);
-  max-width: 900px;     /* Sepet için biraz daha dar bir sınır */
-  margin: 0 auto;       /* Sağdan-soldan ortalar */
-  padding: clamp(16px, 3vw, 24px);
-  border: 1px solid #e0e0e0; /* Hafif bir çerçeve */
-  overflow: hidden;
+  height: 100%;
+  max-width: 900px; // Sepet daha derli toplu dursun
+  margin: 0 auto;
+  gap: 16px;
 }
 
-/* 2. Adres Kartı (Temiz Hiyerarşi) */
-.delivery-card {
+.delivery-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 16px;
+  background: #fdfdfd;
   border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 12px 16px;
 
-  .address-text {
-    flex: 1; /* Metin kalan alanı kaplasın */
-    
-    h3 { margin: 0; font-size: 16px; font-weight: 600; color: #333; }
-    p { margin: 4px 0 0; font-size: 13px; color: #666; font-weight: 400; }
-  }
-
-  .change-btn {
-    --padding-start: 12px; --padding-end: 12px;
-    font-size: 13px; font-weight: 500; text-transform: none;
+  .info {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    h3 { margin: 0; font-size: 15px; font-weight: 700; }
+    p { margin: 0; font-size: 13px; color: #666; }
   }
 }
 
-/* 3. Ürün Listesi (Scroll Olabilen Alan) */
-.cart-items {
-  flex: 1;               /* Kalan alanın TAMAMI */
-  overflow-y: auto;       /* Dikey kaydırma */
-  padding: 8px 0;
+.cart-scroll-area {
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-/* Ürün Kartı (Temiz Tasarım) */
 .item-card {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
   padding: 16px;
-  background-color: #fff;
-  border-radius: 8px;
-  border: 1px solid #eee;
+  background: white;
+  border-bottom: 1px solid #f0f0f0;
 
-  .item-details {
-    flex: 1; /* Ürün bilgisi sol tarafa */
-    
-    h4 { margin: 0; font-size: 16px; font-weight: 600; color: #333; }
-    .options { margin: 4px 0 0; font-size: 12px; color: #888; font-weight: 400; line-height: 1.4; }
-  }
-
-  .item-actions {
+  h4 { margin: 0; font-size: 16px; font-weight: 600; }
+  .options-summary { font-size: 12px; color: #888; margin-top: 4px; }
+  
+  .item-right {
+    text-align: right;
     display: flex;
     flex-direction: column;
-    align-items: flex-end; /* Sağ tarafa yasla */
+    align-items: flex-end;
     gap: 8px;
-    flex-basis: 120px; /* Fiyat ve adet için sabit alan */
-
-    .price { font-size: 18px; font-weight: 700; color: #1db954; }
-    
-    /* Adet Kontrolü (Bakkal defterindeki mavi okları düzelttik) */
-    .qty-control {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid #e0e0e0;
-      border-radius: 4px;
-      padding: 2px 4px;
-
-      ion-button { --padding-start: 6px; --padding-end: 6px; }
-      .qty { font-size: 14px; font-weight: 600; color: #333; min-width: 20px; text-align: center; }
-    }
+    .item-price { font-weight: 700; color: var(--ion-color-primary); }
   }
 }
 
-/* 4. Özet ve Buton (Alt Taraf) */
-.cart-footer {
-  flex-shrink: 0;
+.qty-stepper {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background-color: #f9f9f9;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid #eee;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+  button {
+    background: #f9f9f9; width: 28px; height: 28px; border: none;
+    &:active { background: #eee; }
+  }
+  span { padding: 0 12px; font-weight: 600; font-size: 14px; }
+}
 
-  .summary-area {
+.payment-methods {
+  .section-title { font-weight: 700; margin-bottom: 12px; font-size: 14px; }
+  ion-radio-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .method-box {
+    flex: 1;
+    min-width: 100px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+    &.active { border-color: var(--ion-color-success); background: #f6fff9; }
+    ion-label { font-size: 11px; font-weight: 600; }
+    ion-radio { --size: 0px; } // Radyo butonunu gizle, kutu seçilsin
+  }
+}
 
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      color: #777;
-
-      &.grand-total {
-        font-size: 18px;
-        font-weight: 700;
-        color: #333;
-        margin-top: 4px;
-        padding-top: 4px;
-        border-top: 1px solid #eee;
-      }
-    }
+.total-box {
+  background: #1db954; // Sizin yeşil tonunuz
+  color: white;
+  padding: 20px;
+  border-radius: 16px;
+  margin-top: 16px;
+  
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    span { font-size: 16px; }
+    .amount { font-size: 24px; font-weight: 800; }
   }
 
-  /* Markanızın rengi: Yeşil buton */
-  .pay-btn {
-    --background: #1db954; 
-    --border-radius: 12px;
-    height: 52px;
-    font-size: 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
+  .confirm-btn {
+    --background: white;
+    --color: #1db954;
+    --border-radius: 10px;
+    font-weight: 800;
+    margin: 0;
   }
 }

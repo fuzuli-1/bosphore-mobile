@@ -13,7 +13,7 @@ export class TranslationService {
   private currentLang$ = new BehaviorSubject<string>('tr');
   private translations = signal<{ [key: string]: any }>({}); 
   protected readonly applicationConfigService = inject(ApplicationConfigService);
- protected resourceUrl = this.applicationConfigService.getEndpointFor('/languages/translations');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/languages/translations');
   constructor(private http: HttpClient) {}
 
   /** ✔ kullanılabilir dilleri ekle */

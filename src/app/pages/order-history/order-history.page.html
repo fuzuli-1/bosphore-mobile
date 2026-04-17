@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Eski Siparişlerim</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div *ngIf="orders.length === 0" class="ion-text-center" style="margin-top: 50px;">
+    <ion-icon name="fast-food-outline" style="font-size: 64px; opacity: 0.2;"></ion-icon>
+    <p>Henüz bir siparişin yok kanki. Hemen bir kebap söyle!</p>
+  </div>
+
+  <ion-card *ngFor="let order of orders" mode="ios" (click)="viewDetail(order.id)">
+    <ion-item>
+            <ion-button fill="solid" color="success" size="small" (click)="reorder(order, $event)">
+        <ion-icon slot="start" name="refresh-outline"></ion-icon>
+        Tekrarla
+      </ion-button>
+    </ion-item>
+    <ion-item lines="none">
+      <ion-label>
+        <h2>Sipariş #{{order.id}}</h2>
+        <p>{{order.orderDate?.toDate() | date:'dd.MM.yyyy HH:mm'}}</p>
+      </ion-label>
+      <ion-badge slot="end" [color]="getStatusColor(order.status)">
+        {{order.status}}
+      </ion-badge>
+    </ion-item>
+    
+     <ion-card-content>
+      <div class="summary">
+        <span *ngFor="let item of order.orderItems; let last = last">
+          {{item.quantity}}x {{item.product?.name}}{{!last ? ', ' : ''}}
+        </span>
+      </div>
+      <div class="ion-text-right ion-margin-top">
+        <strong>Toplam: {{order.totalAmount}} TL</strong>
+      </div>
+    </ion-card-content>
+ 
+  </ion-card>
+  
+</ion-content>

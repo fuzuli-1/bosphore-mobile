@@ -1,23 +1,22 @@
-<ion-header [translucent]="true" class="bosp-header">
+<!--page-header.page.html -->
+<ion-header    [translucent]="true" class="bosp-header">
   <ion-toolbar color="primary" class="main-toolbar">
-
     <ion-buttons slot="start">
-      <ion-button (click)="toggleMenu()">
+      <ion-menu-button (click)="toggleMenu()">
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
-      </ion-button>
+      </ion-menu-button>
     </ion-buttons>
-<i class="fas fa-spinner fa-spin"></i>
+
     <ion-title class="logo-title">
       <img
-        src="../../../assets/img/bosphore_logo.svg"
+        src="../../../assets/img/bosphore_logo.svg" 
         alt="Bosphore"
         height="56"
         width="120"
         class="logo"
-        ngSkipHydration
+        ngSkipHydration  
       />
     </ion-title>
- 
     <ion-buttons slot="end">
       <ion-button (click)="openSearch()">
         <ion-icon slot="icon-only" name="search-outline"></ion-icon>
@@ -34,6 +33,5 @@
         <ion-icon slot="icon-only" name="person-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-
-  </ion-toolbar>
+  </ion-toolbar>  
 </ion-header>

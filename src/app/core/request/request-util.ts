@@ -12,6 +12,5 @@ export const createRequestOption = (req?: any): HttpParams => {
       }
     });
   }
-
   return options;
 };

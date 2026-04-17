@@ -1,0 +1,29 @@
+.stepper-container {
+  padding: 20px;
+  .step {
+    display: flex;
+    align-items: center;
+    position: relative;
+    padding-bottom: 30px;
+    opacity: 0.3; /* Pasif adımlar sönük */
+    transition: all 0.5s ease;
+
+    &.active {
+      opacity: 1; /* Aktif ve geçilmiş adımlar net */
+      .circle { background: var(--ion-color-primary); color: white; }
+    }
+
+    .circle {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #ccc; display: flex; align-items: center;
+      justify-content: center; z-index: 2;
+    }
+
+    .line {
+      position: absolute; left: 14px; top: 30px;
+      width: 2px; height: 30px; background: #ccc;
+    }
+    
+    .label { margin-left: 15px; font-weight: bold; }
+  }
+}

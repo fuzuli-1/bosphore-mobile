@@ -1,0 +1,25 @@
+.order-card {
+  margin-bottom: 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+
+  .summary {
+    color: var(--ion-color-step-600);
+    font-size: 0.9em;
+    font-style: italic;
+  }
+
+  ion-badge {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+}
+
+
+.footer-info {
+  display: flex;
+  justify-content: space-between; // Biri sola, biri sağa yaslansın
+  align-items: center;
+  width: 100%;
+}

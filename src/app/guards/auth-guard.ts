@@ -11,7 +11,9 @@ export class AuthGuard implements CanActivate {
   private account = inject(AccountService);
   private router = inject(Router);
 
+ 
   canActivate(): Observable<boolean> {
+    console.log("AUTH GUARD CALISTI");
     return this.account.identity().pipe(
       map(account => {
         if (account) {

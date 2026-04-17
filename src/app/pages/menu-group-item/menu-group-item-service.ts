@@ -3,7 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApplicationConfigService } from 'src/app/core/config/application-config.service';
 import { isPresent } from 'src/app/core/util/operators';
-import { IMenuGroupItem, IOptionGroupWithItems } from 'src/app/interfaces/interfaces';
+import { IMenuGroupItem, IOptionGroupWithItems, NewMenuGroupItem } from 'src/app/interfaces/interfaces';
 import { createRequestOption } from '../../core/request/request-util';
 export type PartialUpdateMenuGroupItem = Partial<IMenuGroupItem> & Pick<IMenuGroupItem, 'id'>;
 
@@ -16,6 +16,9 @@ export type EntityArrayResponseType = HttpResponse<IMenuGroupItem[]>;
 })
 export class MenuGroupItemService {
 
+   protected readonly http = inject(HttpClient);
+   protected readonly applicationConfigService = inject(ApplicationConfigService);
+   protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/menu-group-items');
 
 
   getMenuGroupItems(menuGroupId: number): Observable<EntityArrayResponseType> {
@@ -23,9 +26,9 @@ export class MenuGroupItemService {
      return this.http.get<IMenuGroupItem[]>(this.resourceUrl, { params: options, observe: 'response' });
   }
 
-   protected readonly http = inject(HttpClient);
-   protected readonly applicationConfigService = inject(ApplicationConfigService);
-   protected resourceUrl = this.applicationConfigService.getEndpointFor('/menu-group-items');
+  create(menuItem: NewMenuGroupItem): Observable<EntityResponseType> {
+    return this.http.post<IMenuGroupItem>(this.resourceUrl, menuItem, { observe: 'response' });
+  }
 
 
 

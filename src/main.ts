@@ -16,12 +16,16 @@ import { routes } from './app/app.routes';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
+  addCircleOutline,
   addOutline,
   airplaneOutline,
   arrowForwardOutline,
+  bicycle,
   bicycleOutline,
   cartOutline,
+  cashOutline,
   chatbubbleEllipsesSharp,
+  checkmarkCircle,
   checkmarkDoneCircleOutline,
   chevronBack,
   chevronForward,
@@ -31,10 +35,14 @@ import {
   documentOutline,
   documentTextOutline,
   eye,
+  fastFood,
+  fastFoodOutline,
   folderOpenOutline,
+  gridOutline,
   help,
   helpCircleOutline,
   home,
+  homeSharp,
   imagesOutline,
   informationCircleOutline,
   informationOutline,
@@ -43,6 +51,7 @@ import {
   listOutline,
   locate,
   locateOutline,
+  locateSharp,
   locationOutline,
   lockClosed,
   mailOutline,
@@ -53,22 +62,33 @@ import {
   personAddOutline,
   personCircleOutline,
   personOutline,
+  printOutline,
+  receiptOutline,
+  receiptSharp,
   refresh,
   refreshCircleOutline,
+  refreshOutline,
   remove,
   removeOutline,
+  restaurantOutline,
   searchOutline,
   settingsOutline,
   storefrontOutline,
   trashOutline,
+  
 } from 'ionicons/icons';
  
 import { TokenInterceptor } from './app/interceptors/token.interceptor.ts';
  // main.ts
 import { register } from 'swiper/element/bundle';
+import { initializeApp } from 'firebase/app';
+import { provideFirebaseApp, initializeApp as initializeApp_alias } from '@angular/fire/app';
+import { getAuth, provideAuth } from '@angular/fire/auth';
+import { environment } from './environments/environment';
 
 register();
 
+ 
  
 
 // İkonları ekleyin
@@ -115,105 +135,65 @@ addIcons({
   'bicycle-outline':bicycleOutline,
   'locate-outline': locateOutline,
   'information-circle': informationCircleOutline,
+  'globe-outline': cloudOutline,
+  'card-outline': documentOutline,
+  'cash-outline': cashOutline,
+  'bicycle': bicycle,
+  'checkmark-circle':checkmarkCircle,
+  'receipt': 'receipt',
+  'home-sharp':homeSharp,
+  'receipt-sharp': receiptSharp,
+  'location-sharp': locateSharp,
+  'restaurant-sharp': 'restaurant-sharp',
+  'receipt-outline':receiptOutline,
+  'restaurant-outline': restaurantOutline,
+  'fast-food-outline': fastFoodOutline,
+  'refresh-outline': refreshOutline,
+  'print-outline': printOutline,
+  'grid-outline':gridOutline,
+  'add-circle-outline':addCircleOutline,
+  'add':addCircleOutline,
+  'grid-outline-outline':gridOutline
 });
 
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TranslationService } from './app/services/translation-service';
 import { add } from 'ngx-bootstrap/chronos';
+ // ... diğer importlar aynı kalsın ...
+
 bootstrapApplication(AppComponent, {
   providers: [
-    provideZoneChangeDetection(), // ServiceManager'ı providers'a ekleyin
+    provideZoneChangeDetection(), 
     provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([TokenInterceptor]), // 🔥 interceptor burada devreye girer
-    ),
     provideIonicAngular({
-      mode: 'md', // opsiyonel: Ionic varsayılanı (ios/md) ayarlayabilirsin
-      rippleEffect: true, // opsiyonel: Material ripple efekti
+      mode: 'md',
+      rippleEffect: true,
     }), 
+    // 🔥 DOĞRU YÖNTEM BURASI: Angular Fire'ın kendi başlatıcısı
+    provideFirebaseApp(() => initializeApp(environment.firebase)), 
+    provideAuth(() => getAuth()),
+    
+    provideHttpClient(
+      withInterceptors([TokenInterceptor]),
+    )/*, 
+    provideFirebaseApp(() => initializeApp({ 
+      projectId: "bosphore-app", 
+      appId: "1:131341859706:web:197f24060604d0be12b4c3", 
+      storageBucket: "bosphore-app.firebasestorage.app", 
+      apiKey: "AIzaSyAs9Vqi6uXGsqakomYiyqK--EdoLiG5zHk", 
+      authDomain: "bosphore-app.firebaseapp.com", 
+      messagingSenderId: "131341859706", measurementId: "G-DDP31R4CQR", 
+      
+        })), provideAuth(() => getAuth()),/**/
   ],
 }).then(app => {
+  
   const ts = app.injector.get(TranslationService);
-  return  ts.use('tr'); // uygulama başlamadan çevirileri yükle
+   return ts.use('tr');
 }).catch(err => {
-  debugger;
-  console.error(err);
+ 
+  console.error('Bootstrap Hatası:', err);
 });
 
-
-/*
-
-.then(app => {
-  const ts = app.injector.get(TranslationService);
-  return ts.load('tr'); // uygulama başlamadan çevirileri yükle
-});
-
-// Custom Translate Loader
-class CustomTranslateLoader implements TranslateLoader {
-  constructor(
-    private http: HttpClient,
-    private service: ServiceManager,
-  ) {}
-
-  getTranslation(lang: string): Observable<any> {
-    const languageCode = lang || 'en';
-    console.log('Servise erişim ile dosya çekildi');
-
-    return this.service.getTranslation(languageCode).pipe(
-      catchError(error => {
-        console.error('Servise erişimde hata oluştu:', error);
-        console.log('Yerel çeviri dosyasından yükleniyor...');
-        return this.loadLocalTranslation(languageCode);
-      }),
-    );
-  }
-
-  // Yerel çeviri dosyasını yüklemek için bir yardımcı fonksiyon
-  private loadLocalTranslation(languageCode: string): Observable<any> {
-    // Yerel çeviri dosyasının yolu
-    console.log('Yerel çeviri loadLocalTranslation yükleniyor...');
-    const localTranslationPath = `assets/i18n/${languageCode}.json`;
-    console.log(localTranslationPath);
-
-    // Yerel çeviri dosyasını yükle
-    return this.http.get(localTranslationPath).pipe(
-      catchError(error => {
-        console.error('Yerel çeviri dosyası yüklenirken hata oluştu:', error);
-        // Hata durumunda boş bir Observable döndürülebilir veya başka bir şey yapılabilir
-        return of({});
-      }),
-    );
-  }
-}
-
-export function HttpLoaderFactory(http: HttpClient, service: ServiceManager): TranslateLoader {
-  return new CustomTranslateLoader(http, service);
-}
-
-bootstrapApplication(AppComponent, {
-  providers: [
-    provideZoneChangeDetection(),ServiceManager, // ServiceManager'ı providers'a ekleyin
-    provideRouter(routes),
-    provideHttpClient(
-      withInterceptors([TokenInterceptor]), // 🔥 interceptor burada devreye girer
-    ),
-    provideIonicAngular({
-      mode: 'md', // opsiyonel: Ionic varsayılanı (ios/md) ayarlayabilirsin
-      rippleEffect: true, // opsiyonel: Material ripple efekti
-    }),
-
-    importProvidersFrom(
-      TranslateModule.forRoot({
-        loader: {
-          provide: TranslateLoader,
-          useFactory: HttpLoaderFactory,
-          deps: [HttpClient, ServiceManager], // ServiceManager'ı deps array'ine ekleyin
-        },
-      }),
-    ),
-  ],
-}).catch(err => {
-  debugger;
-  console.error(err);
-});*/
+ 

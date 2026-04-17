@@ -7,12 +7,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
+import { MenuController } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
 import { fontAwesomeIcons } from 'src/app/config/font-awesome-icons';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
@@ -36,6 +31,12 @@ export class PageHeaderPage implements OnInit {
   activeCampaign = signal('50 TL İndirim!');
   currentLocation = signal('Kadıköy, İstanbul');
   cartItemCount = signal(3);
+
+
+
+   isMenuLoaded :boolean = false;  
+
+   private menuCtrl = inject(MenuController);
 
   constructor() {
     this.iconLibrary.addIcons(...fontAwesomeIcons);
@@ -65,8 +66,7 @@ export class PageHeaderPage implements OnInit {
   }
 
   toggleMenu() {
-    console.log('Menu toggled');
-    // Side menu aç/kapat
+    this.menuCtrl.toggle();    
   }
 
   selectLocation() {

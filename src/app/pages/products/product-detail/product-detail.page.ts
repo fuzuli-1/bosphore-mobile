@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { NavController,ModalController } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
 import { combineLatest, Observable, Subscription, tap } from 'rxjs';
 import {
@@ -37,6 +37,7 @@ import { Bosp } from 'src/app/shared/utils/Bosp';
 import { CartItem, OrderItemDraft, SelectedOption } from 'src/app/interfaces/ui-model';
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
 import { OrderStateService } from 'src/app/services/order-state-service';
+import { AdresListPage } from '../../adres-list/adres-list.page';
 
 @Component({
   selector: 'app-product-detail',
@@ -77,7 +78,7 @@ export class ProductDetailPage implements OnInit {
   public orderService = inject(OrderStateService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly productService = inject(ProductService);
-
+  protected modalCtrl = inject(ModalController);
   trackId = (item: IProduct): number =>
     this.productService.getProductIdentifier(item);
 
@@ -160,7 +161,7 @@ export class ProductDetailPage implements OnInit {
     const deliveryType = this.orderService.deliveryType();
 
   if (deliveryType === 'delivery' && !selectedAddress) {
-    // Kullanıcıya adres seçmesi için uyarı göster veya modalı aç
+    this.openAddressList();
    return;
   }
 
@@ -212,5 +213,22 @@ export class ProductDetailPage implements OnInit {
   onOptionsChange(options: SelectedOption[]) {
     this.selectedOptions = options;
     this.calculateTotal();
-  } 
+  }
+  
+    async openAddressList() {
+      const addressModal = await this.modalCtrl.create({
+        component: AdresListPage,
+        cssClass: 'address-list-modal' // Görseldeki gibi tam ekran veya geniş modal
+      });
+        await addressModal.present();
+  
+        const { data } = await addressModal.onWillDismiss();
+        if (data) {
+         // Seçilen adresi merkezi servise (Savaş Merkezi) gönderiyoruz
+           this.orderService.setAddress(data);
+            console.log('Seçilen adres:', data);
+            // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
+        }
+    }
+  
 }

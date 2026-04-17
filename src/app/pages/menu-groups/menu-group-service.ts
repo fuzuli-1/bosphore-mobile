@@ -19,7 +19,7 @@ export class MenuGroupService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('/menu-groups');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/menu-groups');
 
   create(menuGroup: NewMenuGroup): Observable<EntityResponseType> {
     return this.http.post<IMenuGroup>(this.resourceUrl, menuGroup, { observe: 'response' });

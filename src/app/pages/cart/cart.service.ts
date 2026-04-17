@@ -12,7 +12,11 @@ import {
   SelectedOption
 } from 'src/app/interfaces/ui-model';
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
-
+import  {CartProduct} from 'src/app/interfaces/ui-model';
+import { IProduct } from 'src/app/interfaces/interfaces';
+import { NavController, ToastController } from '@ionic/angular';
+import { NewAddress } from 'src/app/interfaces/interfaces';
+import { OrderService } from 'src/app/services/order-service';
 /* -----------------------------
    JHIPSTER TYPES (DEĞİŞMEDİ)
 -------------------------------- */
@@ -38,7 +42,7 @@ export class CartService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
   protected resourceUrl =
-    this.applicationConfigService.getEndpointFor('/carts');
+    this.applicationConfigService.getEndpointFor('/api/carts');
 
   /* --------------------------------
      LOCAL CART STATE

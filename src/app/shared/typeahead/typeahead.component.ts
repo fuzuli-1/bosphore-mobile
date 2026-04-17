@@ -142,7 +142,7 @@ export class TypeaheadComponent implements OnInit {
   public loadingCtrl = inject(LoadingService);
   public toastController = inject(ToastController);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('/languages/categories');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/languages/categories');
   private alertCtrl = inject(AlertController);
   constructor() {
    

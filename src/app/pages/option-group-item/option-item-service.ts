@@ -30,7 +30,7 @@ export class OptionItemService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/option-items');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/option-items');
 
   create(optionItem: NewOptionItem): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(optionItem);
