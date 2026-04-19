@@ -2,8 +2,10 @@ import { IonApp } from '@ionic/angular/standalone';
 import {
   AfterViewInit,
   Component,
+  computed,
   ElementRef,
   inject,
+  NgZone,
   OnDestroy,
   OnInit,
   signal,
@@ -21,7 +23,7 @@ import {
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { IonRefresherCustomEvent } from '@ionic/core';
+import { IonRefresherCustomEvent, IonSegmentCustomEvent, SegmentChangeEventDetail } from '@ionic/core';
 import { FooterService } from '../services/footer-service';
 import { MenuService } from '../services/menu-service';
 import { Langs } from '../pages/lang';
@@ -34,6 +36,12 @@ import { PageHeaderPage } from '../pages/page-header/page-header.page';
 import { AdresListPage } from '../pages/adres-list/adres-list.page';
 import { OrderStateService } from '../services/order-state-service';
 import { CommonModule } from '@angular/common';
+import { IMenuGroupItem } from '../interfaces/interfaces';
+import { body, menu } from 'ionicons/icons';
+import { ProductService } from '../pages/products/product-service';
+import { MenuGroupService } from '../pages/menu-groups/menu-group-service';
+import { MenuGroupItemService } from '../pages/menu-group-item/menu-group-item-service';
+import { CartUtils } from '../shared/utils/CartUtils';
 
 @Component({
   selector: 'app-home',
@@ -55,24 +63,36 @@ import { CommonModule } from '@angular/common';
     // Diğer servisler...
   ],
 })
-export class HomePage implements OnInit, AfterViewInit {
+export class HomePage implements OnInit {
+
+  //seçilen adres
+  selectedAddress: iface.IAddress | null = null;
+  //menu groups
+  menuGroups = signal<iface.IMenuGroup[]>([]);
+  selectedGroup: iface.IMenuGroup | null = null;
+  selectedGroupId = signal<number | null>(null);
+   //menu group items
+  categories = signal<iface.IMenuGroupItem[]>([]);
+  selectedCategories = signal<iface.IMenuGroupItem[]>([]);
+  activeCategory=signal<iface.IMenuGroupItem>({} as iface.IMenuGroupItem);
+  categoryId: number = 0;
+
+  //claude dizayn için
+  products = signal<iface.IProduct[]>([]); 
+  selectedSubCategoryId = signal<number | null>(null);
+
+  totalCount = computed(() => CartUtils.totalCount());
+
   private router = inject(Router);
   private modalCtrl = inject(ModalController);
   private account = inject(AccountService);
   private translate = inject(TranslationService);
   public orderService = inject(OrderStateService); // HTML'den erişmek için public
+  productService=inject(ProductService);
+  menuGroupService = inject(MenuGroupService);
+  menuGroupItemService = inject(MenuGroupItemService);
+  protected ngZone = inject(NgZone);
   constructor() {}
-
-  selectedSegment: number = 0;
-  languages = Langs;
-  products: iface.IProduct[] = [];
-  subGroups: iface.IMenuGroupItem[] = [];
-
-  selectedGroupId: number = 0;
-  selectedGroupItemId: number = 0;
-  selectedAddress: iface.IAddress | null = null;
-
-
 
   ngOnInit() {
     if (this.account.isAuthenticated()) {
@@ -82,6 +102,13 @@ export class HomePage implements OnInit, AfterViewInit {
       this.account.getAuthenticationState().subscribe((account) => {
         if (account) {
           this.orderService.setCurrentUser(account);
+            // Burada DOM elementlerine erişebilirsiniz
+          this.loadMenuGroups();
+          this.loadMenuGroupItems();
+         // this.loadProducts(1); // Örneğin, categoryId 1 olan ürünleri yükleyelim
+         // this.router.navigate(['/home']);
+         // this.router.navigate(['/home'], { queryParams: { categoryId: 1 } });
+         // this.router.navigate(['/home'], { queryParams: { categoryId: 1 } });  
         }
       });
     }else{
@@ -96,17 +123,7 @@ export class HomePage implements OnInit, AfterViewInit {
     });
   }
 
-  doRefresh($event: IonRefresherCustomEvent<RefresherEventDetail>) {
-    throw new Error('Method not implemented.');
-  }
 
-  onSelectedGroupChange(menuGroup: iface.IMenuGroup) {
-    this.selectedGroupId = menuGroup.id;
-  }
-
-  ngAfterViewInit() {
-    let x = 0;
-  }
 
   async presentOrderTypeModal() {
     this.openAddressList();
@@ -151,4 +168,98 @@ export class HomePage implements OnInit, AfterViewInit {
       // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
     }
   }
+
+
+  //yeni menu grup methodlari
+  loadMenuGroups() {
+    this.menuGroupService.query().subscribe(res => {
+      this.menuGroups.set(res.body ?? []);
+      if(body.length > 0) {
+        this.selectedGroup = res.body ? res.body[0] : null;
+        this.selectedGroupId.set(this.selectedGroup?.id ?? null );
+      }
+    });
+  }
+
+   loadMenuGroupItems() {
+    this.menuGroupItemService.query().subscribe(res => {
+      this.categories.set(res.body ?? []);
+      this.setCategory(this.categories()[0]?.id ?? 0); // İlk kategoriyi seçili yap
+    });
+  }
+
+    // 1. Ana Gruba Tıklayınca (Yiyecekler)
+selectGroup(event: any) {
+  const selectedId = event.detail.value;
+  this.selectedGroupId.set(event.detail.value);
+  const selectedGroup = this.menuGroups().find(group => group.id === selectedId);
+  if (selectedGroup) {
+    this.selectedGroup = selectedGroup;
+    // Gruba bağlı alt kategorileri filtrele
+    const items = this.categories().filter(t => t.menuGroup?.id === selectedGroup.id) ?? [];
+    this.selectedCategories.set(items);
+    // Eğer alt kategori varsa, ilkinin ürünlerini otomatik yükle
+    if (items.length > 0) {
+      this.setCategory(items[0].id);
+    } else {
+      this.products.set([]);
+    }
+  }
 }
+
+  setCategory(id: number): void {
+    this.activeCategory.set(this.categories().find(cat => cat.id === id) || {} as iface.IMenuGroupItem);
+
+      this.productService.query({ 'categoryId':id }).subscribe({
+      next: (res) => {
+        this.products.set(res.body ?? []);
+      },
+      error: () => console.error('Ürünler yüklenirken hata oluştu kanki!')
+    });
+  }
+
+ 
+
+// 2. Alt Kategoriye Tıklayınca (KEBAB)
+onSubCategoryChange(event: any) {
+  const targetCategoryId = event.detail.value;
+  this.loadProducts(targetCategoryId);
+}
+
+// 3. Ürünleri Getiren Metot
+loadProducts(categoryId: number) {
+  // Senin SQL sorgunun ProductService karşılığı
+  this.productService.query({ 'categoryId.equals': categoryId }).subscribe(res => {
+    let products = res.body ?? [];
+    this.products.set(products);
+  });
+
+  }
+
+
+ addToCart(product: iface.IProduct) {
+    this.ngZone.run(() => {
+      this.router.navigate(['/products', product.id]);      
+    });
+  }
+
+  EMOJI_MAP: Record<string, string> = {
+      elma: '🍎',
+      armut: '🍐',
+      muz: '🍌',
+      hamburger: '🍔',
+      pizza: '🍕',
+      sandwich: '🥪'   
+  };
+
+getEmoji(name?: string): string {
+  if (!name) return '🍽️';
+  return this.EMOJI_MAP[name.toLowerCase()] ?? '🍽️';
+}
+
+quickAdd($event: PointerEvent,arg1: iface.IProduct) {
+    throw new Error('Method not implemented.');
+}
+
+}
+

@@ -59,7 +59,7 @@ import { CommonModule } from '@angular/common';
 })
 export class ProductsPage implements OnInit, OnChanges {
 
-  @Input() selectedGroupId: number = 0;
+  @Input() categoryId: number = 0;
   subscription: Subscription | null = null;
   products = signal<IProduct[]>([]);
   isLoading = false;
@@ -79,7 +79,7 @@ export class ProductsPage implements OnInit, OnChanges {
   constructor() {}
 
   ngOnChanges() {
-    if (this.selectedGroupId) {
+    if (this.categoryId) {
       this.subscription = combineLatest([
         this.activatedRoute.paramMap,
         this.activatedRoute.queryParamMap,
@@ -95,7 +95,7 @@ export class ProductsPage implements OnInit, OnChanges {
             this.isLoading = true;
             const pageToLoad: number = page;
             const queryObject: any = {
-              menuGroupId: this.selectedGroupId,
+              categoryId: this.categoryId,
               page: pageToLoad - 1,
               size: this.itemsPerPage,
               sort: this.sortService.buildSortParam(this.sortState()),

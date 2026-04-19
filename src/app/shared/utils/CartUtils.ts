@@ -5,6 +5,7 @@ import { Bosp } from "./Bosp";
 export class CartUtils {
 
 
+
   static getSafeCart(): CartItem[] {
   try {
     const raw = localStorage.getItem('cart');
@@ -36,7 +37,10 @@ export class CartUtils {
   }
 }
 
- 
+   static totalCount() {
+    const cart = CartUtils.getSafeCart();
+    return cart.reduce((sum, item) => sum + item.quantity, 0);
+  }
 
   static saveCart(cart: CartItem[]) {
     localStorage.setItem('cart', JSON.stringify(cart));

@@ -22,7 +22,7 @@ export interface IMenuGroupItem {
   id: number;
   label?: string | null;
   orderNo?: number | null;
-  targetCategoryId?: number | null;
+  targetCategoryId: number;
   targetPage?: string | null;
   iconPath?: string | null;
   language?: Pick<ILanguage, 'id'> | null;
@@ -97,6 +97,7 @@ export interface ICompanyMaster {
 export type NewCompanyMaster = Omit<ICompanyMaster, 'id'> & { id: null };
 
 export interface IProduct {
+
   id: number;
   productId?: number | null;
   name?: string | null;
@@ -126,6 +127,10 @@ export interface IProduct {
   tax?: Pick<ITax, 'id'> | null;
   category?: Pick<ICategory, 'id'> | null;
   language?: Pick<ILanguage, 'id'> | null;
+  reviewCount?: number|0;
+  rating?: number|0;
+  badge?: string | null;
+  emoji?: any|null;
 }
 export type NewProduct = Omit<IProduct, 'id'> & { id: null };
 
@@ -158,6 +163,7 @@ export interface ICategory {
   createdAt?: dayjs.Dayjs | null;
   icon: String;
   active: boolean;
+  menuGroupItem?:IMenuGroupItem  | null;
 }
 export type NewCategory = Omit<ICategory, 'id'> & { id: null };
 

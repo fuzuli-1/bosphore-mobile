@@ -153,7 +153,11 @@ addIcons({
   'grid-outline':gridOutline,
   'add-circle-outline':addCircleOutline,
   'add':addCircleOutline,
-  'grid-outline-outline':gridOutline
+  'grid-outline-outline':gridOutline,
+  'star': 'star',
+  'star-outline': 'star-outline',
+  'help': help, 
+
 });
 
 import { Observable, of } from 'rxjs';

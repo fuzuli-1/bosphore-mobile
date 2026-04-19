@@ -1,34 +1,142 @@
-<ion-content id="main-content">
+ <ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
 
-  <app-page-header></app-page-header>
+    <ion-title slot="start" class="logo-title">
+      Leziz<span class="logo-dot">.</span>
+    </ion-title>
 
+    <div slot="end" class="toolbar-end">
+      <ion-chip class="addr-chip" (click)="openAddressList()">
+        <ion-icon name="location-outline" color="warning"></ion-icon>
+        <ion-label>Adres Seçin</ion-label>
+      </ion-chip>
 
-  <!-- diğer içerikler -->
+      <ion-button fill="solid" color="primary" class="cart-btn" [routerLink]="['/cart']">
+        <ion-icon slot="start" name="cart-outline"></ion-icon>
+        Sepet
+        @if (totalCount() > 0) {
+          <ion-badge color="light" class="cart-badge">{{ totalCount() }}</ion-badge>
+        }
+      </ion-button>
+    </div>
 
-   <!--adress secimi-->
-  <div class="location-bar">
-    <ion-breadcrumbs>
-    <ion-breadcrumb (click)="presentOrderTypeModal()">
-        <ion-icon slot="start" [name]="orderService.deliveryType() === 'delivery' ? 'bicycle-outline' : 'storefront-outline'"></ion-icon>
-        {{ orderService.deliveryType() === 'delivery' ? 'Adrese Teslim' : 'Gel Al' }}
-      </ion-breadcrumb>
+  </ion-toolbar>
 
-    <ion-breadcrumb (click)="openAddressList()">
-          <ion-icon slot="start" name="location-outline"></ion-icon>
-          {{ orderService.selectedAddress()?.addressText || 'Adres Seçiniz' }}
-        </ion-breadcrumb>
-    </ion-breadcrumbs>
+  <!-- ANA SEKMELER -->
+  <ion-toolbar color="light" class="tab-toolbar">
+    <ion-segment [value]="selectedGroupId()"  (ionChange)="selectGroup($event)" mode="md">
+      @for (tab of menuGroups(); track tab.id) {
+        <ion-segment-button [value]="tab.id">
+          <ion-label>{{ tab.title }}</ion-label>
+        </ion-segment-button>
+      }
+    </ion-segment>
+  </ion-toolbar>
+
+  <!-- KATEGORİ SCROLLU -->
+  <ion-toolbar class="category-toolbar">
+    <div class="category-scroll">
+      @for (cat of categories(); track cat.id) {
+        <ion-chip
+          [class.active-chip]="activeCategory().id === cat.id"
+          [outline]="activeCategory().id !== cat.id"
+          (click)="setCategory(cat.id)">
+          {{ cat.label }}
+        </ion-chip>
+      }
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="menu-content">
+
+  <!-- SECTION BAŞLIĞI -->
+  <div class="section-header">
+    <h2 class="section-title">Soğuk Sandviçler</h2>
+    <ion-badge color="medium" class="count-badge">{{ products().length }} ürün</ion-badge>
   </div>
 
-  <!--menu gruplari-->
- <app-menu-groups (selectedGroupChange)="onSelectedGroupChange($event)"></app-menu-groups>
- 
- <!--urunler -->
-<app-products [selectedGroupId]="selectedGroupId"></app-products>
- 
+  <!-- ÜRÜN GRID -->
+  <div class="product-grid">
 
+    <!-- İLK ÜRÜN — GENİŞ KART (featured) -->
+    @if (products().length > 0) {
+      <ion-card class="product-card product-card--wide"
+        (click)="addToCart(products()[0])">
+        <div class="card-img-wrap">
+          @if (products()[0].badge === 'hot') {
+            <ion-badge color="primary" class="img-badge">⭐ Çok Satan</ion-badge>
+          }
+           <span class="food-emoji">{{ getEmoji('elma') }}</span>
+         <!--  @if (products()[0].imageUrl) {
+               <img [src]=" 'assets/products/' + products()[0].imageUrl + '.png'" 
+                class="product-img"
+               alt="product"/>
+            } @else {
+              <span class="food-emoji">{{ products()[0].emoji }}</span>
+            } -->
+        </div>
+        <ion-card-content class="card-content">
+          <div class="card-top">
+            <div>
+              <ion-card-title class="card-name">{{ products()[0].name }}</ion-card-title>
+              <ion-card-subtitle class="card-desc">{{ products()[0].description }}</ion-card-subtitle>
+            </div>
+            <div class="price-tag">{{ products()[0].price | number:'1.2-2' }} TL</div>
+          </div>
+          <div class="card-footer">
+            <ion-chip color="medium" class="rating-chip">
+              <ion-icon name="star" color="warning"></ion-icon>
+              <ion-label>{{ products()[0].rating }} ({{ products()[0].reviewCount }})</ion-label>
+            </ion-chip>
+            <ion-button fill="outline" color="dark" size="small"
+              (click)="quickAdd($event, products()[0])">
+              <ion-icon slot="icon-only" name="add"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+
+    <!-- DİĞER ÜRÜNLER — 2'Lİ GRID -->
+    <div class="two-col-grid">
+      @for (item of products().slice(1); track item.id) {
+        <ion-card class="product-card" (click)="addToCart(item)">
+
+          <div class="card-img-wrap card-img-wrap--sm">
+            @if (item.badge === 'new') {
+              <ion-badge color="warning" class="img-badge">Yeni</ion-badge>
+            } @else if (item.badge === 'hot') {
+              <ion-badge color="primary" class="img-badge">Çok Satan</ion-badge>
+            }
+
+            @if (item.imageUrl) {
+               <img [src]=" 'assets/products/' + item.imageUrl + '.png'" 
+                class="product-img"
+               alt="product"/>
+            } @else {
+              <span class="food-emoji">{{ item.emoji }}</span>
+            }
+
+          </div>
+
+          <ion-card-content class="card-content card-content--sm">
+            <ion-card-title class="card-name card-name--sm">{{ item.name }}</ion-card-title>
+            <ion-card-subtitle class="card-desc card-desc--sm">{{ item.description }}</ion-card-subtitle>
+            <div class="card-footer card-footer--sm">
+              <span class="price-tag price-tag--sm">{{ item.price | number:'1.2-2' }} TL</span>
+              <ion-button fill="solid" color="dark" size="small"
+                (click)="quickAdd($event, item)">
+                <ion-icon slot="icon-only" name="add"></ion-icon>
+              </ion-button>
+            </div>
+          </ion-card-content>
+
+        </ion-card>
+      }
+    </div>
+
+  </div>
 
 </ion-content>
-
- 
 
