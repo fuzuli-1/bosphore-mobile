@@ -108,23 +108,10 @@ export interface IProduct {
   isAvailable?: boolean | null;
   preparationTime?: number | null;
   createdAt?: dayjs.Dayjs | null;
-  productCode?: string | null;
-  productSellerCode?: string | null;
-  productName?: string | null;
-  productSellingName?: string | null;
-  note?: string | null;
-  unitId?: number | null;
-  lastInSum?: number | null;
-  wholesaleSum?: number | null;
-  retailSum?: number | null;
-  passivedPersonnel?: string | null;
-  passivedUserId?: number | null;
-  passiveDate?: string | null;
   createdBy?: number | null;
-  createdDate?: string | null;
+  updatedAt?: dayjs.Dayjs | null;
   updatedBy?: number | null;
-  updatedDate?: string | null;
-  tax?: Pick<ITax, 'id'> | null;
+  tax?: Pick<ITax, 'id'> | null;  
   category?: Pick<ICategory, 'id'> | null;
   language?: Pick<ILanguage, 'id'> | null;
   reviewCount?: number|0;
@@ -140,7 +127,7 @@ export interface ILanguage {
   desc?: string | null;
   tr?: string | null;
   en?: string | null;
-  ru?: string | null;
+  fr?: string | null;
   kz?: string | null;
   an?: string | null;
   isActive?: boolean | null;
@@ -163,7 +150,8 @@ export interface ICategory {
   createdAt?: dayjs.Dayjs | null;
   icon: String;
   active: boolean;
-  menuGroupItem?:IMenuGroupItem  | null;
+  menuGroupItem?:Pick<IMenuGroupItem, 'id'> | null;
+  language?: Pick<ILanguage, 'id'> | null;
 }
 export type NewCategory = Omit<ICategory, 'id'> & { id: null };
 

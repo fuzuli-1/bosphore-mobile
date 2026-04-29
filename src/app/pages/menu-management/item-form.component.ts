@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { ICategory, ILanguage, IMenuGroupItem } from 'src/app/interfaces/interfaces';
 import { CategoryService } from '../category/category-service';
 import { LanguageService } from '../language/language-service';
+import { icon } from 'leaflet';
+import { LanguageSelectorComponent } from '../language/language-selector.component';
  
 @Component({
   selector: 'app-item-form',
@@ -23,14 +25,15 @@ import { LanguageService } from '../language/language-service';
           <ion-label position="stacked">Etiket (Label)</ion-label>
           <ion-input formControlName="label" placeholder="Örn: Kebaplar"></ion-input>
         </ion-item>
-
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Hedef Kategori (DB ID)</ion-label>
-          <ion-select formControlName="targetCategoryId" placeholder="Ürün Kategorisi Seç">
-            <ion-select-option *ngFor="let cat of dbCategories" [value]="cat.id">
-              {{ cat.name }} (ID: {{cat.id}})
-            </ion-select-option>
-          </ion-select>
+          <ion-label position="stacked">Icon Path</ion-label>
+          <ion-input formControlName="iconPath" placeholder="Örn: assets/icons/kebap.png"></ion-input>
+        </ion-item>
+ 
+        <ion-item fill="outline" mode="md" class="ion-margin-bottom">
+          <ion-label position="stacked">Dil</ion-label>
+          <ion-input formControlName="languageId" placeholder="Dil Seçiniz"></ion-input>
+          <ion-button (click)="loadLanguages()">Dil Seç </ion-button>
         </ion-item>
 
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
@@ -56,24 +59,31 @@ export class ItemFormComponent implements OnInit {
   item: IMenuGroupItem | null = null;
   menuGroupId!: number; // Üst grubun ID'si
   dbCategories: ICategory[] = []; // Java'dan çektiğin gerçek ürün kategorileri
-  languages=signal<ILanguage[]>([]);
+  language=signal<ILanguage>({} as ILanguage);
   itemForm!: FormGroup;
  
 
   ngOnInit() {
     this.initForm();
-    this.loadDbCategories();  
+    this.language().id
+    //this.loadLanguages();  
   }
 
-  private loadDbCategories() {
-    // Ürün kategorilerini Java backend'den çekiyoruz
-    this.categoryService.query({ size: 200, sort: ['name,asc'] }).subscribe({
-      next: (res) => {
-        this.dbCategories = res.body ?? [];
-      },
-      error: () => console.error('Kategoriler yüklenirken hata oluştu kanki!')
-    });
-  }
+   async loadLanguages() {
+        // Dil seçici modalini açmak için gerekli kodu buraya ekleyin
+        // Örneğin: this.languageModal.present();
+      const  modal= await this.modalCtrl.create({
+            component: LanguageSelectorComponent,
+            cssClass: 'my-custom-modal-css'
+        });
+        await modal.present();
+        const { data } = await modal.onWillDismiss();
+        if (data) {
+
+            this.language.set(data);
+            this.itemForm.patchValue({ languageId: data.id });
+        }
+    }
 
 
 
@@ -81,10 +91,10 @@ export class ItemFormComponent implements OnInit {
     this.itemForm = this.fb.group({
       id: [this.item?.id || null],
       label: [this.item?.label || '', [Validators.required]],
-      orderNo: [this.item?.orderNo || 0],
-      targetCategoryId: [this.item?.targetCategoryId || null, [Validators.required]],
+      iconPath: [this.item?.iconPath || null],
+      orderNo: [this.item?.orderNo || 0],      
       menuGroupId: [this.menuGroupId, [Validators.required]],
-      languageId: [1] //
+      languageId: [this.language().id] //
     });
   }
 

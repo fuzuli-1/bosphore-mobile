@@ -17,6 +17,7 @@ import {
   NavController,
   ModalController,
   ToastController,
+  MenuController,
   RefresherEventDetail,
 } from '@ionic/angular';
 
@@ -91,7 +92,9 @@ export class HomePage implements OnInit {
   productService=inject(ProductService);
   menuGroupService = inject(MenuGroupService);
   menuGroupItemService = inject(MenuGroupItemService);
-  protected ngZone = inject(NgZone);
+  protected ngZone = inject(NgZone);  
+  private menuCtrl = inject(MenuController);
+
   constructor() {}
 
   ngOnInit() {
@@ -261,5 +264,8 @@ quickAdd($event: PointerEvent,arg1: iface.IProduct) {
     throw new Error('Method not implemented.');
 }
 
+  toggleMenu() {
+    this.menuCtrl.toggle();    
+  }
 }
 

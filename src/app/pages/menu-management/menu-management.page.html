@@ -1,6 +1,9 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>Menü Yönetimi</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
     <ion-buttons slot="end">
       <ion-button (click)="openGroupModal()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>

@@ -1,40 +1,74 @@
- <ion-content>
-  <ion-grid fixed>
-    <ion-row>
-      @for(product of products();track product.id){
+ <ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Ürün Yönetimi</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openForm()">
+        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+        Yeni Ürün
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
 
-      <ion-col size="12" size-md="6" size-lg="4" size-xl="3">
-        
-        <ion-card class="product-card">
-        
-          
-          <img
-  [src]="product?.imageUrl
-    ? 'assets/products/' + product.imageUrl + '.png'
-    : 'assets/products/default.png'"
-  alt="product"
-/>
+  <ion-toolbar>
+    <ion-searchbar 
+      placeholder="Ürün adı ile ara..." 
+      (ionInput)="search($event)" 
+      [debounce]="500">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
 
+<ion-content>
+  <ion-list lines="full">
+    <ion-item-sliding *ngFor="let product of products()">
+      <ion-item>
+        <ion-avatar slot="start">
+          <img [src]="product.imageUrl ? product.imageUrl : 'assets/products/default.png'" 
+               onerror="this.src='assets/products/default.png'" />
+        </ion-avatar>
 
+        <ion-label>
+          <h2>{{ product.name }}</h2>
+          <p>
+            <ion-text color="medium">Kat: </ion-text> {{ product.category?.id || 'Belirtilmemiş' }} 
+            | <ion-text color="medium">Dil: </ion-text> {{ product.language?.id || '-' }}
+          </p>
+          <ion-badge color="success" mode="ios">{{ product.price | number:'1.2-2' }} TL</ion-badge>
+        </ion-label>
 
-          <ion-card-content>
-            <h2>{{ product.name }}</h2>
-            <p class="desc">{{ product.description }}</p>
+        <ion-note slot="end" class="ion-text-center">
+          <ion-icon 
+            [name]="product.isActive ? 'checkmark-circle' : 'close-circle'" 
+            [color]="product.isActive ? 'success' : 'danger'"
+            size="large">
+          </ion-icon>
+          <p style="font-size: 10px;">{{ product.isActive ? 'Aktif' : 'Pasif' }}</p>
+        </ion-note>
+      </ion-item>
 
-            <div class="price-row">
-              <span class="price">{{ product.price }} TL</span>
-              <ion-button size="small" fill="outline" (click)="openProductDetail(product.id)">
-               {{ 'bos-3009' | translate }}
-              </ion-button>
-            </div>
-          </ion-card-content>
-        </ion-card>
+      <ion-item-options side="end">
+        <ion-item-option color="warning" (click)="openForm(product)">
+          <ion-icon name="create-outline" slot="top"></ion-icon>
+          Düzenle
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="delete(product.id!)">
+          <ion-icon name="trash-outline" slot="top"></ion-icon>
+          Sil
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
 
-      </ion-col>
+  <div *ngIf="products().length === 0" class="ion-padding ion-text-center">
+    <ion-text color="medium">
+      <p>Ürün bulunamadı veya yükleniyor...</p>
+    </ion-text>
+  </div>
 
-      }
-
-    </ion-row>
-  </ion-grid>
-
+  <ion-infinite-scroll (ionInfinite)="loadAll($event)">
+    <ion-infinite-scroll-content 
+      loadingSpinner="bubbles" 
+      loadingText="Daha fazla ürün yükleniyor...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

@@ -32,6 +32,7 @@ import {
   closeCircle,
   cloudOutline,
   cloudUploadOutline,
+  createOutline,
   documentOutline,
   documentTextOutline,
   eye,
@@ -59,6 +60,7 @@ import {
   menuOutline,
   notifications,
   pencilOutline,
+  peopleOutline,
   personAddOutline,
   personCircleOutline,
   personOutline,
@@ -85,7 +87,8 @@ import { initializeApp } from 'firebase/app';
 import { provideFirebaseApp, initializeApp as initializeApp_alias } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { environment } from './environments/environment';
-
+import { TranslateModule,provideTranslateLoader } from '@ngx-translate/core';
+ 
 register();
 
  
@@ -93,6 +96,10 @@ register();
 
 // İkonları ekleyin
 addIcons({
+  'arrow-back-outline': arrowForwardOutline,
+  'folder-outline': folderOpenOutline,
+  'refresh-outline': refreshOutline,
+  'people-outline': peopleOutline,
   'arrow-forward-outline': arrowForwardOutline,
   'mail-outline': mailOutline,
   'lock-closed': lockClosed,
@@ -147,8 +154,7 @@ addIcons({
   'restaurant-sharp': 'restaurant-sharp',
   'receipt-outline':receiptOutline,
   'restaurant-outline': restaurantOutline,
-  'fast-food-outline': fastFoodOutline,
-  'refresh-outline': refreshOutline,
+  'fast-food-outline': fastFoodOutline, 
   'print-outline': printOutline,
   'grid-outline':gridOutline,
   'add-circle-outline':addCircleOutline,
@@ -157,6 +163,10 @@ addIcons({
   'star': 'star',
   'star-outline': 'star-outline',
   'help': help, 
+  'search': searchOutline,
+  'settings': settingsOutline,
+  'home': home,
+  'create-outline':createOutline,
 
 });
 
@@ -164,10 +174,15 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TranslationService } from './app/services/translation-service';
 import { add } from 'ngx-bootstrap/chronos';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { appConfig } from './app/app.config';
  // ... diğer importlar aynı kalsın ...
 
 bootstrapApplication(AppComponent, {
   providers: [
+       importProvidersFrom(
+      TranslateModule.forRoot()
+    ),
     provideZoneChangeDetection(), 
     provideRouter(routes),
     provideIonicAngular({
@@ -180,7 +195,11 @@ bootstrapApplication(AppComponent, {
     
     provideHttpClient(
       withInterceptors([TokenInterceptor]),
-    )/*, 
+    ),
+
+ 
+    // Diğer servisler ve sağlayıcılar burada...
+    /*, 
     provideFirebaseApp(() => initializeApp({ 
       projectId: "bosphore-app", 
       appId: "1:131341859706:web:197f24060604d0be12b4c3", 
@@ -200,4 +219,6 @@ bootstrapApplication(AppComponent, {
   console.error('Bootstrap Hatası:', err);
 });
 
+
+ 
  

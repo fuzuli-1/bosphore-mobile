@@ -1,13 +1,81 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>language</ion-title>
+  <ion-toolbar color="primary">
+    <ion-title>Dil Yönetimi</ion-title>
+    <ion-buttons slot="start">
+        <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <!-- Yeni Dil Ekleme Butonu -->
+      <ion-button (click)="openLanguageModal()">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Yeni Kayıt
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content class="ion-padding">
+  <!-- Dil Listesi -->
+  <ion-list lines="full">
+    <ion-item-sliding *ngFor="let lang of languages()">
+      <ion-item>
+        <ion-label>
+          <h2 style="font-weight: bold; color: var(--ion-color-primary);">
+            {{ lang.tr }} <span style="font-weight: normal; color: gray;">({{ lang.translateCode }})</span>
+          </h2>
+          <p>EN: {{ lang.en }} | Grup: {{ lang.groupCode || 'Genel' }}</p>
+        </ion-label>
+        
+        <ion-note slot="end" color="medium" class="ion-text-right">
+          ID: {{ lang.id }}
+          <br>
+          <ion-badge [color]="lang.isActive ? 'success' : 'danger'">
+            {{ lang.isActive ? 'Aktif' : 'Pasif' }}
+          </ion-badge>
+        </ion-note>
+      </ion-item>
+
+      <!-- Sağa Kaydırınca Aksiyonlar -->
+      <ion-item-options side="end">
+        <ion-item-option color="warning" (click)="openLanguageModal(lang)">
+          <ion-icon name="create-outline" slot="top"></ion-icon>
+          Düzenle
+        </ion-item-option>
+        <ion-item-option color="danger" (click)="deleteLanguage(lang)">
+          <ion-icon name="trash-outline" slot="top"></ion-icon>
+          Sil
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- Veri Yoksa Gösterilecek Alan -->
+  <div *ngIf="languages().length === 0" class="ion-text-center ion-padding">
+    <ion-text color="medium">
+      <p>Kayıtlı dil bulunamadı.</p>
+    </ion-text>
+  </div>
+
+  <!-- Sayfalama (Pagination) Kontrolleri -->
+  <ion-footer class="ion-no-border">
     <ion-toolbar>
-      <ion-title size="large">language</ion-title>
+      <ion-buttons slot="start">
+        <ion-button (click)="previousPage()" [disabled]="page === 0">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+          Geri
+        </ion-button>
+      </ion-buttons>
+      
+      <ion-title class="ion-text-center" style="font-size: 0.9rem;">
+        Sayfa {{ page + 1 }}
+      </ion-title>
+
+      <ion-buttons slot="end">
+        <ion-button (click)="nextPage()" [disabled]="(page + 1) * itemsPerPage >= totalItems">
+          İleri
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
     </ion-toolbar>
-  </ion-header>
+  </ion-footer>
 </ion-content>

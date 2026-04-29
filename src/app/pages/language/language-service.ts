@@ -18,7 +18,7 @@ export class LanguageService {
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);
 
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('api/languages');
+  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/languages');
 
   create(language: NewLanguage): Observable<EntityResponseType> {
     return this.http.post<ILanguage>(this.resourceUrl, language, { observe: 'response' });
@@ -39,6 +39,11 @@ export class LanguageService {
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<ILanguage[]>(this.resourceUrl, { params: options, observe: 'response' });
+  }
+
+  search(req?: any): Observable<EntityArrayResponseType> {
+    const options = createRequestOption(req);
+    return this.http.get<ILanguage[]>(this.resourceUrl+ '/search', { params: options, observe: 'response' });
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {

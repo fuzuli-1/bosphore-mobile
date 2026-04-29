@@ -18,3 +18,4 @@ export function translatePartialLoader(http: HttpClient): TranslateLoader {
 export function missingTranslationHandler(): MissingTranslationHandler {
   return new MissingTranslationHandlerImpl();
 }
+const I18N_HASH = '20240606-14-00';

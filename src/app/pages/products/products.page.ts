@@ -1,219 +1,120 @@
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  inject,
-  Input,
-  input,
-  NgZone,
-  OnChanges,
-  OnInit,
-  signal,
-} from '@angular/core';
-
-import { FormsModule } from '@angular/forms';
-import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-  IonButtons,
-} from '@ionic/angular/standalone';
-import { IonicModule } from '@ionic/angular';
-import {
-  NavController,
-  ModalController,
-  ToastController,
-} from '@ionic/angular';
-
-import * as iface from '../../interfaces/interfaces';
-import { FooterService } from 'src/app/services/footer-service';
-import { MenuService } from 'src/app/services/menu-service';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { ProductService } from './product-service';
+import { IProduct } from 'src/app/interfaces/interfaces';
+import { ModalController, AlertController, IonicModule } from '@ionic/angular';
+import { ProductFormComponent } from './ProductFormComponent';
 import { TranslationService } from 'src/app/services/translation-service';
-import { TranslatePipe } from '../../services/TranslatePipe';
-import { EntityArrayResponseType, ProductService } from './product-service';
-import { combineLatest, Observable, Subscription, tap } from 'rxjs';
-import { IProduct } from '../../interfaces/interfaces';
-import {
-  ITEMS_PER_PAGE,
-  PAGE_HEADER,
-  TOTAL_COUNT_RESPONSE_HEADER,
-} from 'src/app/config/pagination.constants';
-import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
-import { SortService, SortState, sortStateSignal } from 'src/app/shared/sort';
-
-import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
-import { HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+
 @Component({
-  selector: 'app-products',
+  selector: 'products',
   templateUrl: './products.page.html',
-  styleUrls: ['./products.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hata mesajını bastırır
-  providers: [
-    FooterService,
-    MenuService,
-    // Diğer servisler...
-  ],
+  imports: [IonicModule,CommonModule]
 })
-export class ProductsPage implements OnInit, OnChanges {
+export class ProductsPage implements OnInit {
+  private productService = inject(ProductService);
+  private modalCtrl = inject(ModalController);
+  private alertCtrl = inject(AlertController);
+  private translate = inject(TranslationService);
 
-  @Input() categoryId: number = 0;
-  subscription: Subscription | null = null;
   products = signal<IProduct[]>([]);
-  isLoading = false;
-  sortState = sortStateSignal({});
-  itemsPerPage = ITEMS_PER_PAGE;
-  totalItems = 0;
-  page = 1;
-  public readonly router = inject(Router);
-  protected readonly productService = inject(ProductService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected modalService = inject(ModalController);
-  protected ngZone = inject(NgZone);
-  trackId = (item: IProduct): number =>
-    this.productService.getProductIdentifier(item);
+  searchTerm: string = '';
+  page = 0;
+  itemsPerPage = 20; // Sabit boyutu buraya alalım
+  isLastPage = false; // Veri bitti mi kontrolü
 
-  constructor() {}
+  ngOnInit() { 
+    this.loadAll(); 
+  }
 
-  ngOnChanges() {
-    if (this.categoryId) {
-      this.subscription = combineLatest([
-        this.activatedRoute.paramMap,
-        this.activatedRoute.queryParamMap,
-        this.activatedRoute.data,
-      ])
-        .pipe(
-          tap(([params]) => {
-            const id = Number(params.get('id'));
-            console.log('Route ID:', id);
-          }),
-          tap(() => {
-            const { page } = this;
-            this.isLoading = true;
-            const pageToLoad: number = page;
-            const queryObject: any = {
-              categoryId: this.categoryId,
-              page: pageToLoad - 1,
-              size: this.itemsPerPage,
-              sort: this.sortService.buildSortParam(this.sortState()),
-            };
-
-            this.productService
-              .query(queryObject)
-              .pipe(tap(() => (this.isLoading = false)))
-              .subscribe({
-                next: (res: EntityArrayResponseType) => {
-                  this.totalItems = Number(
-                    res.headers.get(TOTAL_COUNT_RESPONSE_HEADER)
-                  );
-                  this.products.set(res.body ?? []);
-                },
-              });
-          })
-        )
-        .subscribe();
+  loadAll(event?: any) {
+    // Eğer veri bittiyse ve infinite scroll tetiklendiyse durdur
+    if (this.isLastPage && event) {
+      event.target.disabled = true;
+      return;
     }
-  }
 
-  ngOnInit(): void {
-    this.subscription = combineLatest([
-      this.activatedRoute.queryParamMap,
-      this.activatedRoute.data,
-    ])
-      .pipe(
-        tap(([params, data]) =>
-          this.fillComponentAttributeFromRoute(params, data)
-        ),
-        tap(() => this.load())
-      )
-      .subscribe();
-  }
+    const queryParams: any = {
+      page: this.page,
+      size: this.itemsPerPage,
+      sort: ['id,desc']
+    };
 
-  load(): void {
-    this.queryBackend().subscribe({
-      next: (res: EntityArrayResponseType) => {
-        this.onResponseSuccess(res);
+    if (this.searchTerm) {
+      queryParams['name'] = this.searchTerm;
+    }
+
+    this.productService.query(queryParams).subscribe({
+      next: (res) => {
+        const data = res.body ?? [];
+        
+        // Gelen veri sayfa boyutundan azsa "son sayfadayız" demektir
+        if (data.length < this.itemsPerPage) {
+          this.isLastPage = true;
+        }
+
+        if (this.page === 0) {
+          this.products.set(data);
+        } else {
+          // Önceki verilerin üzerine yeni gelenleri ekle
+          this.products.set([...this.products(), ...data]);
+        }
+
+        // Başarılıysa sayfa numarasını bir sonraki için hazırla
+        this.page++;
+
+        if (event) {
+          event.target.complete();
+          // Veri bittiyse infinite scroll'u tamamen kapat
+          if (this.isLastPage) event.target.disabled = true;
+        }
       },
+      error: () => {
+        if (event) event.target.complete();
+      }
     });
   }
 
-  navigateToWithComponentValues(event: SortState): void {
-    this.handleNavigation(this.page, event);
+  search(event: any) {
+    this.searchTerm = event.target.value;
+    this.resetList(); // Arama yapınca her şeyi sıfırla
+    this.loadAll();
   }
 
-  navigateToPage(page: number): void {
-    this.handleNavigation(page, this.sortState());
+    // Listeyi baştan yüklemek için yardımcı metod
+  private resetList() {
+    this.page = 0;
+    this.isLastPage = false;
+    this.products.set([]);
   }
 
-  protected onResponseSuccess(response: EntityArrayResponseType): void {
-    this.fillComponentAttributesFromResponseHeader(response.headers);
-    const dataFromBody = this.fillComponentAttributesFromResponseBody(
-      response.body
-    );
-    this.products.set(dataFromBody);
-  }
+  async openForm(product?: IProduct) {
 
-  protected fillComponentAttributeFromRoute(
-    params: ParamMap,
-    data: Data
-  ): void {
-    const page = params.get(PAGE_HEADER);
-    this.page = +(page ?? 1);
-    this.sortState.set(
-      this.sortService.parseSortParam(
-        params.get(SORT) ?? data[DEFAULT_SORT_DATA]
-      )
-    );
-  }
-
-  protected fillComponentAttributesFromResponseBody(
-    data: IProduct[] | null
-  ): IProduct[] {
-    return data ?? [];
-  }
-
-  protected fillComponentAttributesFromResponseHeader(
-    headers: HttpHeaders
-  ): void {
-    this.totalItems = Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER));
-  }
-
-  protected queryBackend(): Observable<EntityArrayResponseType> {
-    const { page } = this;
-
-    this.isLoading = true;
-    const pageToLoad: number = page;
-    const queryObject: any = {
-      page: pageToLoad - 1,
-      size: this.itemsPerPage,
-      sort: this.sortService.buildSortParam(this.sortState()),
-    };
-    return this.productService
-      .query(queryObject)
-      .pipe(tap(() => (this.isLoading = false)));
-  }
-
-  protected handleNavigation(page: number, sortState: SortState): void {
-    const queryParamsObj = {
-      page,
-      size: this.itemsPerPage,
-      sort: this.sortService.buildSortParam(sortState),
-    };
-
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
+    const modal = await this.modalCtrl.create({
+      component: ProductFormComponent,
+      componentProps: { product: product || null }
     });
+
+    modal.onDidDismiss().then(res => { if (res.data) this.loadAll(); });
+    return await modal.present();
+
   }
 
-  openProductDetail(id: number): void {
-    this.ngZone.run(() => {
-      this.router.navigate(['/products', id]);      
+  async delete(id: number) {
+    const alert = await this.alertCtrl.create({
+      header: this.translate.instant('delete'),
+      message: this.translate.instant('confirm_delete'),
+      buttons: [
+        { text: this.translate.instant('cancel'), role: 'cancel' },
+        { text: this.translate.instant('delete'), handler: () => {
+
+          this.productService.delete(id).subscribe(() => this.loadAll()) 
+
+          }          
+        }
+      ]
     });
+    await alert.present();
   }
 }

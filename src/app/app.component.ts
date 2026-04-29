@@ -36,7 +36,10 @@ export class AppComponent implements OnInit {
     { title: 'Adreslerim', url: '/address', icon: 'location' },
     // Mutfak Paneli - Şimdilik herkes görsün, sonra sadece admin yaparız
     { title: 'Mutfak Paneli', url: '/kitchen', icon: 'restaurant' },
-     { title: 'Menu Tanim', url: '/menu-management', icon: 'grid-outline' },
+    { title: 'Dil Yönetimi', url: '/language', icon: 'people' },
+    { title: 'Category Tanim', url: '/category', icon: 'grid-outline' },
+     { title: 'Ürün Tanim', url: '/products', icon: 'grid-outline' },
+    { title: 'Menu Tanim', url: '/menu-management', icon: 'grid-outline' },
   ];
 
   public userPages = [

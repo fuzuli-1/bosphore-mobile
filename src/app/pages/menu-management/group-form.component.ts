@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IMenuGroup } from 'src/app/interfaces/interfaces';
+import { LanguageSelectorComponent } from '../language/language-selector.component';
 
 @Component({
   selector: 'app-group-form',
@@ -29,6 +30,12 @@ import { IMenuGroup } from 'src/app/interfaces/interfaces';
           <ion-label position="stacked">İkon Yolu (icon_path)</ion-label>
           <ion-input formControlName="iconPath" placeholder="Örn: beverage-icon"></ion-input>
         </ion-item>
+        <ion-item fill="outline" mode="md" class="ion-margin-bottom">
+          <ion-label position="stacked">Dil ID</ion-label>
+          <ion-input type="number" formControlName="languageId"></ion-input>
+          <ion-button (click)="selectLanguage()">Seç </ion-button>
+        </ion-item>
+
         <ion-button expand="block" (click)="save()" [disabled]="!groupForm.valid">
           {{ group ? 'Güncelle' : 'Kaydet' }}
         </ion-button>
@@ -39,11 +46,31 @@ import { IMenuGroup } from 'src/app/interfaces/interfaces';
   imports: [IonicModule, CommonModule, ReactiveFormsModule]
 })
 export class GroupFormComponent implements OnInit {
+
   private fb = inject(FormBuilder);
   private modalCtrl = inject(ModalController);
   
   group: IMenuGroup | null = null; // ComponentProps ile dışarıdan gelir
   groupForm!: FormGroup;
+
+  selectLanguage() {
+    // Burada dil seçici modalini açabilirsin
+    // Modal'den seçilen dilin ID'sini alıp formdaki languageId'ye set et
+    this.modalCtrl.create({
+      component: LanguageSelectorComponent,
+      cssClass: 'language-selector-modal'
+    }).then(modal => {
+      modal.present();
+      modal.onDidDismiss().then(result => {
+        if (result.data) {
+          this.groupForm.patchValue({ languageId: result.data.id });
+        } else {
+          this.groupForm.patchValue({ languageId: null });
+        }
+      });
+    });
+  }
+
 
   ngOnInit() {    
     this.groupForm = this.fb.group({

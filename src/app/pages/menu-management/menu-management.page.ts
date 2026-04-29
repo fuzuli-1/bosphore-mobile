@@ -21,6 +21,7 @@ import { MenuGroupItemService } from '../menu-group-item/menu-group-item-service
 import { ModalController } from '@ionic/angular';
 import { GroupFormComponent } from './group-form.component';
 import { ItemFormComponent } from './item-form.component';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-menu-management',
@@ -44,8 +45,10 @@ export class MenuManagementPage implements OnInit {
   private account = inject(AccountService);
   private translate = inject(TranslationService);
   private modalCtrl = inject(ModalController);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
+  private activatedRoute = inject(ActivatedRoute);
+  private sortService = inject(SortService);
+  private alertCtrl = inject(AlertController);
+
   private router = inject(Router);
 
   //items
@@ -190,12 +193,12 @@ async openItemModal(item?: IMenuGroupItem) {
     if (result.data) {
       const itemData = result.data;
       if (itemData.id) {
-        // Düzenleme
+         itemData.language={id:itemData.languageId};         
         this.menuItemService.update(itemData).subscribe(() => this.loadCategoryItems(this.selectedGroup.id));
       } else {
         // Yeni Kayıt (create metodu servisde yoksa eklemelisin kanki)
         let groupId=this.selectedGroup.id;
-        itemData.language={id:1};
+        itemData.language={id:itemData.languageId};
         itemData.menuGroup={...this.selectedGroup,groupId};
         this.menuItemService.create(itemData).subscribe(() => this.loadCategoryItems(this.selectedGroup.id));
       }
@@ -205,13 +208,38 @@ async openItemModal(item?: IMenuGroupItem) {
 }
 
   editGroup(group:any){
+    this.openGroupModal(group);
 
   }
 
   deleteGroup(group:any){
-
     
+    this.alertCtrl.create({
+      header: 'Grubu Sil',
+      message: 'Bu grubu silmek istediğinize emin misiniz?', 
+      buttons: [
+        { text: 'İptal', role: 'cancel' },
+        { text: 'Sil', role: 'destructive', handler: () => {
+             this.menuGroupService.delete(group.id).subscribe(() => { 
+                
+                this.showToast('Grup başarıyla silindi!', 'bottom');
+                this.loadGroups(); // Listeyi yenile
+              });
+        } }
+      ]
+    }).then(alert => alert.present());
+
+
+/*
+    if(confirm('Bu grubu silmek istediğinize emin misiniz?')) {
+      this.menuGroupService.delete(group.id).subscribe(() => {
+        this.showToast('Grup başarıyla silindi!', 'bottom');
+        this.loadGroups(); // Listeyi yenile
+      });
+    } */
+
   }
+  
 
   // Örnek bir Save işlemi
   saveMenuGrup() {

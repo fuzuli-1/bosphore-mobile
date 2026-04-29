@@ -1,6 +1,11 @@
- <ion-header class="ion-no-border">
+ 
+ <ion-header class="ion-no-border">  
   <ion-toolbar color="dark">
-
+    <ion-buttons slot="start">
+      <ion-menu-button (click)="toggleMenu()">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
     <ion-title slot="start" class="logo-title">
       Leziz<span class="logo-dot">.</span>
     </ion-title>

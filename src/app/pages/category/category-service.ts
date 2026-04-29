@@ -66,6 +66,13 @@ export class CategoryService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
+  search(req?: any): Observable<EntityArrayResponseType> {
+    const options = createRequestOption(req);
+    return this.http
+      .get<RestCategory[]>(this.resourceUrl + '/search', { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
