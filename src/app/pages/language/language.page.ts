@@ -20,6 +20,7 @@ export class LanguagePage implements OnInit {
   private alertCtrl = inject(AlertController);
 
   languages = signal<ILanguage[]>([]);
+  searchTerm = ''; // Arama terimi için
   totalItems = 0;
   itemsPerPage = 20;
   page = 0;
@@ -30,6 +31,39 @@ export class LanguagePage implements OnInit {
     this.loadLanguages();
   }
 
+  // Arama inputu değiştikçe tetiklenir
+  onSearch(event: any): void {
+    this.searchTerm = event.target.value;
+    this.page = 0; // Her aramada ilk sayfaya dön
+    this.loadLanguages();
+  }
+
+  loadLanguages(): void {
+    const queryParams: any = {
+      page: this.page,
+      size: this.itemsPerPage,
+      sort: ['id,asc'],
+    };
+
+    // Eğer arama terimi varsa 'search' servisini, yoksa standart 'query' servisini kullan
+    if (this.searchTerm && this.searchTerm.length > 2) {
+      queryParams['query'] = this.searchTerm;
+      this.languageService.search(queryParams).subscribe((res: EntityArrayResponseType) => {
+        this.handleResponse(res);
+      });
+    } else {
+      this.languageService.query(queryParams).subscribe((res: EntityArrayResponseType) => {
+        this.handleResponse(res);
+      });
+    }
+  }
+
+  private handleResponse(res: EntityArrayResponseType): void {
+    this.languages.set(res.body ?? []);
+    this.totalItems = Number(res.headers.get('X-Total-Count'));
+  }
+
+  /*
   loadLanguages(): void {
     this.languageService
       .query({
@@ -41,7 +75,7 @@ export class LanguagePage implements OnInit {
         this.languages.set(res.body ?? []);
         this.totalItems = Number(res.headers.get('X-Total-Count'));
       });
-  }
+  }*/
 
   async openLanguageModal(language?: ILanguage): Promise<void> {
     const modal = await this.modalCtrl.create({

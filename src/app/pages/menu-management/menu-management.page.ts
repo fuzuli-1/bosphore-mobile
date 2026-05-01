@@ -31,6 +31,7 @@ import { AlertController } from '@ionic/angular';
   imports: [IonicModule, CommonModule, FormsModule],
 })
 export class MenuManagementPage implements OnInit {
+
   isLoading = false;
   totalItems = 0;
   page = 1;
@@ -128,15 +129,18 @@ export class MenuManagementPage implements OnInit {
     };
     this.menuItemService.query(queryObject).subscribe(items => {
       const data=items.body??[];
-      this.categoryItems.set(data); // Kebab, Sandwich vs. üst barı doldurur
+      this.categoryItems.set(data); 
+      this.selectedCategories.set(data);
+       this.selectedGroup.itemCount=data.length;
     });
   }
 
  selectGroup(group :IMenuGroup){
    this.selectedGroup=group;
-    let data: IMenuGroupItem[]=this.categoryItems().filter(t=>t.menuGroup?.id==group.id)??[];
+   this.loadCategoryItems(group.id);
+  /*  let data: IMenuGroupItem[]=this.categoryItems().filter(t=>t.menuGroup?.id==group.id)??[];
    this.selectedCategories.set(data);
-   this.selectedGroup.itemCount=data.length;
+   this.selectedGroup.itemCount=data.length; */
  }
 
   protected handleNavigation(page: number, sortState: SortState): void {
@@ -207,38 +211,63 @@ async openItemModal(item?: IMenuGroupItem) {
   return await modal.present();
 }
 
+deleteItem(item: any) {
+
+  this.alertCtrl.create({
+    header: 'Öğeyi Sil',
+    message: 'Bu öğeyi silmek istediğinize emin misiniz?',  
+    buttons: [
+      { text: 'İptal', role: 'cancel' },
+      { text: 'Sil', role: 'destructive', handler: () => {
+           this.menuItemService.delete(item.id).subscribe({
+            next:(res=>{ 
+              this.showToast('Öğe başarıyla silindi!', 'bottom');
+              this.loadCategoryItems(this.selectedGroup.id); // Listeyi yenile
+  
+            }),
+            error:(err=>{
+                  this.showToast(err.detail, 'bottom');
+            })
+           });
+      } }
+    ]
+  }).then(alert => alert.present());
+}
+
+editItem(item: any) {
+    this.openItemModal(item);
+}
+
   editGroup(group:any){
     this.openGroupModal(group);
 
   }
 
-  deleteGroup(group:any){
-    
-    this.alertCtrl.create({
-      header: 'Grubu Sil',
-      message: 'Bu grubu silmek istediğinize emin misiniz?', 
-      buttons: [
-        { text: 'İptal', role: 'cancel' },
-        { text: 'Sil', role: 'destructive', handler: () => {
-             this.menuGroupService.delete(group.id).subscribe(() => { 
-                
-                this.showToast('Grup başarıyla silindi!', 'bottom');
-                this.loadGroups(); // Listeyi yenile
-              });
-        } }
-      ]
-    }).then(alert => alert.present());
-
-
-/*
-    if(confirm('Bu grubu silmek istediğinize emin misiniz?')) {
-      this.menuGroupService.delete(group.id).subscribe(() => {
-        this.showToast('Grup başarıyla silindi!', 'bottom');
-        this.loadGroups(); // Listeyi yenile
-      });
-    } */
-
-  }
+deleteGroup(group: any) {
+  this.alertCtrl.create({
+    header: 'Grubu Sil',
+    message: 'Bu grubu silmek istediğinize emin misiniz?',
+    buttons: [
+      { text: 'İptal', role: 'cancel' },
+      {
+        text: 'Sil',
+        role: 'destructive',
+        handler: () => {
+          this.menuGroupService.delete(group.id).subscribe({
+            next: () => {
+              this.showToast('Grup başarıyla silindi!', 'bottom');
+              this.loadGroups();
+            },
+            error: (resp) => {
+              console.error(resp.error.detail);
+              this.showToast('Silme işlemi başarısız!'+resp.error.detail , 'bottom');
+            }
+          });
+        }
+      }
+    ]
+  }).then(alert => alert.present());
+}
   
 
   // Örnek bir Save işlemi

@@ -59,7 +59,20 @@ export class CategorySelectorComponent implements OnInit {
 
   ngOnInit() {
     // İlk açılışta popüler olanları veya boş bir liste getirebilirsin
+    this.loadAll();
   }
+
+
+ loadAll() {
+      this.categoryService.query({      
+      size: 20,
+      sort:["name,asc"]
+    }).subscribe(res => {
+      this.results.set(res.body ?? []);
+    });
+
+ 
+}
 
   search(event: any) {
   const term = event.target.value.toLowerCase();
@@ -67,7 +80,8 @@ export class CategorySelectorComponent implements OnInit {
     // SEÇENEK A: Backend'den ara (Daha profesyonel)
     this.categoryService.query({
       'query': term, // JHipster filtre yapısı (Eğer Filtering aktifse)
-      size: 20
+      size: 20,
+      sort:["name,asc"]
     }).subscribe(res => {
       this.results.set(res.body ?? []);
     });
@@ -87,7 +101,7 @@ export class CategorySelectorComponent implements OnInit {
       this.categoryService.search({
         'query': query,
         size: 10,
-        sort: ['tr,asc']
+        sort: ['name,asc']
       }).subscribe(res => {
         this.results.set(res.body ?? []);
       });

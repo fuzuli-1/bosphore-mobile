@@ -12,6 +12,16 @@
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+  <ion-toolbar> <!-- Arama Çubuğu -->
+    <ion-searchbar       
+      (ionInput)="onSearch($event)"
+      placeholder="Dil ara..."
+      debounce="500"
+      show-clear-button="always">
+      
+    
+    </ion-searchbar> 
+  </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">

@@ -1,12 +1,16 @@
- <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Ürün Yönetimi</ion-title>
+ <ion-header [translucent]="true">  
+  <ion-toolbar color="primary">    
+     <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+     </ion-buttons>
+     <ion-title>Ürün Yönetimi</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openForm()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
         Yeni Ürün
       </ion-button>
     </ion-buttons>
+
   </ion-toolbar>
 
   <ion-toolbar>

@@ -3,11 +3,13 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalController, IonicModule } from '@ionic/angular';
 import { LanguageSelectorComponent } from '../language/language-selector.component';
 import { TranslationService } from 'src/app/services/translation-service';
-import { IProduct } from 'src/app/interfaces/interfaces';
+import { ICategory, IProduct } from 'src/app/interfaces/interfaces';
 import { Bosp } from 'src/app/shared/utils/Bosp';
 import { CategorySelectorComponent } from '../category/category-selector';
 import { ProductService } from './product-service';
 import { TranslatePipe } from '../../services/TranslatePipe';
+import { CategoryService } from '../category/category-service';
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-product-form',
@@ -17,6 +19,12 @@ import { TranslatePipe } from '../../services/TranslatePipe';
         <ion-title>{{
           product ? ['edit_product' | translate] : ['new_product' | translate]
         }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cancel()">
+             <ion-icon name="close-circle"></ion-icon>
+          </ion-button>
+
+        </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
@@ -93,14 +101,16 @@ import { TranslatePipe } from '../../services/TranslatePipe';
 })
 export class ProductFormComponent implements OnInit {
   product: IProduct | null = null;
-  selectedCategoryName = '';
+  selectedCategoryName: string | null = null;
   selectedLanguageName = '';
+  category:ICategory|null=null;
 
   //inject edilen servisler ve diğer bağımlılıklar
   private fb = inject(FormBuilder);
   private modalCtrl = inject(ModalController);
   public translate = inject(TranslationService);
   private productService = inject(ProductService);
+  private categoryService=inject(CategoryService)
 
   editForm = this.fb.group({
     id: this.fb.control<number | null>(null),
@@ -122,6 +132,7 @@ export class ProductFormComponent implements OnInit {
 
   ngOnInit() {
     if (this.product != null && this.product != undefined) {
+      this.loadCategory(this.product.category?.id)
       this.editForm.patchValue({
         id: this.product.id,
         productId: this.product.productId,
@@ -155,6 +166,18 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
+  loadCategory(id : any){ 
+     if (this.product != null && this.product != undefined) {
+      this.categoryService.find(id)
+          .pipe(
+            map(res => res.body?.name ?? null)
+          )
+          .subscribe(name => {
+            this.selectedCategoryName = name;
+          });
+     }
+
+  }
   // Kategori Seçiciyi Aç
   async selectCategory() {
     const modal = await this.modalCtrl.create({
