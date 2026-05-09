@@ -51,7 +51,6 @@ export class AdreseTeslimPage implements OnInit {
 
   
 selectType(arg0: string) {
-  debugger;
    console.log('Seçilen teslimat tipi:', arg0); 
    if (arg0 === 'delivery') {    
      // Modal içinde kapatırken:

@@ -66,6 +66,14 @@ export class OptionItemService {
       .pipe(map(res => this.convertResponseArrayFromServer(res)));
   }
 
+
+    getRecords(req?: any): Observable<EntityArrayResponseType> {
+    const options = createRequestOption(req);
+    return this.http
+      .get<RestOptionItem[]>(this.resourceUrl+'/getRecords', { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseArrayFromServer(res)));
+  }
+
   delete(id: number): Observable<HttpResponse<{}>> {
     return this.http.delete(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }

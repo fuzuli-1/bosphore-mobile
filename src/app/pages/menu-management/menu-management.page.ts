@@ -22,13 +22,14 @@ import { ModalController } from '@ionic/angular';
 import { GroupFormComponent } from './group-form.component';
 import { ItemFormComponent } from './item-form.component';
 import { AlertController } from '@ionic/angular';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 @Component({
   selector: 'app-menu-management',
   templateUrl: './menu-management.page.html',
   styleUrls: ['./menu-management.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
 })
 export class MenuManagementPage implements OnInit {
 
@@ -196,12 +197,14 @@ async openItemModal(item?: IMenuGroupItem) {
   modal.onDidDismiss().then((result) => {
     if (result.data) {
       const itemData = result.data;
+       let groupId=this.selectedGroup.id;
       if (itemData.id) {
-         itemData.language={id:itemData.languageId};         
+         itemData.language={id:itemData.languageId}; 
+           itemData.menuGroup={...this.selectedGroup,groupId};        
         this.menuItemService.update(itemData).subscribe(() => this.loadCategoryItems(this.selectedGroup.id));
       } else {
         // Yeni Kayıt (create metodu servisde yoksa eklemelisin kanki)
-        let groupId=this.selectedGroup.id;
+       
         itemData.language={id:itemData.languageId};
         itemData.menuGroup={...this.selectedGroup,groupId};
         this.menuItemService.create(itemData).subscribe(() => this.loadCategoryItems(this.selectedGroup.id));

@@ -84,7 +84,11 @@ export const routes: Routes = [
   {
     path: 'language',
     loadComponent: () => import('./pages/language/language.page').then( m => m.LanguagePage)
+  },  {
+    path: 'option-management',
+    loadComponent: () => import('./pages/option-management/option-management.page').then( m => m.OptionManagementPage)
   },
+
  
 
  

@@ -23,7 +23,7 @@
     <div class="pd-dynamic-menu-bar">
       <ion-breadcrumbs>
         <ion-breadcrumb  (click)="go('/home')">Ana Sayfa</ion-breadcrumb>
-        <ion-breadcrumb routerLink="/siparisler">Tüm Pizzalar</ion-breadcrumb>
+        <ion-breadcrumb routerLink="/siparisler">Tüm Siparisler</ion-breadcrumb>
         <ion-breadcrumb routerLink="/pizzalar/bol-malzemeli">
           Bol Malzeme Pizzalar
         </ion-breadcrumb>
@@ -40,7 +40,7 @@
         <!-- Ürün Görseli -->
         <div class="image-wrapper">
           <img
-            [src]="'assets/products/' + product?.imageUrl + '.png'"
+            [src]="product?.imageUrl"
             alt="{{ this.product?.name }}"
             loading="lazy"
           />

@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons>
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Seçenek Yönetimi</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="openGroupForm()">
+        <ion-icon name="add-outline" slot="start"></ion-icon>
+        Yeni Grup
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- Grupları Akordiyon Yapısında Listele -->
+  <ion-accordion-group (ionChange)="onAccordionChange($event)">
+    <ion-accordion *ngFor="let group of allGroups()" [value]="group.id">
+      <ion-item slot="header" color="light">
+        <ion-label>
+          <h2 style="font-weight: bold;">{{ group.name }}</h2>
+          <p>Tip: {{ group.type }} | Min: {{ group.minSelect }} - Max: {{ group.maxSelect }}</p>
+        </ion-label>
+        <ion-badge color="tertiary" slot="end">{{ group.optionItems?.length || 0 }} Seçenek</ion-badge>
+      </ion-item>
+
+      <div slot="content" class="ion-padding">
+        <!-- Grup İşlemleri -->
+        <ion-row class="ion-justify-content-between ion-align-items-center">
+          <ion-text color="medium"><h6>Grup Seçenekleri</h6></ion-text>
+          <div>
+            <!-- Silme Butonu (Header içinde sağ tarafta) -->
+            <ion-button fill="clear" color="danger" slot="end" (click)="deleteGroup(group); $event.stopPropagation();">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" (click)="openGroupForm(group)">
+              <ion-icon name="create-outline"></ion-icon> Düzenle
+            </ion-button>
+            <ion-button fill="solid" size="small" color="success" (click)="addOptionItem(group)">
+              <ion-icon name="add-outline" slot="start"></ion-icon> Seçenek Ekle
+            </ion-button>
+          </div>
+        </ion-row>
+
+        <!-- Alt Seçenekler (Items) Listesi -->
+        <ion-list>
+          <ion-item *ngFor="let item of optionItems()">
+            <ion-avatar slot="start" *ngIf="item.imageUrl">
+              <img [src]="item.imageUrl" />
+            </ion-avatar>
+            <ion-label>
+              <h3>{{ item.name }}</h3>
+              <p>Ek Fiyat: {{ item.additionalPrice | number:'1.2-2' }} ₺</p>
+            </ion-label>
+            <ion-badge slot="end" [color]="item.isDefault ? 'warning' : 'light'">
+              {{ item.isDefault ? 'Default' : '' }}
+            </ion-badge>
+            <ion-button fill="clear" color="danger" slot="end" (click)="deleteItem(item)">
+              <ion-icon name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+      </div>
+    </ion-accordion>
+  </ion-accordion-group>
+
+  <div *ngIf="allGroups().length === 0" class="ion-padding ion-text-center">
+    <p>Henüz bir seçenek grubu oluşturulmadı.</p>
+  </div>
+</ion-content>

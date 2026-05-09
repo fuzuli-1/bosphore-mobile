@@ -43,6 +43,7 @@ import { ProductService } from '../pages/products/product-service';
 import { MenuGroupService } from '../pages/menu-groups/menu-group-service';
 import { MenuGroupItemService } from '../pages/menu-group-item/menu-group-item-service';
 import { CartUtils } from '../shared/utils/CartUtils';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -97,27 +98,47 @@ export class HomePage implements OnInit {
 
   constructor() {}
 
-  ngOnInit() {
-    if (this.account.isAuthenticated()) {
-      this.initAfterLogin();
-    }
-    if (this.account.isAuthenticated()) {
-      this.account.getAuthenticationState().subscribe((account) => {
-        if (account) {
-          this.orderService.setCurrentUser(account);
-            // Burada DOM elementlerine erişebilirsiniz
-          this.loadMenuGroups();
-          this.loadMenuGroupItems();
-         // this.loadProducts(1); // Örneğin, categoryId 1 olan ürünleri yükleyelim
-         // this.router.navigate(['/home']);
-         // this.router.navigate(['/home'], { queryParams: { categoryId: 1 } });
-         // this.router.navigate(['/home'], { queryParams: { categoryId: 1 } });  
-        }
-      });
-    }else{
-      this.account.identity().subscribe();
-    }
+ ngOnInit() {
+  if (this.account.isAuthenticated()) {
+    this.account.getAuthenticationState().subscribe(account => {
+      if (account) {
+        this.orderService.setCurrentUser(account);
+
+        forkJoin({
+          groups: this.menuGroupService.query(),
+          items: this.menuGroupItemService.query()
+        }).subscribe(({ groups, items }) => {
+
+          this.menuGroups.set(groups.body ?? []);
+          this.categories.set(items.body ?? []);
+
+          // 👇 artık ikisi de hazır
+          this.initSelection();
+
+        });
+      }
+    });
   }
+}
+
+private initSelection() {
+  const groups = this.menuGroups();
+  const categories = this.categories();
+
+  if (groups.length === 0) return;
+
+  this.selectedGroup = groups[0];
+  this.selectedGroupId.set(this.selectedGroup.id);
+
+  const items = categories.filter(t => t.menuGroup?.id === this.selectedGroup?.id);
+  this.selectedCategories.set(items);
+
+  if (items.length > 0) {
+    this.setCategory(items[0].id);
+  } else {
+    this.products.set([]);
+  }
+}
 
   initAfterLogin() {
     this.router.events.subscribe((event) => {
@@ -180,6 +201,18 @@ export class HomePage implements OnInit {
       if(body.length > 0) {
         this.selectedGroup = res.body ? res.body[0] : null;
         this.selectedGroupId.set(this.selectedGroup?.id ?? null );
+        if (this.selectedGroup) {
+            /* Gruba bağlı alt kategorileri filtrele*/
+          const items = this.categories().filter(t => t.menuGroup?.id === this.selectedGroup?.id) ?? [];
+          this.selectedCategories.set(items);
+          /* Eğer alt kategori varsa, ilkinin ürünlerini otomatik yükle*/
+          if (items.length > 0) {
+            this.setCategory(items[0].id);
+          } else {
+            this.products.set([]);
+          }
+  }
+
       }
     });
   }

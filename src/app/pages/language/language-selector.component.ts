@@ -63,7 +63,7 @@ export class LanguageSelectorComponent implements OnInit {
   const term = event.target.value.toLowerCase();
   if (term && term.length > 3) {
     // SEÇENEK A: Backend'den ara (Daha profesyonel)
-    this.languageService.query({
+    this.languageService.search({
       'query': term, // JHipster filtre yapısı (Eğer Filtering aktifse)
       size: 20
     }).subscribe(res => {

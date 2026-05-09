@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Menü Yönetimi</ion-title>
+    <ion-title>{{'MENU_MANAGEMENT'|translate}}</ion-title>
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
     <ion-buttons slot="end">
       <ion-button (click)="openGroupModal()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        Yeni Grup
+        {{'NEW_GROUP'|translate}}
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -16,7 +16,7 @@
 <ion-content>
   <ion-list>
     <ion-list-header>
-      <ion-label>Menü Grupları</ion-label>
+      <ion-label>{{'MENU_GROUPS'|translate}}</ion-label>
     </ion-list-header>
 
     <ion-item-sliding *ngFor="let group of allGroups()">
@@ -28,12 +28,12 @@
           <img
             [src]="group?.iconPath
     ? 'assets/menus/' + group?.iconPath + '.png'
-    : 'assets/products/default.png'"
+    : 'assets/menus/default.png'"
             alt="product"
           />
         </ion-avatar>
         <ion-label>
-          <h2>{{ group.title }}</h2>
+          <h2>{{ group.title|translate }}</h2>
           <p>Sıra: {{ group.orderNo }} | Page: {{ group.targetPage }}</p>
         </ion-label>
         <ion-badge slot="end" color="secondary"
@@ -43,10 +43,10 @@
 
       <ion-item-options side="end">
         <ion-item-option color="warning" (click)="editGroup(group)"
-          >Düzenle</ion-item-option
+          >{{'EDIT'|translate}}</ion-item-option
         >
         <ion-item-option color="danger" (click)="deleteGroup(group)"
-          >Sil</ion-item-option
+          >{{'DELETE'|translate}}</ion-item-option
         >
       </ion-item-options>
     </ion-item-sliding>
@@ -54,7 +54,7 @@
 
   <div *ngIf="selectedGroup" class="ion-padding-top">
     <ion-item lines="none">
-      <ion-label><strong>{{ selectedGroup.title }}</strong> İçeriği</ion-label>
+      <ion-label><strong>{{ selectedGroup.title }}</strong> {{'CONTENT'|translate}}</ion-label>
       <ion-button
         slot="end"
         size="small"

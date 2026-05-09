@@ -94,7 +94,7 @@ export class ItemFormComponent implements OnInit {
       iconPath: [this.item?.iconPath || null],
       orderNo: [this.item?.orderNo || 0],      
       menuGroupId: [this.menuGroupId, [Validators.required]],
-      languageId: [this.language().id] //
+      languageId: [this.language().id||this.item?.language?.id,[Validators.required]] //
     });
   }
 

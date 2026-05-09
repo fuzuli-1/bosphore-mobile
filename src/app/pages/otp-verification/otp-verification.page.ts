@@ -86,7 +86,6 @@ private bypassAndVerify() {
   }*/
 
   async sendOtp() {
-    debugger;
     if (!this.recaptchaVerifier) return;
     
     try {

@@ -49,6 +49,7 @@ import {
   informationOutline,
   key,
   keyOutline,
+  languageOutline,
   listOutline,
   locate,
   locateOutline,
@@ -167,6 +168,7 @@ addIcons({
   'settings': settingsOutline,
   'home': home,
   'create-outline':createOutline,
+  'language-outline':languageOutline,
 
 });
 

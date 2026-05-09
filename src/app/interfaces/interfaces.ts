@@ -8,7 +8,7 @@ import { PaymentStatus } from '../pages/enumerations/payment-status.model';
 
 export interface IMenuGroup {
   id: number;
-  title?: string | null;
+  title: string;
   orderNo?: number | null;
   iconPath?: string | null;
   targetPage?: string | null;
@@ -251,8 +251,12 @@ export interface IOptionGroup {
   requiredGroup?: boolean | null;
   product?: Pick<IProduct, 'id'> | null;
   language?: Pick<ILanguage, 'id'> | null;
+  optionItems?: IOptionItem[];
+  iconPath?: string;
+  type: OptionGroupType;
 }
 export type NewOptionGroup = Omit<IOptionGroup, 'id'> & { id: null };
+
 
 export interface IOptionItem {
   id: number;
@@ -268,6 +272,40 @@ export interface IOptionItem {
   selectedItemId?: number;
 }
 export type NewOptionItem = Omit<IOptionItem, 'id'> & { id: null };
+
+ export enum OptionGroupType {
+  STANDARD = 'STANDARD',
+  EXTRA = 'EXTRA',
+  REQUIRED = 'REQUIRED',
+  EXCLUSIVE = 'EXCLUSIVE',
+  PROMOSYON = 'PROMOSYON',
+  SOSLAR = 'SOSLAR'
+}
+
+/*NEW → Yeni ürün
+HOT → Çok satan / popüler
+SALE → İndirimde
+TRENDING → Trend
+FEATURED → Öne çıkan
+BEST_SELLER → En çok satan
+LIMITED → Sınırlı stok
+OUTLET → Outlet
+PREORDER → Ön sipariş
+EXCLUSIVE → Özel ürün
+RECOMMENDED → Tavsiye edilen
+ORGANIC → Organik
+PREMIUM → Premium
+FAST_DELIVERY → Hızlı teslimat
+FREE_SHIPPING → Ücretsiz kargo */
+export type BadgeType =
+  | 'NEW'
+  | 'HOT'
+  | 'SALE'
+  | 'TRENDING'
+  | 'FEATURED'
+  | 'BEST_SELLER';
+
+
 
 export interface IOptionGroupWithItems extends IOptionGroup {
   selectedItemId?: number;

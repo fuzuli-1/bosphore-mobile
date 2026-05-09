@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ModalController, IonicModule } from '@ionic/angular';
 import { CategoryService } from './category-service';
@@ -76,7 +76,7 @@ export class CategoryFormComponent implements OnInit {
     private modalCtrl = inject(ModalController);
     private categoryService = inject(CategoryService);
 
-    category: ICategory | null = null;
+   @Input() category: ICategory | null = null;
     editForm: FormGroup= this.fb.group({
         id: [null], 
         name: [null, [Validators.required]],

@@ -15,6 +15,7 @@ import { GeneralSettings } from './page';
 import { CartUtils } from './shared/utils/CartUtils';
 import { CommonModule } from '@angular/common';
 import { AccountService } from './core/auth/account.service';
+import { Title } from '@angular/platform-browser';
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -37,9 +38,10 @@ export class AppComponent implements OnInit {
     // Mutfak Paneli - Şimdilik herkes görsün, sonra sadece admin yaparız
     { title: 'Mutfak Paneli', url: '/kitchen', icon: 'restaurant' },
     { title: 'Dil Yönetimi', url: '/language', icon: 'people' },
-    { title: 'Category Tanim', url: '/category', icon: 'grid-outline' },
-     { title: 'Ürün Tanim', url: '/products', icon: 'grid-outline' },
     { title: 'Menu Tanim', url: '/menu-management', icon: 'grid-outline' },
+    { title: 'Category Tanim', url: '/category', icon: 'grid-outline' }, 
+    { title: 'Ürün Tanim', url: '/products', icon: 'grid-outline' },    
+    {title:'Urun Secenekleri',url:'/option-management',icon:'grid-outline'}
   ];
 
   public userPages = [

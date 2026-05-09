@@ -1,13 +1,14 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController,AlertController } from '@ionic/angular';
+import { IonicModule,ToastController, ModalController,AlertController } from '@ionic/angular';
 import { LanguageFormComponent } from '../language/language-form.component';
 import { LanguageSelectorComponent } from '../language/language-selector.component';
 import { TranslatePipe } from "../../services/TranslatePipe";
 import { ICategory } from 'src/app/interfaces/interfaces';
 import { CategoryService } from './category-service';
 import { CategoryFormComponent } from './category-form';
+import { TranslationService } from 'src/app/services/translation-service';
  
  
 @Component({
@@ -31,6 +32,8 @@ export class CategoryPage implements OnInit {
   private alertCtrl = inject(AlertController);
  // private translatePipe = inject(TranslatePipe);
   private service=inject(CategoryService); // Bu servisi oluşturman gerekecek, backend ile iletişim için.
+  private translate = inject(TranslationService);
+  private toastCtrl = inject(ToastController);
   constructor() {}
 
   ngOnInit() {
@@ -75,8 +78,21 @@ export class CategoryPage implements OnInit {
     }
   }
 
-  openCategoryModal() {
-    // Kategori oluşturma veya düzenleme modalini açmak için buraya kod ekleyebilirsin.
+ async openCategoryModal(category:ICategory) {
+    const modal=await this.modalCtrl.create({
+      component:CategoryFormComponent,
+      componentProps:{category:category}
+
+    });
+
+    modal.onDidDismiss().then((result)=>{
+      if(result.data){
+        this.locadCategories();
+      }
+
+    });
+
+    await modal.present();
   }
 
    selectCategory(cat :ICategory){
@@ -152,5 +168,47 @@ export class CategoryPage implements OnInit {
       });
     });
   }
+
+  async deleteCategory(cat:ICategory){
+    const alert=await this.alertCtrl.create({
+      header:this.translate.instant("delete"),
+      message:this.translate.instant('CONFIRM_DELETE'),
+      buttons:[
+        {text:this.translate.instant("cancel"),role:"cancel"},
+        {
+          text:this.translate.instant('delete'),
+          role:"destructive",
+          handler:()=>{
+             this.service.delete(cat.id).subscribe({
+              next:(res:any)=>{
+                 this.locadCategories();
+              },
+              error:(res:any)=>{
+                this.locadCategories();
+                this.presentToast(res.error,'bottom');
+                
+              }
+             });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
+  }
+
+  async presentToast(message:string,position:'top'|'middle'|'bottom'){
+    const toast=await this.toastCtrl.create({
+      message:message,
+      duration:250,
+      cssClass: 'custom-toast-success',
+       icon: 'checkmark-done-outline',
+      position: position,
+    });
+    await toast.present();
+  }
+
+ 
 
 }

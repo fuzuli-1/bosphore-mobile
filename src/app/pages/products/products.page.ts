@@ -104,11 +104,11 @@ export class ProductsPage implements OnInit {
   async delete(id: number) {
     const alert = await this.alertCtrl.create({
       header: this.translate.instant('delete'),
-      message: this.translate.instant('confirm_delete'),
+      message: this.translate.instant('CONFIRM_DELETE'),
       buttons: [
         { text: this.translate.instant('cancel'), role: 'cancel' },
         { text: this.translate.instant('delete'), handler: () => {
-
+          this.resetList();
           this.productService.delete(id).subscribe(() => this.loadAll()) 
 
           }          
