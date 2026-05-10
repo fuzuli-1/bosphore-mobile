@@ -24,6 +24,7 @@ import { OptionGroupService } from '../option-group/option-group-service';
 import { OptionItemService } from '../option-group-item/option-item-service';
 import { OptionGroupFormComponent } from './option-group-form';
 import { ItemFormComponent } from '../menu-management/item-form.component';
+import { OptionItemFormComponent } from './option-item-form';
 
 @Component({
   selector: 'app-option-management',
@@ -169,9 +170,8 @@ export class OptionManagementPage implements OnInit {
  async openGroupForm(group?:IOptionGroup){
     const modal=await this.modalCtrl.create({
       component:OptionGroupFormComponent,
-      componentProps:{group:group||null}
-    });
-    
+      componentProps:{optionGroup:group||null}
+    });    
     modal.onDidDismiss().then((result)=>{
       if(result.data){
          const groupData=result.data;
@@ -179,8 +179,7 @@ export class OptionManagementPage implements OnInit {
            this.optionGroupService
            .update(groupData)
            .subscribe(()=>this.load());
-         }else{
-           groupData.language={id:1};
+         }else{         
            this.optionGroupService.create(groupData)
            .subscribe(()=>{
             this.load();
@@ -194,24 +193,23 @@ export class OptionManagementPage implements OnInit {
   async addOptionItem(item?:IOptionItem){
     const groupId=this.selectedGroup.id;
      const modal=await this.modalCtrl.create({
-      component:ItemFormComponent,
+      component:OptionItemFormComponent,
       componentProps:{
-        item:item||null,
+        item:null,
         groupId:groupId
       }
      });
 
      modal.onDidDismiss().then((result)=>{
+      debugger;
         if(result.data){
           const itemData=result.data;
-          if(itemData.id){
-            itemData.language={id:itemData.languageId};
+          if(itemData.id){            
             this.optionItemService.update(itemData)
             .subscribe(()=>{
               this.loadOptionItems(groupId);
             })
-          }else{
-              itemData.language={id:itemData.languageId};
+          }else{            
               this.optionItemService.create(itemData)
                  .subscribe(() => this.loadOptionItems(this.selectedGroup.id));
           }
@@ -250,7 +248,7 @@ export class OptionManagementPage implements OnInit {
     this.openGroupForm(group);
   }
 
-   deleteGroup(group:any){
+  deleteGroup(group:any){
     this.alertCtrl.create({
       header:'Grubu Sil',
       message:'Bu grubu silmek istediginizden emin misiniz',

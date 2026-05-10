@@ -5,7 +5,7 @@ import dayjs from 'dayjs/esm';
 import { OrderStatus } from '../pages/enumerations/order-status.model';
 import { PaymentMethod } from '../pages/enumerations/payment-method.model';
 import { PaymentStatus } from '../pages/enumerations/payment-status.model';
-import { IOrder, NewAddress } from './interfaces';
+import { IOrder, NewAddress, SelectedOption } from './interfaces';
  
 
 export interface OrderItemDraft {
@@ -78,14 +78,7 @@ export interface CartChildItem {
 }
 
 
-export interface SelectedOption {
-  type: 'GROUP' | 'EXTRA';
-  groupId: number;
-  optionId: number;
-  optionName: string;
-  price: number; 
-  groupName?: string;  
-}
+
 
 export interface Address {
   id: number;

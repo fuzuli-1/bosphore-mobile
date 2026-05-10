@@ -2,7 +2,7 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { ProductService } from './product-service';
 import { IProduct } from 'src/app/interfaces/interfaces';
 import { ModalController, AlertController, IonicModule } from '@ionic/angular';
-import { ProductFormComponent } from './ProductFormComponent';
+import { ProductFormComponent } from './product-form';
 import { TranslationService } from 'src/app/services/translation-service';
 import { CommonModule } from '@angular/common';
 

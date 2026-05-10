@@ -1,84 +1,162 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Geri" color="light"></ion-back-button>
+    </ion-buttons>
 
-   <ion-header>
-     <app-page-header></app-page-header>
-   </ion-header>
-<ion-content>
-  
-  <div class="page">
+    <ion-title class="detail-title">{{ 'PRODUCT_DETAIL' | translate }}</ion-title>
 
-    <!--addres bar-->
-    <div class="top-bar-address-bar">
-      <ion-segment>
-        <ion-segment-button selected>
-          <ion-icon name="location-outline"></ion-icon>
-          <ion-label>Teslimat Adresi</ion-label>
-        </ion-segment-button>
-        <ion-segment-button>
-          <ion-icon name="storefront-outline"></ion-icon>
-          <ion-label>Mağazadan Al</ion-label>
-        </ion-segment-button>
-      </ion-segment>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="toggleFavorite()">
+        <ion-icon
+          slot="icon-only"
+          [name]="isFavorite() ? 'heart' : 'heart-outline'"
+          [color]="isFavorite() ? 'primary' : 'light'">
+        </ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="detail-content">
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>{{ 'loading' | translate }}</p>
     </div>
-    <!--dynamic menu bar-->
-    <div class="pd-dynamic-menu-bar">
-      <ion-breadcrumbs>
-        <ion-breadcrumb  (click)="go('/home')">Ana Sayfa</ion-breadcrumb>
-        <ion-breadcrumb routerLink="/siparisler">Tüm Siparisler</ion-breadcrumb>
-        <ion-breadcrumb routerLink="/pizzalar/bol-malzemeli">
-          Bol Malzeme Pizzalar
-        </ion-breadcrumb>
-        <ion-breadcrumb active>{{ this.product?.name }}</ion-breadcrumb>
-      </ion-breadcrumbs>
-    </div>
-    <!--product detail content-->
-    <div class="product-area">
-      <div class="product-image">
-        <!-- Yemek Adı -->
-        <ion-text class="product-title">
-          <h2>{{ this.product?.name }}</h2>
-        </ion-text>
-        <!-- Ürün Görseli -->
-        <div class="image-wrapper">
-          <img
-            [src]="product?.imageUrl"
-            alt="{{ this.product?.name }}"
-            loading="lazy"
-          />
+  }
+
+  <!-- Product Detail -->
+  @if (product ) {
+    <!-- HERO SECTION -->
+   @if (product.imageUrl) {
+               <img [src]="product.imageUrl" 
+                class="product-img"
+               alt="product"/>
+            } @else {
+       <div class="hero-section">
+      @if (product.badge === 'HOT') {
+        <ion-badge color="primary" class="hero-badge">⭐ Çok Satan</ion-badge>
+      }
+      @if (product.badge === 'NEW') {
+        <ion-badge color="success" class="hero-badge">🆕 Yeni</ion-badge>
+      }
+      @if (product.badge === 'SALE') {
+        <ion-badge color="danger" class="hero-badge">💸 İndirim</ion-badge>
+      }
+      <span class="hero-emoji">{{ product.emoji || '🍽️' }}</span>
+      <div class="hero-rating">
+        <ion-icon name="star" color="warning" style="font-size:14px"></ion-icon>
+        <strong>{{ product.rating || 0 }}</strong>
+        <span>({{ product.reviewCount || 0 }} {{ 'reviews' | translate }})</span>
+      </div>
+    </div>           
+            }
+
+
+    <!-- PRODUCT CONTENT -->
+    <div class="content-wrap">
+      <!-- Product Header -->
+      <div class="product-header">
+        <div>
+          <h1 class="product-name">{{ product.name }}</h1>
+          <p class="product-desc">{{ product.description || ('no_description' | translate) }}</p>
         </div>
-        <!-- Fiyat + Adet -->
-        <div class="price-qty">
-          <!-- Fiyat -->
-          <div color="dark" class="price">
-            <ion-text color="primary">
-              <h3>{{ orderDraft.totalPrice | currency:'':'symbol':'1.2-4' }}</h3>
-            </ion-text>
-          </div>
+        <div class="unit-price">{{ (this.getProductPrice() || 0) | number:'1.2-2' }} TL</div>
+      </div>
 
-          <!-- Adet -->
-          <div class="qty-control">
-            <ion-button fill="outline" size="small" (click)="decrease()">
-              <ion-icon name="remove-outline"></ion-icon>
-            </ion-button>          
-            <ion-text class="qty">
-              {{ orderDraft.quantity| number }}
-            </ion-text>
-            <ion-button fill="outline" size="small" (click)="increase()">
-              <ion-icon name="add-outline"></ion-icon>
-            </ion-button>
+      <!-- Option Groups (Dinamik Seçenekler) -->
+         <app-option-group
+          [productId]="product.id"
+          (optionsChange)="onOptionsChange($event)">
+        </app-option-group>
+      <!-- Selected Options Summary -->
+      @if (selectedOptions.length > 0) {
+        <div class="selected-options-section">
+          <h2 class="section-label">{{ 'selected_options' | translate }}</h2>
+          <div class="selected-options-list">
+            @for (option of selectedOptions; track option.optionId) {
+              <div class="selected-option-item">
+                <span class="option-name">{{ option.optionName }}</span>
+                <span class="option-price">+{{ option.price | number:'1.2-2' }} TL</span>
+              </div>
+            }
           </div>
-         
+        </div>
+      }
+
+      <!-- Product Description -->
+      <h2 class="section-label">{{ 'product_details' | translate }}</h2>
+      <div class="product-info-card">
+        <div class="info-row" *ngIf="product.category">
+          <ion-icon name="folder-outline"></ion-icon>
+          <span>{{ 'category' | translate }}: {{ product.category.id }}</span>
+        </div>
+        <div class="info-row" *ngIf="product.language">
+          <ion-icon name="language-outline"></ion-icon>
+          <span>{{ 'language' | translate }}: {{ product.language.id }}</span>
+        </div>
+        <div class="info-row" *ngIf="product.tax">
+          <ion-icon name="cash-outline"></ion-icon>
+          <span>{{ 'tax' | translate }}: %{{ product.tax.id || 10 }}</span>
         </div>
       </div>
-      <div class="product-options">
-        <app-option-group 
-        [productId]="product?.id"
-        (optionChange)="onOptionsChange($event)" 
-        ></app-option-group>
-      </div>
     </div>
-    <div class="add-to-cart">
-      <ion-button expand="block" color="primary" (click)="sepeteEkle()">Sepete Ekle</ion-button>
+  }
+
+  <!-- Product Not Found -->
+  @if (!product && !isLoading) {
+    <div class="not-found-container">
+      <ion-icon name="alert-circle-outline" size="large"></ion-icon>
+      <h3>{{ 'product_not_found' | translate }}</h3>
+      <ion-button (click)="go('/menu')" fill="outline">
+        {{ 'back_to_menu' | translate }}
+      </ion-button>
     </div>
-    <div class="footer-info"></div>
-  </div>
+  }
+
 </ion-content>
+
+<!-- Bottom Footer Bar -->
+<ion-footer class="detail-footer ion-no-border">
+  <ion-toolbar class="footer-toolbar">
+    <!-- Quantity Control -->
+    <div class="qty-ctrl" slot="start">
+      <ion-button 
+        fill="clear" 
+        color="dark" 
+        size="small"
+        (click)="decrease()" 
+        class="qty-btn"
+        [disabled]="orderDraft.quantity <= 1">
+        <ion-icon slot="icon-only" name="remove"></ion-icon>
+      </ion-button>
+      
+      <span class="qty-num">{{ orderDraft.quantity }}</span>
+      
+      <ion-button 
+        fill="clear" 
+        color="dark" 
+        size="small"
+        (click)="increase()" 
+        class="qty-btn">
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Add to Cart Button -->
+    <ion-button
+      slot="end"
+      expand="block"
+      color="primary"
+      class="add-cart-btn"
+      (click)="sepeteEkle()"
+      [disabled]="!product">
+      <span>{{ 'add_to_cart' | translate }}</span>
+      <ion-badge slot="end" color="light" class="total-badge">
+        {{ totalPrice | number:'1.2-2' }} TL
+      </ion-badge>
+    </ion-button>
+  </ion-toolbar>
+</ion-footer>

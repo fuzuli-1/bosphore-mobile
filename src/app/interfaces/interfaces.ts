@@ -118,6 +118,7 @@ export interface IProduct {
   rating?: number|0;
   badge?: string | null;
   emoji?: any|null;
+  optionGroups?:IOptionGroup[]| undefined;
 }
 export type NewProduct = Omit<IProduct, 'id'> & { id: null };
 
@@ -257,6 +258,14 @@ export interface IOptionGroup {
 }
 export type NewOptionGroup = Omit<IOptionGroup, 'id'> & { id: null };
 
+export interface SelectedOption {
+  type: 'GROUP' | 'EXTRA';
+  groupId: number;
+  optionId: number;
+  optionName: string;
+  price: number; 
+  groupName?: string;  
+}
 
 export interface IOptionItem {
   id: number;

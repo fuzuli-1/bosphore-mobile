@@ -6,11 +6,11 @@ import { PageHeaderPage } from '../page-header/page-header.page';
 import {
   CartItem,
   CartChildItem,
-  SelectedOption,
+  
   OrderRequestDTO,
 } from 'src/app/interfaces/ui-model';
 import { CartService } from './cart.service';
-import { IOptionGroupWithItems } from 'src/app/interfaces/interfaces';
+import { IOptionGroupWithItems, SelectedOption } from 'src/app/interfaces/interfaces';
 import { ITEMS_PER_PAGE } from 'src/app/config/pagination.constants';
 import { ExtraOptionGroupPage } from '../options/extra-options/extra-group.page';
 import { OrderStateService } from 'src/app/services/order-state-service';

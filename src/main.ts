@@ -40,6 +40,8 @@ import {
   fastFoodOutline,
   folderOpenOutline,
   gridOutline,
+  heart,
+  heartOutline,
   help,
   helpCircleOutline,
   home,
@@ -169,6 +171,9 @@ addIcons({
   'home': home,
   'create-outline':createOutline,
   'language-outline':languageOutline,
+  'heart-outline':heartOutline,
+  'remove':remove,
+  'heart':heart
 
 });
 

@@ -31,7 +31,7 @@ import {
   Subscription,
   tap,
 } from 'rxjs';
-import { IOptionGroup, IOptionGroupWithItems, IOptionItem } from 'src/app/interfaces/interfaces';
+import { IOptionGroup, IOptionGroupWithItems, IOptionItem, SelectedOption } from 'src/app/interfaces/interfaces';
 import {
   ITEMS_PER_PAGE,
   PAGE_HEADER,
@@ -50,7 +50,7 @@ import Swiper from 'swiper';
 import { Navigation, Pagination, Autoplay, Thumbs, Scrollbar } from 'swiper/modules';
 import { SwiperOptions } from 'swiper/types';
 import { Bosp } from 'src/app/shared/utils/Bosp';
-import { SelectedOption } from 'src/app/interfaces/ui-model';
+
 
 // Swiper modüllerini kaydet
 Swiper.use([Navigation, Pagination, Scrollbar]);
@@ -66,7 +66,7 @@ Swiper.use([Navigation, Pagination, Scrollbar]);
 export class OptionGroupPage implements OnChanges {
 
   @Input() productId?: number;
-  @Output() optionChange = new EventEmitter<SelectedOption[]>();
+  @Output() optionsChange = new EventEmitter<SelectedOption[]>();
   subscription: Subscription | null = null;
   optionGroups = signal<IOptionGroupWithItems[]>([]);
   extraGroup :IOptionGroupWithItems|null = null;
@@ -307,7 +307,7 @@ emitSelections() {
       });
     });
 
-  this.optionChange.emit(selections);
+  this.optionsChange.emit(selections);
 }
 
  

@@ -8,8 +8,7 @@ import { isPresent } from 'src/app/core/util/operators';
 import { ICart, NewCart } from 'src/app/interfaces/interfaces';
 import {
   CartItem,
-  CartChildItem,
-  SelectedOption
+  CartChildItem 
 } from 'src/app/interfaces/ui-model';
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
 import  {CartProduct} from 'src/app/interfaces/ui-model';

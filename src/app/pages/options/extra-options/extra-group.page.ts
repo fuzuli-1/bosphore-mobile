@@ -2,9 +2,9 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, EventEmitter, inject, Input, NgZone,
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonChip, IonLabel, IonIcon, IonRadio } from '@ionic/angular/standalone';
-import { SelectedOption } from 'src/app/interfaces/ui-model';
+ 
 import { Subscription } from 'rxjs';
-import { IOptionGroup, IOptionGroupWithItems, IOptionItem } from 'src/app/interfaces/interfaces';
+import { IOptionGroup, IOptionGroupWithItems, IOptionItem, SelectedOption } from 'src/app/interfaces/interfaces';
 import { SortService, SortState, sortStateSignal } from 'src/app/shared/sort';
 import { Bosp } from 'src/app/shared/utils/Bosp';
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'src/app/config/pagination.constants';

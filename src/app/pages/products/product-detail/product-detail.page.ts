@@ -15,6 +15,7 @@ import {
   IOptionItem,
   IOrderItem,
   IProduct,
+  SelectedOption,
 
 } from 'src/app/interfaces/interfaces';
 import {
@@ -34,11 +35,12 @@ import { CommonModule } from '@angular/common';
 import { PageHeaderPage } from '../../page-header/page-header.page';
 import { OptionGroupPage } from '../../option-group/option-group.page';
 import { Bosp } from 'src/app/shared/utils/Bosp';
-import { CartItem, OrderItemDraft, SelectedOption } from 'src/app/interfaces/ui-model';
+import { CartItem, OrderItemDraft } from 'src/app/interfaces/ui-model';
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
 import { OrderStateService } from 'src/app/services/order-state-service';
 import { AdresListPage } from '../../adres-list/adres-list.page';
-
+import { TranslatePipe } from "../../../services/TranslatePipe";
+ 
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-detail.page.html',
@@ -48,14 +50,16 @@ import { AdresListPage } from '../../adres-list/adres-list.page';
     IonicModule,
     FormsModule,
     CommonModule,
-    PageHeaderPage,
     OptionGroupPage,
-  ],
+    TranslatePipe
+],
 })
 export class ProductDetailPage implements OnInit {
+ 
   totalPrice = 0;
+  favorite = false;
   selectedOptions: SelectedOption[] = [];
-
+  
   orderDraft: OrderItemDraft = {
     id: 0,
     quantity: 1,
@@ -66,15 +70,13 @@ export class ProductDetailPage implements OnInit {
     productName: '',
     options: [],
   };
- 
-  product: IProduct | null = null;
-  isLoading = false; 
+  isLoading = true; 
+  product: IProduct | null = null; 
+  product1: IProduct | null = null; 
+  // 1. Servisi public olarak inject et (HTML'den erişebilmek için)
   public readonly router = inject(Router);
- 
-  
   private navCtrl = inject(NavController);
   protected modalService = inject(NavController);
-  // 1. Servisi public olarak inject et (HTML'den erişebilmek için)
   public orderService = inject(OrderStateService);
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly productService = inject(ProductService);
@@ -82,7 +84,7 @@ export class ProductDetailPage implements OnInit {
   trackId = (item: IProduct): number =>
     this.productService.getProductIdentifier(item);
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute ) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -229,6 +231,20 @@ export class ProductDetailPage implements OnInit {
             console.log('Seçilen adres:', data);
             // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
         }
+    }
+
+    // product-detail.page.ts
+    getProductPrice(): number {
+      return Bosp.getValue(this.product, 'price');
+    }
+
+    toggleFavorite() {
+     this.favorite = ! this.favorite;
+      // İsterseniz favorileri localStorage veya servise kaydedebilirsiniz
+    }
+
+    isFavorite(){
+      return this.isFavorite;
     }
   
 }
