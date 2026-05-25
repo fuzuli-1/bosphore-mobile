@@ -1,50 +1,19 @@
-import {
-  Component,
-  CUSTOM_ELEMENTS_SCHEMA,
-  inject,
-  OnInit,
-  Signal,
-  ViewChild,
-} from '@angular/core';
-
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  Validators,
-} from '@angular/forms';
-import {
-
-   
-  IonModal,
-   
-} from '@ionic/angular/common';
+import {  Component,  CUSTOM_ELEMENTS_SCHEMA,  inject,  OnInit,  Signal,  ViewChild,} from '@angular/core';
+import {FormsModule,} from '@angular/forms';
+import {   IonModal,  } from '@ionic/angular/common';
 import { appCode, appVersion } from '../../../app/page';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-import { OverlayEventDetail } from 'src/app/shared/typeahead/typeahead.component';
-import { decodeToken } from 'src/app/shared/token';
+import { OverlayEventDetail } from 'src/app/shared/typeahead/typeahead.component'; 
 import { Langs } from '../lang';
 
-import {
-  AlertController,
-  LoadingController,
-  NavController,
-  MenuController,
-  ToastController,
-  IonicModule,
-} from '@ionic/angular';
+import {  AlertController,  LoadingController,  NavController,  MenuController,  ToastController,  IonicModule,} from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
-import { FooterService } from 'src/app/services/footer-service';
-
-import { AppComponent } from 'src/app/app.component';
+import { FooterService } from 'src/app/services/footer-service'; 
 
 import { MenuService } from 'src/app/services/menu-service';
 import { HttpClient } from '@angular/common/http';
 import { LoadingService } from 'src/app/services/loading-service';
-
-import { HomePage } from '../../home/home.page';
-import { jwtDecode } from 'jwt-decode';
-import { AppJwtPayload } from 'src/app/interfaces/interfaces';
+ 
 import { LoginService } from 'src/app/services/login-service';
 import { Login } from './login.model';
 import { TranslationService } from 'src/app/services/translation-service';
@@ -52,7 +21,7 @@ import { TranslatePipe } from '../../services/TranslatePipe';
 import { Account } from 'src/app/core/auth/account.model';
 import { CommonModule } from '@angular/common';
 import { AccountService } from 'src/app/core/auth/account.service';
-import { IonButton, IonContent, IonHeader, IonTitle, IonToolbar, ModalController } from '@ionic/angular/standalone';
+import {   ModalController } from '@ionic/angular/standalone';
 
 import { RegisterPage } from 'src/app/account/register/register.page';
 const initialAccount: Account = {} as Account;
@@ -73,7 +42,7 @@ const initialAccount: Account = {} as Account;
 export class LoginPage implements OnInit {
 
 
-  langKey: string | null = "fr";
+  langKey: string | null = "en";
   loginType: 'email' | 'phone' = 'email';
  
 

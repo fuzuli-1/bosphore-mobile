@@ -1,4 +1,5 @@
-import { CartItem } from "src/app/interfaces/ui-model";
+ 
+import { CartItem } from "src/app/interfaces/interfaces";
 import { Bosp } from "./Bosp";
 
 // utils/cart-utils.ts

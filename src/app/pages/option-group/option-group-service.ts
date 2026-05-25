@@ -10,7 +10,7 @@ import { createRequestOption } from 'src/app/core/request/request-util';
 
 
 
-export type PartialUpdateOptionGroup = Partial<IOptionGroup> & Pick<IOptionGroup, 'id'|'type'>;
+export type PartialUpdateOptionGroup = Partial<IOptionGroup> & Pick<IOptionGroup, 'minSelect'|'maxSelect'|'name'|'id'|'type'>;
 
 type RestOf<T extends IOptionGroup | NewOptionGroup> = Omit<T, 'createdAt'> & {
   createdAt?: string | null;

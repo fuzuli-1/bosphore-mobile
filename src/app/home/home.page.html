@@ -7,18 +7,18 @@
       </ion-menu-button>
     </ion-buttons>
     <ion-title slot="start" class="logo-title">
-      Leziz<span class="logo-dot">.</span>
+      {{'DELICIOUS'|translate}}<span class="logo-dot">.</span>
     </ion-title>
 
     <div slot="end" class="toolbar-end">
       <ion-chip class="addr-chip" (click)="openAddressList()">
         <ion-icon name="location-outline" color="warning"></ion-icon>
-        <ion-label>Adres Seçin</ion-label>
+        <ion-label>{{'SELECT_ADDRESS'|translate}}</ion-label>
       </ion-chip>
 
       <ion-button fill="solid" color="primary" class="cart-btn" [routerLink]="['/cart']">
         <ion-icon slot="start" name="cart-outline"></ion-icon>
-        Sepet
+         {{'BASKET'|translate}}
         @if (totalCount() > 0) {
           <ion-badge color="light" class="cart-badge">{{ totalCount() }}</ion-badge>
         }
@@ -57,8 +57,8 @@
 
   <!-- SECTION BAŞLIĞI -->
   <div class="section-header">
-    <h2 class="section-title">Soğuk Sandviçler</h2>
-    <ion-badge color="medium" class="count-badge">{{ products().length }} ürün</ion-badge>
+    <h2 class="section-title">{{ activeCategory().label }}</h2>
+    <ion-badge color="medium" class="count-badge">{{ products().length }} {{'PRODUCT'|translate}}</ion-badge>
   </div>
 
   <!-- ÜRÜN GRID -->
@@ -111,9 +111,9 @@
 
           <div class="card-img-wrap card-img-wrap--sm">
             @if (item.badge === 'new') {
-              <ion-badge color="warning" class="img-badge">Yeni</ion-badge>
+              <ion-badge color="warning" class="img-badge">{{'NEW'|translate}}</ion-badge>
             } @else if (item.badge === 'HOT') {
-              <ion-badge color="primary" class="img-badge">Çok Satan</ion-badge>
+              <ion-badge color="primary" class="img-badge">{{'BEST_SELLER'|translate}}</ion-badge>
             }
 
             @if (item.imageUrl) {
@@ -130,7 +130,7 @@
             <ion-card-title class="card-name card-name--sm">{{ item.name }}</ion-card-title>
             <ion-card-subtitle class="card-desc card-desc--sm">{{ item.description }}</ion-card-subtitle>
             <div class="card-footer card-footer--sm">
-              <span class="price-tag price-tag--sm">{{ item.price | number:'1.2-2' }} TL</span>
+              <span class="price-tag price-tag--sm">{{ item.price | number:'1.2-2' }} </span>
               <ion-button fill="solid" color="dark" size="small"
                 (click)="quickAdd($event, item)">
                 <ion-icon slot="icon-only" name="add"></ion-icon>

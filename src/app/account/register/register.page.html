@@ -3,12 +3,12 @@
     <div class="register-container">
       <div class="header-section ion-text-center">
         <img src="assets/img/bosphore_logo.svg" class="mini-logo" alt="Bosphore Logo" height="100"  />
-        <h1 class="ion-no-margin">Üye Ol</h1>
+        <h1 class="ion-no-margin">{{'BECAME_MEMBER'|translate}}</h1>
       </div>
 
       <div class="form-content">
         <div class="input-group">
-          <label>Telefon Numarası</label>
+          <label>{{'PHONE_NUMBER'|translate}}</label>
           <ion-input 
            formControlName="phoneNumber"
            type="tel" placeholder="5XXXXXXXXX" mode="md" fill="outline">
@@ -18,26 +18,26 @@
 
         <div class="row">
           <div class="input-group">
-            <label>Ad</label>
-            <ion-input formControlName="firstName" type="text" placeholder="Adınız" mode="md" fill="outline"></ion-input>
+            <label>{{'FIRST_NAME'|translate}}</label>
+            <ion-input formControlName="firstName" type="text" placeholder="{{'FIRST_NAME_PLACEHOLDER'|translate}}" mode="md" fill="outline"></ion-input>
           </div>
           <div class="input-group">
-            <label>Soyad</label>
-            <ion-input formControlName="lastName" type="text" placeholder="Soyadınız" mode="md" fill="outline"></ion-input>
+            <label>{{'LAST_NAME'|translate}}</label>
+            <ion-input formControlName="lastName" type="text" placeholder="{{'LAST_NAME_PLACEHOLDER'|translate}}" mode="md" fill="outline"></ion-input>
           </div>
         </div>
 
         <div class="input-group">
-          <label>E-Posta Adresi (İsteğe Bağlı)</label>
-          <ion-input formControlName="email" type="email" placeholder="E-Posta Adresinizi Giriniz" mode="md" fill="outline"></ion-input>
+          <label>{{'EMAIL_ADDRESS'|translate}} ({{'OPTIONAL'|translate}})</label>
+          <ion-input formControlName="email" type="email" placeholder="{{'EMAIL_PLACEHOLDER'|translate}}" mode="md" fill="outline"></ion-input>
         </div>
         <div class="input-group">
-          <label>Şifre</label>
+          <label>{{'PASSWORD'|translate}}</label>
           <div class="password-wrapper">
             <ion-input 
               formControlName="password" 
               [type]="showPassword ? 'text' : 'password'" 
-              placeholder="Şifrenizi Belirleyin" 
+              placeholder="{{'PASSWORD_PLACEHOLDER'|translate}}" 
               mode="md" 
               fill="outline">
               <ion-button slot="end" fill="clear" (click)="showPassword = !showPassword" class="password-toggle">
@@ -47,25 +47,25 @@
           </div>
         </div>
         <div class="agreement-box">
-          <p class="info-text">Kişisel verilerinize dair aydınlatma metnine <a href="#">buradan</a> ulaşabilirsiniz.</p>
+          <p class="info-text">{{'INFORMATION_TEXT'|translate}}</p>
           
           <ion-item lines="none" class="check-item">
             <ion-checkbox formControlName="kvkkCheck" slot="start"></ion-checkbox>
-            <ion-label>Açık Rıza Metni kapsamında verilerimin işlenmesini kabul ediyorum.</ion-label>
+            <ion-label>{{'KVKK_AGREEMENT'|translate}}</ion-label>
           </ion-item>
 
           <ion-item lines="none" class="check-item">
             <ion-checkbox formControlName="marketingCheck" slot="start"></ion-checkbox>
-            <ion-label>İletişim izni ve kampanya duyurularını onaylıyorum.</ion-label>
+            <ion-label>{{'MARKETING_AGREEMENT'|translate}}</ion-label>
           </ion-item>
         </div>
 
         <ion-button type="submit" [disabled]="!registerForm.valid" expand="block" color="success" class="main-btn" shape="round">
-          Üye Ol
+          {{'SIGN_UP'|translate}}
         </ion-button>
 
         <div class="footer-links ion-text-center">
-          <p>Hesabınız var mı? <a (click)="goToLogin()">Üye Girişi</a></p>
+          <p>{{'DO_YOU_HAVE_ACCOUNT'|translate}}? <a (click)="goToLogin()">{{'LOGIN'|translate}}</a></p>
         </div>
       </div>
     </div>

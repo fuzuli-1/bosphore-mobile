@@ -44,6 +44,13 @@ import { MenuGroupService } from '../pages/menu-groups/menu-group-service';
 import { MenuGroupItemService } from '../pages/menu-group-item/menu-group-item-service';
 import { CartUtils } from '../shared/utils/CartUtils';
 import { forkJoin } from 'rxjs';
+import { TranslatePipe } from "../services/TranslatePipe";
+import { SortService } from '../shared/sort/sort.service';   
+import { SortState, sortStateSignal } from '../shared/sort/sort-state';
+import { Subscription } from 'rxjs';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
+ 
+import { ITEMS_PER_PAGE } from '../config/pagination.constants';    
 
 @Component({
   selector: 'app-home',
@@ -57,7 +64,8 @@ import { forkJoin } from 'rxjs';
     ProductsPage,
     PageHeaderPage,
     CommonModule,
-  ],
+    TranslatePipe
+],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hata mesajını bastırır
   providers: [
     FooterService,
@@ -95,6 +103,7 @@ export class HomePage implements OnInit {
   menuGroupItemService = inject(MenuGroupItemService);
   protected ngZone = inject(NgZone);  
   private menuCtrl = inject(MenuController);
+  private sortService = inject(SortService);
 
   constructor() {}
 
@@ -103,10 +112,15 @@ export class HomePage implements OnInit {
     this.account.getAuthenticationState().subscribe(account => {
       if (account) {
         this.orderService.setCurrentUser(account);
-
+          const pageToLoad={
+            lang: this.translate.getActiveLang(),
+            page:0,
+            size: 2000
+            
+          };
         forkJoin({
-          groups: this.menuGroupService.query(),
-          items: this.menuGroupItemService.query()
+          groups: this.menuGroupService.getRecords(pageToLoad),
+          items: this.menuGroupItemService.getRecords()
         }).subscribe(({ groups, items }) => {
 
           this.menuGroups.set(groups.body ?? []);
@@ -196,7 +210,13 @@ private initSelection() {
 
   //yeni menu grup methodlari
   loadMenuGroups() {
-    this.menuGroupService.query().subscribe(res => {
+    const pageToLoad={
+      lang: this.translate.getActiveLang(),
+      page:0,
+      size: 20,
+      sort: this.sortService.startSort({ predicate: 'id', order: 'asc' })
+    };
+    this.menuGroupService.getRecords(pageToLoad).subscribe(res => {
       this.menuGroups.set(res.body ?? []);
       if(body.length > 0) {
         this.selectedGroup = res.body ? res.body[0] : null;

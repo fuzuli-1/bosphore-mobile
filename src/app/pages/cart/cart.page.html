@@ -1,68 +1,178 @@
-<ion-content class="ion-padding">
-  <div class="page">
-    
-    <div class="delivery-header">
-      <div class="info">
-        <ion-icon name="bicycle" color="success"></ion-icon>
-        <div>
-          <h3>{{ orderStateService.deliveryType() === 'delivery' ? 'Adrese Teslimat' : 'Gel Al' }}</h3>
-          <p>{{ orderStateService.selectedAddress()?.addressText || 'Adres seçilmedi...' }}</p>
-        </div>
-      </div>
-      <ion-button fill="clear" (click)="changeAddress()">Değiştir</ion-button>
-    </div>
+<ion-header class="ion-no-border">
+  <ion-toolbar color="dark">
 
-    <div class="cart-scroll-area">
-      <div class="item-card" *ngFor="let item of cartItems">
-        <div class="item-main">
-          <h4>{{ item.product.name }}</h4>
-          <p class="options-summary">
-            <span *ngFor="let opt of item.product.options">{{ opt.optionName }} (+{{ opt.price | currency:'TRY' }})</span>
-          </p>
-        </div>
-        <div class="item-right">
-          <span class="item-price">{{ item.totalPrice | currency:'TRY' }}</span>
-          <div class="qty-stepper">
-            <button (click)="decrease(item)">-</button>
-            <span>{{ item.quantity }}</span>
-            <button (click)="increase(item)">+</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home" text="Menüye Dön" color="light"></ion-back-button>
+    </ion-buttons>
 
-    <div class="checkout-section">
-      <div class="payment-methods">
-        <p class="section-title">Ödeme Yöntemi Seçin</p>
-        <ion-radio-group [(ngModel)]="selectedPayment">
-          <div class="method-box" [class.active]="selectedPayment() === 'CASH'">
-            <ion-radio value="CASH"></ion-radio>
-            <ion-icon name="cash-outline"></ion-icon>
-            <ion-label>Kapıda Nakit</ion-label>
-          </div>
-          <div class="method-box" [class.active]="selectedPayment() === 'CREDIT_CARD'">
-            <ion-radio value="CARD"></ion-radio>
-            <ion-icon name="card-outline"></ion-icon>
-            <ion-label>Kapıda Kredi Kartı</ion-label>
-          </div>
-          <div class="method-box" [class.active]="selectedPayment() === 'ONLINE'">
-            <ion-radio value="ONLINE"></ion-radio>
-            <ion-icon name="globe-outline"></ion-icon>
-            <ion-label>Online Ödeme</ion-label>
-          </div>
-        </ion-radio-group>
-      </div>
+    <ion-title class="cart-title">Sepetim</ion-title>
 
-      <div class="total-box">
-        <div class="row">
-          <span>Toplam Tutar</span>
-          <span class="amount">{{ total | currency:'TRY' }}</span>
-        </div>
-        <ion-button expand="block" class="confirm-btn" (click)="completeOrder()">
-          SİPARİŞİ ONAYLA
+    <ion-buttons slot="end">
+      @if (cartItems.length > 0) {
+        <ion-button fill="clear" (click)="clearCart()" class="clear-btn">
+          Temizle
         </ion-button>
+      }
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="cart-content">
+
+  <!-- BOŞ SEPET -->
+  @if (cartItems.length === 0) {
+    <div class="empty-state">
+      <span class="empty-emoji">🛒</span>
+      <h2 class="empty-title">Sepetiniz boş</h2>
+      <p class="empty-desc">Menüden ürün ekleyerek başlayın</p>
+      <ion-button color="primary" shape="round" routerLink="/home">
+        Menüye Git
+      </ion-button>
+    </div>
+  }
+
+  @if (cartItems.length > 0) {
+
+    <!-- TESLİMAT ADRESİ -->
+    <div class="addr-card">
+      <div class="addr-icon">
+        <ion-icon name="location" color="primary"></ion-icon>
       </div>
+      <div class="addr-info">
+        <span class="addr-label">Teslimat Adresi</span>
+        <span class="addr-value">{{ getAdressText() }}</span>
+      </div>
+      <ion-button fill="clear" color="primary" size="small" class="addr-change" (click)="openAddressList()" tooltip="Adresi Değiştir">
+        Değiştir
+      </ion-button>
+    </div>
+ 
+
+    <!-- ÜRÜNLER BAŞLIĞI -->
+    <div class="section-header">
+      <h2 class="section-title">Ürünler</h2>
+      <ion-badge color="medium" class="item-count">{{ cartItems.length }} ürün</ion-badge>
     </div>
 
+    <!-- ÜRÜN KARTLARI -->
+    <ion-list class="cart-list" lines="none">
+      @for (item of cartItems; track item; let i = $index) {
+        <ion-item-sliding>
+
+          <!-- SWIPE SİL -->
+          <ion-item-options side="end">
+            <ion-item-option color="danger" (click)="remove(item)" expandable>
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-item-option>
+          </ion-item-options>
+
+          <ion-item class="cart-item" detail="false">
+
+            <div class="item-img" slot="start">{{ item.product.emoji }}</div>
+
+            <ion-label class="item-label">
+              <h3 class="item-name">{{ item.product.name }}</h3>
+              <p class="item-extras">{{ getExtrasLabel(item) }}</p>
+              <div class="item-bottom">
+                <span class="item-price">
+                  {{ (item.totalPrice) | number:'1.2-2' }} TL
+                </span>
+                <div class="qty-ctrl">
+                  <ion-button fill="clear" size="small" class="qty-btn"
+                    (click)="decrease(item)">
+                    <ion-icon slot="icon-only" name="remove-circle-outline"></ion-icon>
+                  </ion-button>
+                  <span class="qty-num">{{ item.quantity }}</span>
+                  <ion-button fill="clear" size="small" class="qty-btn"
+                    (click)="increase(item)">
+                    <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </ion-label>
+
+          </ion-item>
+
+        </ion-item-sliding>
+      }
+    </ion-list>
+
+    <!-- SİPARİŞ ÖZETİ -->
+    <ion-card class="summary-card">
+      <ion-card-content>
+         <div class="sum-row sum-row--total">
+          <span class="sum-total-label">Toplam</span>
+          <span class="sum-total-val">{{ total | number:'1.2-2' }} TL</span>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
+
+  }
+@if(cartItems.length > 0) {
+
+  <div class="payment-row">
+    <p class="section-title">Ödeme Yöntemi Seçin</p>
+
+    <div class="payment-options">
+
+      <div class="method-box"
+           (click)="selectPayment('CASH')"
+           [class.method-box--active]="selectedPayment() === 'CASH'">
+
+        <ion-icon name="cash-outline"></ion-icon>
+        <div class="pay-name">Kapıda Nakit</div>
+
+      </div>
+
+      <div class="method-box"
+           (click)="selectPayment('CREDIT_CARD')"
+           [class.method-box--active]="selectedPayment() === 'CREDIT_CARD'">
+
+        <ion-icon name="card-outline"></ion-icon>
+        <div class="pay-name">Kapıda Kart</div>
+
+      </div>
+
+      <div class="method-box"
+           (click)="selectPayment('ONLINE')"
+           [class.method-box--active]="selectedPayment() === 'ONLINE'">
+
+        <ion-icon name="cloud-outline"></ion-icon>
+        <div class="pay-name">Online Ödeme</div>
+
+      </div>
+
+    </div>
   </div>
+
+}
 </ion-content>
+
+
+
+<!-- SİPARİŞ VER BUTONU -->
+@if (cartItems.length > 0) {
+  <ion-footer class="cart-footer ion-no-border">
+    <ion-toolbar class="footer-toolbar">
+      <ion-button
+        expand="block"
+        [color]="orderPlaced() ? 'success' : 'primary'"
+        class="checkout-btn"
+        (click)="confirmOrder()">
+
+        @if (orderPlaced()) {
+          <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
+          <span>Sipariş Alındı!</span>
+        } @else {
+          <span>Siparişi Onayla</span>
+          <ion-badge slot="end" color="dark" class="checkout-total">
+            {{ total | number:'1.2-2' }} TL
+          </ion-badge>
+        }
+
+      </ion-button>
+    </ion-toolbar>
+  </ion-footer>
+}

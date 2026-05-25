@@ -5,12 +5,13 @@ import { IonicModule, NavController, ToastController } from '@ionic/angular';
 import { RegisterService } from './register-service';
 import { OtpVerificationPage } from 'src/app/pages/otp-verification/otp-verification.page';
 import { ModalController } from '@ionic/angular';
+import { TranslatePipe } from "../../services/TranslatePipe";
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule]
+  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule, TranslatePipe]
 })
 export class RegisterPage implements OnInit {
 

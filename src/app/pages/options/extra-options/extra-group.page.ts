@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonItem, IonChip, IonLabel, IonIcon, IonRadio } from '@ionic/angular/standalone';
  
 import { Subscription } from 'rxjs';
-import { IOptionGroup, IOptionGroupWithItems, IOptionItem, SelectedOption } from 'src/app/interfaces/interfaces';
+import { IOptionGroup, IOptionGroupWithItems, IOptionItem } from 'src/app/interfaces/interfaces';
 import { SortService, SortState, sortStateSignal } from 'src/app/shared/sort';
 import { Bosp } from 'src/app/shared/utils/Bosp';
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'src/app/config/pagination.constants';
@@ -28,7 +28,7 @@ export class ExtraOptionGroupPage implements OnInit {
   @Input() productId?: number;
   @Input() optionType?:number;
 
-  @Output() optionChange = new EventEmitter<SelectedOption[]>();
+  @Output() optionChange = new EventEmitter<IOptionItem[]>();
   subscription: Subscription | null = null;
   optionGroups = signal<IOptionGroupWithItems[]>([]);
   extraGroup :IOptionGroupWithItems|null = null;
@@ -240,40 +240,42 @@ filteredExtras(): IOptionItem[] {
 }
 
 emitSelections() {
-  const selections: SelectedOption[] = [];
+  const selections: IOptionItem[] = [];
 
   // GROUP seçenekleri (tekli)
-  this.optionGroups().forEach(group => {
-    if (group.selectedItemId) {
-      const item = group.items.find(i => i.id === group.selectedItemId);
-      if (item) {
-        selections.push({
-          type: 'GROUP',
-          groupId: group.id,
-          groupName: Bosp.valueFrom(group,"name"),
-          optionId: item.id,
-          optionName:Bosp.valueFrom(item,"name"),  
-          price: item.additionalPrice ?? 0,
-        });
-      }
-    }
-  });
+this.optionGroups().forEach(group => {
 
+  if (group.selectedItemId) {
 
-  // EXTRA seçenekler (çoklu)
-  this.extraOptions()
-    .filter(e => e.selected)
-    .forEach(item => {
+    const item =
+      group.items.find(i => i.id === group.selectedItemId);
+
+    if (item) {
       selections.push({
-        type: 'EXTRA',
-        groupId:Bosp.getValue(this.extraGroup,"name"),
-        groupName: Bosp.valueFrom(this.extraGroup,"name"),
-        optionId: item.id,
-        optionName:Bosp.valueFrom(item,"name"),  
-        price: item.additionalPrice ?? 0,
+        type: 'GROUP' as const,
+        optionGroup: {
+          ...group,
+          id: group.id
+        },
+        id: item.id,
+        quantity: item.quantity,
+        name: Bosp.valueFrom(item, "name"),
+        additionalPrice: item.additionalPrice ?? 0,
       });
-    });
+    }
+  }
+});
 
+selections.push(...this.extraOptions()
+  .filter(e => e.selected)
+  .map(item => ({
+    type: 'GROUP' as const,
+    quantity: item.quantity,
+    id: item.id,
+    name: Bosp.valueFrom(item, "name"),
+    additionalPrice: item.additionalPrice ?? 0,
+  }))
+);  
   this.optionChange.emit(selections);
 }
 

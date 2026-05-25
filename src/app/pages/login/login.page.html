@@ -8,16 +8,16 @@
  
 
         <ion-segment-button value="phone">
-          {{'phoneNumber'|translate}}
+          {{'PHONE_NUMBER'|translate}}
         </ion-segment-button>
         <ion-segment-button value="email">
-          {{'e-mail'|translate}}
+          {{'EMAIL_ADDRESS'|translate}}
         </ion-segment-button>
       </ion-segment>
       <!-- e-mail-->
       @if(loginType==='email'){
       <div class="form-group">
-        <ion-label>{{'emailAddress'|translate}}</ion-label>
+        <ion-label>{{'EMAIL_ADDRESS'|translate}}</ion-label>
         <ion-input
           type="e-mail"
           placeholder="xxx@gmail.com"
@@ -41,7 +41,7 @@
       <!-- telefon-->
       @if(loginType==="phone"){
       <div class="form-group">
-        <ion-label>{{'phoneNumber'|translate}}</ion-label>
+        <ion-label>{{'PHONE_NUMBER'|translate}}</ion-label>
         <ion-input
           type="tel"
           placeholder="xxx.xxx.xx.xx"
@@ -53,7 +53,7 @@
 
 
       <div class="forgot">
-        <a href="#">{{'forgotPassword'|translate}}</a>
+        <a href="#">{{'FORGET_PASSWORD'|translate}}</a>
       </div>
 
       <ion-button expand="block" class="login-btn" (click)="login()">
@@ -61,7 +61,7 @@
       </ion-button>
 
       <ion-button expand="block" fill="outline" class="register-btn" (click)="register()">
-        {{'Hesabiniz Yok Mu'|translate}} <span>{{'yeniUye'|translate}}</span>
+        {{'DO_NOT_YOU_HAVE_AN_ACCOUNT'|translate}} <span>{{'NEW_MEMBER'|translate}}</span>
       </ion-button>
       <div class="form-group">
         <ion-select

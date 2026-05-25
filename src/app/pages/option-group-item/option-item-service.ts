@@ -10,7 +10,8 @@ import { isPresent } from 'src/app/core/util/operators';
 
 
 
-export type PartialUpdateOptionItem = Partial<IOptionItem> & Pick<IOptionItem, 'id'>;
+export type PartialUpdateOptionItem =   Partial<Omit<IOptionItem, 'id' | 'quantity'>> &
+  Pick<IOptionItem, 'id' | 'quantity'>;
 
 type RestOf<T extends IOptionItem | NewOptionItem> = Omit<T, 'createdAt'> & {
   createdAt?: string | null;

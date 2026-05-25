@@ -1,4 +1,11 @@
-import { Component, inject, NgZone, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  NgZone,
+  OnInit,
+  signal,
+} from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import {
@@ -8,15 +15,16 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
-import { NavController,ModalController } from '@ionic/angular';
+import { NavController, ModalController } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
 import { combineLatest, Observable, Subscription, tap } from 'rxjs';
 import {
+  CartItem,
+  IOptionGroupWithItems,
   IOptionItem,
   IOrderItem,
   IProduct,
-  SelectedOption,
-
+ 
 } from 'src/app/interfaces/interfaces';
 import {
   EntityArrayResponseType,
@@ -35,12 +43,15 @@ import { CommonModule } from '@angular/common';
 import { PageHeaderPage } from '../../page-header/page-header.page';
 import { OptionGroupPage } from '../../option-group/option-group.page';
 import { Bosp } from 'src/app/shared/utils/Bosp';
-import { CartItem, OrderItemDraft } from 'src/app/interfaces/ui-model';
-import { CartUtils } from 'src/app/shared/utils/CartUtils';
+import {  OrderItemDraft } from 'src/app/interfaces/ui-model';
+
 import { OrderStateService } from 'src/app/services/order-state-service';
 import { AdresListPage } from '../../adres-list/adres-list.page';
-import { TranslatePipe } from "../../../services/TranslatePipe";
- 
+import { TranslatePipe } from '../../../services/TranslatePipe';
+import { OptionGroupService } from '../../option-group/option-group-service';
+import { CartService } from '../../cart/cart.service';
+import { TranslationService } from 'src/app/services/translation-service';
+
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-detail.page.html',
@@ -51,15 +62,14 @@ import { TranslatePipe } from "../../../services/TranslatePipe";
     FormsModule,
     CommonModule,
     OptionGroupPage,
-    TranslatePipe
-],
+    TranslatePipe,
+  ],
 })
 export class ProductDetailPage implements OnInit {
- 
-  totalPrice = 0;
+  addedToCart = signal(false);
+  optionGroups = signal<IOptionGroupWithItems[]>([]); 
+  note = signal('');
   favorite = false;
-  selectedOptions: SelectedOption[] = [];
-  
   orderDraft: OrderItemDraft = {
     id: 0,
     quantity: 1,
@@ -70,9 +80,11 @@ export class ProductDetailPage implements OnInit {
     productName: '',
     options: [],
   };
-  isLoading = true; 
-  product: IProduct | null = null; 
-  product1: IProduct | null = null; 
+
+  isLoading = true;
+  product: IProduct | null = null;
+  product1: IProduct | null = null;
+
   // 1. Servisi public olarak inject et (HTML'den erişebilmek için)
   public readonly router = inject(Router);
   private navCtrl = inject(NavController);
@@ -81,44 +93,52 @@ export class ProductDetailPage implements OnInit {
   protected readonly activatedRoute = inject(ActivatedRoute);
   protected readonly productService = inject(ProductService);
   protected modalCtrl = inject(ModalController);
+  protected optionGroupService = inject(OptionGroupService);
+   protected readonly cartService = inject(CartService);
+    private translate = inject(TranslationService);
   trackId = (item: IProduct): number =>
     this.productService.getProductIdentifier(item);
 
-  constructor(private route: ActivatedRoute ) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.loadProduct(id);
+      
     }
   }
 
-  private loadProduct(id: any): void {
-    this.isLoading = true;
+ private loadProduct(id: any): void {
+  this.isLoading = true;
+  const pageToLoad = {
+    id: id,
+    lang: this.translate.getActiveLang(),
+  };
+  this.productService.getRecordsById(pageToLoad).subscribe({
+    next: (res) => {
+      this.product = res.body;
+      this.isLoading = false;
 
-    this.productService.find(id).subscribe({
-      next: (res) => {
-        this.product = res.body;
-        this.isLoading = false;
-        if (this.product) {
-          this.orderDraft = {
-            id: 0, // yeni kayıt
-            quantity: 1,
-            basePrice: 0, // string
-            optionPrice: 0,
-            totalPrice: Bosp.getValue(this.product, 'price'),
-            productName: Bosp.valueFrom(this.product, 'name'),
-            createdAt: dayjs(),
-            productId: this.product.id,
-            options: [],
-          };
-        }
-      },
-      error: () => {
-        this.isLoading = false;
-      },
-    });
-  }
+      if (this.product) {
+
+        this.loadOptionGroups();  
+
+        this.orderDraft = {
+          id: 0,
+          quantity: 1,
+          basePrice: 0,
+          optionPrice: 0,
+          totalPrice: Bosp.getValue(this.product, 'price'),
+          productName: Bosp.valueFrom(this.product, 'name'),
+          createdAt: dayjs(),
+          productId: this.product.id,
+          options: [],
+        };
+      }
+    },
+  });
+}
 
   increase() {
     if (!this.orderDraft.quantity) {
@@ -139,112 +159,197 @@ export class ProductDetailPage implements OnInit {
     }
   }
 
-  calculateTotal() {
-    const base =Bosp.getValue(this.product,"price");
+ toggleExtra(groupId: number, itemId: number) {
 
-    const optionTotal = this.selectedOptions.reduce(
-      (sum, opt) => sum + Number(opt.price || 0),
-      0
-    );
+  const group = this.optionGroups()
+    .find(g => g.id === groupId);
+
+  if (!group) return;
+
+  const item = group.items.find(i => i.id === itemId);
+
+  if (!item) return;
+
+  // TEK SEÇİM
+  if (group.maxSelect === 1) {
+
+    group.items.forEach(i => {
+      i.selected = false;
+    });
+
+    item.selected = true;
+this.calculateTotal();
+    return;
+  }
+
+  // ÇOKLU SEÇİM
+  item.selected = !item.selected;
+
+  const selectedCount =
+    group.items.filter(i => i.selected).length;
+
+  if (selectedCount > group.maxSelect) {
+    item.selected = false;
+  }
+
+  this.calculateTotal();
+ }
+
+ 
+
+  calculateTotal() {
+
+    const base = Bosp.getValue(this.product, 'price');
+    let optionTotal = 0;
+    for (const group of this.optionGroups()) {
+      const selectedItems = group.items?.filter(i => i.selected) || [];
+      for (const item of selectedItems) {
+        optionTotal += Number(item.additionalPrice || 0);
+      }
+    }
 
     this.orderDraft.basePrice = base;
     this.orderDraft.optionPrice = optionTotal;
 
-    const singleItemTotal = base + optionTotal;
+    const singleItemTotal = base  + optionTotal;
 
-    this.totalPrice = singleItemTotal * this.orderDraft.quantity;
-    this.orderDraft.totalPrice = this.totalPrice;
+    this.orderDraft.totalPrice = singleItemTotal* this.orderDraft.quantity;
   }
 
- sepeteEkle() {
-  if (!this.product) return;
-// 2. Cephelerden gelen bilgileri topla
+  async openAddressList() :Promise<number> {
+    const addressModal = await this.modalCtrl.create({
+      component: AdresListPage,
+      cssClass: 'address-list-modal', // Görseldeki gibi tam ekran veya geniş modal
+    });
+    await addressModal.present();
+
+    const { data } = await addressModal.onWillDismiss();
+    if (data) {
+      // Seçilen adresi merkezi servise (Savaş Merkezi) gönderiyoruz
+      this.orderService.setAddress(data);
+      console.log('Seçilen adres:', data);
+      // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
+      return 1;
+    }
+
+    return 0;
+  }
+
+  async  sepeteEkle() {
+    if (!this.product) return;
+
+     this.cartService.clear(); 
+    // 2. Cephelerden gelen bilgileri topla
     const selectedAddress = this.orderService.selectedAddress(); // Signal'den oku
     const deliveryType = this.orderService.deliveryType();
 
-  if (deliveryType === 'delivery' && !selectedAddress) {
-    this.openAddressList();
-   return;
-  }
-
-
-  const basePrice = Number(Bosp.getValue(this.product, 'price'));
-
-  const optionTotal = this.selectedOptions.reduce(
-    (sum, opt) => sum + Number(opt.price || 0),
-    0
-  );
-
-  const singleItemTotal = basePrice + optionTotal;
-  const totalPrice = singleItemTotal * this.orderDraft.quantity;
-
-  const cartItem: CartItem = {
-    uuid: crypto.randomUUID(),
-
-    product: {
-      productId: this.product.id,
-      name: Bosp.valueFrom(this.product, 'name'),
-      basePrice: basePrice,
-      options: this.selectedOptions
-    },
-
-    quantity: this.orderDraft.quantity,
-
-    // şimdilik child yok (extra sonradan cart’ta eklenecek)
-    children: [],
-
-    totalPrice: totalPrice,
-
-    createdAt: new Date().toISOString(),
-    // Savaşın sonucu: Bu sipariş nereye ve nasıl gidecek?
-      address: selectedAddress
+    if (deliveryType === 'delivery' && !selectedAddress) {
+ 
+        const result = await this.openAddressList();
+        
+        if (result === 1) {
+          // Adres başarıyla seçildi
+          console.log('Adres seçimi tamamlandı'); 
+        } else {
+          // Adres seçilmedi veya iptal edildi
+          return;
+        }    
+    }    
+    const basePrice = Number(Bosp.getValue(this.product, 'price'));
+    for (const group of this.optionGroups()) {
+      const selectedItems = group.items?.filter(i => i.selected) || [];
+      for (const item of selectedItems) {
+        this.orderDraft.options.push({
+          id: item.id,
+          name: item.name,
+          additionalPrice: item.additionalPrice,
+          quantity: 1,
+          type: item.type,
+        });
+      }   
+        };
       
-  };
+    
+    let optionTotal = 0;
+      for (const item of this.orderDraft.options) {
+        optionTotal += Number(item.additionalPrice || 0);
+    }
+    const singleItemTotal = basePrice + optionTotal;
+    const totalPrice = singleItemTotal* this.orderDraft.quantity;
+    const cartItem: CartItem = {
+      uuid: crypto.randomUUID(),
+      product: this.product,
+      quantity: this.orderDraft.quantity,
+      // şimdilik child yok (extra sonradan cart’ta eklenecek)
+      children: [],
 
-  const cart = CartUtils.getSafeCart();
-  cart.push(cartItem);
-  CartUtils.saveCart(cart);
+      totalPrice: totalPrice,
 
-  this.navCtrl.navigateForward('/payments/cart');
-}
+      createdAt: new Date().toISOString(),
+      // Savaşın sonucu: Bu sipariş nereye ve nasıl gidecek?
+      address: selectedAddress,
+    };
+    
+    cartItem.children?.push(...this.orderDraft.options);
+    this.cartService.add(cartItem);
+
+    this.navCtrl.navigateForward('/payments/cart');
+    this.addedToCart.set(true);
+  }
 
   go(path: string) {
     this.router.navigateByUrl(path);
   }
 
-  onOptionsChange(options: SelectedOption[]) {
-    this.selectedOptions = options;
-    this.calculateTotal();
+  // product-detail.page.ts
+  getProductPrice(): number {
+    return Bosp.getValue(this.product, 'price');
   }
-  
-    async openAddressList() {
-      const addressModal = await this.modalCtrl.create({
-        component: AdresListPage,
-        cssClass: 'address-list-modal' // Görseldeki gibi tam ekran veya geniş modal
-      });
-        await addressModal.present();
-  
-        const { data } = await addressModal.onWillDismiss();
-        if (data) {
-         // Seçilen adresi merkezi servise (Savaş Merkezi) gönderiyoruz
-           this.orderService.setAddress(data);
-            console.log('Seçilen adres:', data);
-            // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
+
+  toggleFavorite() {
+    this.favorite = !this.favorite;
+    // İsterseniz favorileri localStorage veya servise kaydedebilirsiniz
+  }
+
+  isFavorite() {
+    return this.favorite;
+  }
+
+loadOptionGroups() {
+  const pageToLoad = {
+    productId: this.product?.id,
+    optionType: 1,
+  };
+  this.isLoading = true;
+  this.optionGroupService.queryWithItems(pageToLoad).subscribe({
+    next: (res) => {
+      this.isLoading = false;
+      let data: IOptionGroupWithItems[] = res.body ?? [];
+
+      // STANDARD gruplarda ilk item'ı default seçili yap
+      data = data.map(group => {
+        if (group.requiredGroup==true && group.type === 'STANDARD' && group.items?.length > 0) {
+          group.items = group.items.map((item, index) => ({
+            ...item,
+            selected: index === 0,
+          }));
         }
-    }
+        return group;
+      });
 
-    // product-detail.page.ts
-    getProductPrice(): number {
-      return Bosp.getValue(this.product, 'price');
-    }
+      this.optionGroups.set(data);
+      this.calculateTotal(); // Fiyat da güncellensin
+    },
+    error: () => {
+      this.isLoading = false;
+    },
+  });
+}
 
-    toggleFavorite() {
-     this.favorite = ! this.favorite;
-      // İsterseniz favorileri localStorage veya servise kaydedebilirsiniz
-    }
-
-    isFavorite(){
-      return this.isFavorite;
-    }
-  
+  /*toggleExtra(id: number): void {
+    
+    this.extras.update(list =>
+      list.map(e => e.id === id ? { ...e, selected: !e.selected } : e)
+    );
+  }*/
 }

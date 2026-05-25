@@ -31,7 +31,7 @@ import {
   Subscription,
   tap,
 } from 'rxjs';
-import { IOptionGroup, IOptionGroupWithItems, IOptionItem, SelectedOption } from 'src/app/interfaces/interfaces';
+import { IOptionGroup, IOptionGroupWithItems, IOptionItem } from 'src/app/interfaces/interfaces';
 import {
   ITEMS_PER_PAGE,
   PAGE_HEADER,
@@ -66,7 +66,7 @@ Swiper.use([Navigation, Pagination, Scrollbar]);
 export class OptionGroupPage implements OnChanges {
 
   @Input() productId?: number;
-  @Output() optionsChange = new EventEmitter<SelectedOption[]>();
+  @Output() optionsChange = new EventEmitter<IOptionItem[]>();
   subscription: Subscription | null = null;
   optionGroups = signal<IOptionGroupWithItems[]>([]);
   extraGroup :IOptionGroupWithItems|null = null;
@@ -273,21 +273,14 @@ filteredExtras(): IOptionItem[] {
 }
 
 emitSelections() {
-  const selections: SelectedOption[] = [];
+  const selections: IOptionItem[] = [];
 
   // GROUP seçenekleri (tekli)
   this.optionGroups().forEach(group => {
     if (group.selectedItemId) {
       const item = group.items.find(i => i.id === group.selectedItemId);
       if (item) {
-        selections.push({
-          type: 'GROUP',
-          groupId: group.id,
-          groupName: Bosp.valueFrom(group,"name"),
-          optionId: item.id,
-          optionName:Bosp.valueFrom(item,"name"),  
-          price: item.additionalPrice ?? 0,
-        });
+        selections.push(item);
       }
     }
   });
@@ -297,14 +290,7 @@ emitSelections() {
   this.extraOptions()
     .filter(e => e.selected)
     .forEach(item => {
-      selections.push({
-        type: 'EXTRA',
-        groupId:Bosp.getValue(this.extraGroup,"name"),
-        groupName: Bosp.valueFrom(this.extraGroup,"name"),
-        optionId: item.id,
-        optionName:Bosp.valueFrom(item,"name"),  
-        price: item.additionalPrice ?? 0,
-      });
+      selections.push(item);
     });
 
   this.optionsChange.emit(selections);

@@ -190,13 +190,13 @@ export class OptionManagementPage implements OnInit {
      return await modal.present();
   }
 
-  async addOptionItem(item?:IOptionItem){
-    const groupId=this.selectedGroup.id;
+  async addOptionItem(group:IOptionGroup){
+    const groupId=group.id;
      const modal=await this.modalCtrl.create({
       component:OptionItemFormComponent,
       componentProps:{
         item:null,
-        groupId:groupId
+        groupId:group?.id
       }
      });
 
@@ -211,7 +211,7 @@ export class OptionManagementPage implements OnInit {
             })
           }else{            
               this.optionItemService.create(itemData)
-                 .subscribe(() => this.loadOptionItems(this.selectedGroup.id));
+                 .subscribe(() => this.loadOptionItems(groupId));
           }
         }
      });

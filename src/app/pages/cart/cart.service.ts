@@ -5,13 +5,10 @@ import { BehaviorSubject, map, Observable } from 'rxjs';
 import { ApplicationConfigService } from 'src/app/core/config/application-config.service';
 import { createRequestOption } from 'src/app/core/request/request-util';
 import { isPresent } from 'src/app/core/util/operators';
-import { ICart, NewCart } from 'src/app/interfaces/interfaces';
-import {
-  CartItem,
-  CartChildItem 
-} from 'src/app/interfaces/ui-model';
+import {CartItem, ICart, IOptionItem, NewCart } from 'src/app/interfaces/interfaces';
+ 
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
-import  {CartProduct} from 'src/app/interfaces/ui-model';
+ 
 import { IProduct } from 'src/app/interfaces/interfaces';
 import { NavController, ToastController } from '@ionic/angular';
 import { NewAddress } from 'src/app/interfaces/interfaces';
@@ -93,7 +90,7 @@ getCart(): Observable<CartItem[]> {
      CHILD ITEMS
   ---------------------------------- */
 
-  addChildren(uuid: string, children: CartChildItem[]) {
+  addChildren(uuid: string, children: IOptionItem[]) {
     const cart = this.cart$.value.map(item => {
       if (item.uuid !== uuid) return item;
 
@@ -134,27 +131,19 @@ getCart(): Observable<CartItem[]> {
   ---------------------------------- */
 
   private recalculateItem(item: CartItem): CartItem {
-    const base = item.product.basePrice ?? 0;
-
-    const optionTotal =
-      item.product.options?.reduce(
-        (sum, opt) => sum + (Number(opt.price) || 0),
-        0
-      ) ?? 0;
-
-    const productTotal = (base + optionTotal) * item.quantity;
+    const base = item.product.price ?? 0;
 
     const childrenTotal =
       item.children?.reduce(
-        (sum, c) => sum + (c.price * c.quantity),
+        (sum, c) => sum + (c.additionalPrice ?? 0) * c.quantity,
         0
       ) ?? 0;
-
+    const productTotal = (base + childrenTotal);
     return {
       ...item,
-      totalPrice: productTotal + childrenTotal
+      totalPrice: productTotal 
     };
-  }
+  } 
 
   /* --------------------------------
      STORAGE

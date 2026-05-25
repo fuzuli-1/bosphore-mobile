@@ -37,6 +37,7 @@ export type EntityArrayResponseType = HttpResponse<IOrder[]>;
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
+
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(
     ApplicationConfigService,
@@ -70,6 +71,15 @@ export class OrderService {
       })
       .pipe(map((res) => this.convertResponseFromServer(res)));
   }
+
+  initiateOnlinePayment(order: NewOrder):Observable<EntityResponseType> {
+    const copy=this.convertDateFromClient(order);
+    return this.http.post<RestOrder>(`${this.resourceUrl}/initiateOnline`,copy,{
+      observe:'response',
+    })
+    .pipe(map((res)=>this.convertResponseFromServer(res)));
+    
+   }
 
   update(order: IOrder): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(order);

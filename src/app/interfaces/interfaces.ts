@@ -97,6 +97,8 @@ export interface ICompanyMaster {
 export type NewCompanyMaster = Omit<ICompanyMaster, 'id'> & { id: null };
 
 export interface IProduct {
+isHalal?: any;
+calories?: any;
 
   id: number;
   productId?: number | null;
@@ -236,7 +238,7 @@ export interface IOrderItem {
   price?: number | null;
   note?: string | null;
   createdAt?: dayjs.Dayjs | null;
-  product?: IProduct | null;
+  product: IProduct | null;
   order?: Pick<IOrder, 'id'> | null;
   options?: IOptionItem[] | null;
 }
@@ -244,9 +246,9 @@ export type NewOrderItem = Omit<IOrderItem, 'id'> & { id: null };
 
 export interface IOptionGroup {
   id: number;
-  name?: string | null;
-  minSelect?: number | null;
-  maxSelect?: number | null;
+  name: string;
+  minSelect: number;
+  maxSelect: number;
   isActive?: boolean | null;
   createdAt?: dayjs.Dayjs | null;
   requiredGroup?: boolean | null;
@@ -258,28 +260,27 @@ export interface IOptionGroup {
 }
 export type NewOptionGroup = Omit<IOptionGroup, 'id'> & { id: null };
 
-export interface SelectedOption {
-  type: 'GROUP' | 'EXTRA';
-  groupId: number;
-  optionId: number;
-  optionName: string;
-  price: number; 
-  groupName?: string;  
-}
-
 export interface IOptionItem {
+  uuid?: string;
+  type?: 'GROUP'| 'PROMO' | 'EXTRA' | 'DRINK' | 'SAUCE';
   id: number;
   name?: string | null;
   additionalPrice?: number | null;
+  quantity: number;
   isActive?: boolean | null;
   isDefault?: boolean | null;
   createdAt?: dayjs.Dayjs | null;
   optionGroup?: Pick<IOptionGroup, 'id'> | null;
   language?: Pick<ILanguage, 'id'> | null;
   imageUrl?: string | null;
-  selected?: boolean | null;
+  selected?: boolean;
   selectedItemId?: number;
+  description?: any;
+  emoji?: any;
 }
+
+ 
+
 export type NewOptionItem = Omit<IOptionItem, 'id'> & { id: null };
 
  export enum OptionGroupType {
@@ -370,4 +371,18 @@ export interface IUser {
   authorities?: Pick<IAuthority, 'name'>[] | null;
 }
 
+export type DeliveryType = 'delivery' | 'pickup' | 'scheduled';
+
+export interface CartItem {
+  uuid: string;
+  product: IProduct;      // ana ürün
+  quantity: number;
+  children?: IOptionItem[]; // alt ürünler (promo, ekstra)
+
+  totalPrice: number;
+  createdAt?: string;
+  // Savaşın sonucu: Bu sipariş nereye ve nasıl gidecek?
+  address: NewAddress;
+    
+}
 

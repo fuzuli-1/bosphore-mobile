@@ -22,9 +22,13 @@ import {
   arrowForwardOutline,
   bicycle,
   bicycleOutline,
+  calendarOutline,
+  car,
+  carOutline,
   cartOutline,
   cashOutline,
   chatbubbleEllipsesSharp,
+  checkmark,
   checkmarkCircle,
   checkmarkDoneCircleOutline,
   chevronBack,
@@ -38,6 +42,7 @@ import {
   eye,
   fastFood,
   fastFoodOutline,
+  flameOutline,
   folderOpenOutline,
   gridOutline,
   heart,
@@ -67,6 +72,7 @@ import {
   personAddOutline,
   personCircleOutline,
   personOutline,
+  pricetagOutline,
   printOutline,
   receiptOutline,
   receiptSharp,
@@ -74,12 +80,15 @@ import {
   refreshCircleOutline,
   refreshOutline,
   remove,
+  removeCircleOutline,
   removeOutline,
   restaurantOutline,
   searchOutline,
   settingsOutline,
   storefrontOutline,
+  timeOutline,
   trashOutline,
+  walkOutline,
   
 } from 'ionicons/icons';
  
@@ -173,8 +182,16 @@ addIcons({
   'language-outline':languageOutline,
   'heart-outline':heartOutline,
   'remove':remove,
-  'heart':heart
-
+  'heart':heart,
+  'time-outline':timeOutline,
+  'flame-outline':flameOutline,
+  'checkmark':checkmark,
+  'remove-circle-outline':removeCircleOutline,
+  'walk-outline':walkOutline,
+  'calendar-outline':calendarOutline,
+  'pricetag-outline':pricetagOutline,
+  'location':locationOutline,
+  'car-outline':carOutline,
 });
 
 import { Observable, of } from 'rxjs';
@@ -197,7 +214,7 @@ bootstrapApplication(AppComponent, {
       rippleEffect: true,
     }), 
     // 🔥 DOĞRU YÖNTEM BURASI: Angular Fire'ın kendi başlatıcısı
-    provideFirebaseApp(() => initializeApp(environment.firebase)), 
+ //   provideFirebaseApp(() => initializeApp(environment.firebase)), 
     provideAuth(() => getAuth()),
     
     provideHttpClient(

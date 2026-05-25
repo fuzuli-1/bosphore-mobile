@@ -59,6 +59,13 @@ export class ProductService {
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 
+  getRecordsById(req?: any): Observable<EntityResponseType> {
+    const options = createRequestOption(req);
+    return this.http
+      .get<RestProduct>(this.resourceUrl+'/getRecordsById', { params: options, observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http

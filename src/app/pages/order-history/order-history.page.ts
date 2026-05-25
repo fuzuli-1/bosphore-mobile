@@ -4,13 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule} from '@ionic/angular';
 import { inject } from '@angular/core';
 import { OrderService } from '../../services/order-service';
-import { IOrder } from '../../interfaces/interfaces';
+import { CartItem, IOrder } from '../../interfaces/interfaces';
 import { NavController } from '@ionic/angular';
 import { CartService } from '../cart/cart.service';
 import { ToastController } from '@ionic/angular';  
-import { CartItem } from 'src/app/interfaces/ui-model';
 import { Bosp } from 'src/app/shared/utils/Bosp';
 import { OrderStateService } from 'src/app/services/order-state-service';
+import dayjs from 'dayjs/esm';
  
 @Component({
   selector: 'app-order-history',
@@ -81,21 +81,9 @@ async reorder(order: IOrder, event: Event) {
 
   if (order.orderItems && order.orderItems.length > 0) {
     order.orderItems.forEach(item => {
-
       let cartItem: CartItem = {
       uuid: crypto.randomUUID(),
-      product: {
-        productId: item.product?.id ?? 0,
-        name: Bosp.valueFrom(item.product, 'name'),
-        basePrice: item.product?.price ?? 0,
-        options: item.options?.map(opt => ({         
-          type: 'EXTRA',
-          optionName: opt.name ?? '',
-          groupId: opt.optionGroup?.id ?? 0,
-          optionId: opt.id,         
-          price: opt.additionalPrice ?? 0
-        })) || []
-      },
+      product: item.product as any,  
       quantity: item.quantity ?? 1,
       totalPrice: (item.price ?? 0) * (item.quantity ?? 1),
       address:  this.orderStateService.selectedAddress()

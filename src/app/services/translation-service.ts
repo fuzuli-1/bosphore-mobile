@@ -8,9 +8,9 @@ import { ApplicationConfigService } from '../core/config/application-config.serv
 export class TranslationService {
 
   private availableLangs: string[] = ["en", "tr", "de", "fr"];
-  private fallbackLang = 'tr';
+  private fallbackLang = 'en';
 
-  private currentLang$ = new BehaviorSubject<string>('tr');
+  private currentLang$ = new BehaviorSubject<string>('en');
   private translations = signal<{ [key: string]: any }>({}); 
   protected readonly applicationConfigService = inject(ApplicationConfigService);
   protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/languages/translations');
@@ -82,5 +82,9 @@ export class TranslationService {
       }
     }
     return null;
+  }
+
+  public getActiveLang():string   {
+    return this.currentLang$.getValue();
   }
 }
