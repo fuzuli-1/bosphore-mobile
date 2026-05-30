@@ -50,6 +50,7 @@ import Swiper from 'swiper';
 import { Navigation, Pagination, Autoplay, Thumbs, Scrollbar } from 'swiper/modules';
 import { SwiperOptions } from 'swiper/types';
 import { Bosp } from 'src/app/shared/utils/Bosp';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 
 // Swiper modüllerini kaydet
@@ -60,7 +61,7 @@ Swiper.use([Navigation, Pagination, Scrollbar]);
   templateUrl: './option-group.page.html',
   styleUrls: ['./option-group.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class OptionGroupPage implements OnChanges {

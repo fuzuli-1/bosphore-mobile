@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, ReplaySubject, of } from 'rxjs';
 import { catchError, shareReplay, tap } from 'rxjs/operators';
 
- 
 import { ApplicationConfigService } from '../config/application-config.service';
 import { Account } from './account.model';
 import { StateStorageService } from './state-storage.service';
@@ -17,7 +16,6 @@ export class AccountService {
   private readonly authenticationState = new ReplaySubject<Account | null>(1);
   private accountCache$?: Observable<Account> | null;
 
-  private readonly translateService = inject(TranslationService);
   private readonly http = inject(HttpClient);
   private readonly stateStorageService = inject(StateStorageService);
   private readonly router = inject(Router);
@@ -51,18 +49,16 @@ export class AccountService {
   }
 
   identity(force?: boolean): Observable<Account | null> {
+    // ✅ Token yoksa hiç istek atma, null dön
+    const token = this.stateStorageService.getAuthenticationToken();
+    if (!token) {
+      return of(null);
+    }
+
     if (!this.accountCache$ || force) {
       this.accountCache$ = this.fetch().pipe(
         tap((account: Account) => {
           this.authenticate(account);
-
-          // After retrieve the account info, the language will be changed to
-          // the user's preferred language configured in the account setting
-          // unless user have chosen another language in the current session
-          if (!this.stateStorageService.getLocale()) {
-            this.translateService.use(account.langKey);
-          }
-
           this.navigateToStoredUrl();
         }),
         shareReplay(),
@@ -93,8 +89,6 @@ export class AccountService {
   }
 
   private navigateToStoredUrl(): void {
-    // previousState can be set in the authExpiredInterceptor and in the userRouteAccessService
-    // if login is successful, go to stored previousState and clear previousState
     const previousUrl = this.stateStorageService.getUrl();
     if (previousUrl) {
       this.stateStorageService.clearUrl();

@@ -1,94 +1,97 @@
-import { IonApp } from '@ionic/angular/standalone';
 import {
-  AfterViewInit,
   Component,
   computed,
-  ElementRef,
   inject,
   NgZone,
-  OnDestroy,
   OnInit,
   signal,
-  Signal,
-  ViewChild,
 } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import {
-  NavController,
-  ModalController,
-  ToastController,
-  MenuController,
-  RefresherEventDetail,
-} from '@ionic/angular';
+import { NavigationEnd, Router } from '@angular/router';
 
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { IonRefresherCustomEvent, IonSegmentCustomEvent, SegmentChangeEventDetail } from '@ionic/core';
-import { FooterService } from '../services/footer-service';
-import { MenuService } from '../services/menu-service';
-import { Langs } from '../pages/lang';
+
 import * as iface from '../interfaces/interfaces';
 import { TranslationService } from '../services/translation-service';
 import { AccountService } from '../core/auth/account.service';
-import { MenuGroupsPage } from '../pages/menu-groups/menu-groups.page';
-import { ProductsPage } from '../pages/products/products.page';
-import { PageHeaderPage } from '../pages/page-header/page-header.page';
+
 import { AdresListPage } from '../pages/adres-list/adres-list.page';
 import { OrderStateService } from '../services/order-state-service';
 import { CommonModule } from '@angular/common';
-import { IMenuGroupItem } from '../interfaces/interfaces';
-import { body, menu } from 'ionicons/icons';
+
+import { body } from 'ionicons/icons';
 import { ProductService } from '../pages/products/product-service';
 import { MenuGroupService } from '../pages/menu-groups/menu-group-service';
 import { MenuGroupItemService } from '../pages/menu-group-item/menu-group-item-service';
 import { CartUtils } from '../shared/utils/CartUtils';
 import { forkJoin } from 'rxjs';
-import { TranslatePipe } from "../services/TranslatePipe";
-import { SortService } from '../shared/sort/sort.service';   
-import { SortState, sortStateSignal } from '../shared/sort/sort-state';
-import { Subscription } from 'rxjs';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import { TranslatePipe } from '../services/TranslatePipe';
+import { SortService } from '../shared/sort/sort.service';
+
+import { StateStorageService } from '../core/auth/state-storage.service';
+import {
  
-import { ITEMS_PER_PAGE } from '../config/pagination.constants';    
+  IonToolbar,
+  IonIcon,
+  IonBadge,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonChip,
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonMenuButton,
+  IonTitle,
+  ModalController,MenuController,ToastController, IonHeader, IonButtons, IonButton } from '@ionic/angular/standalone';
+import { CartService } from '../pages/cart/cart.service';
+import { CategoryService } from '../pages/category/category-service';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
   standalone: true,
-  imports: [
-    IonicModule,
-    FormsModule,
-    MenuGroupsPage,
-    ProductsPage,
-    PageHeaderPage,
+  imports: [IonButton, IonButtons, IonHeader, 
     CommonModule,
-    TranslatePipe
-],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hata mesajını bastırır
-  providers: [
-    FooterService,
-    MenuService,
-    // Diğer servisler...
+    FormsModule,
+    TranslatePipe,
+    IonToolbar,
+    IonIcon,
+    IonBadge,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonChip,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonHeader, IonButtons,
+    IonMenuButton,
+     IonTitle,
   ],
 })
 export class HomePage implements OnInit {
-
   //seçilen adres
   selectedAddress: iface.IAddress | null = null;
   //menu groups
   menuGroups = signal<iface.IMenuGroup[]>([]);
   selectedGroup: iface.IMenuGroup | null = null;
   selectedGroupId = signal<number | null>(null);
-   //menu group items
+  //menu group items
   categories = signal<iface.IMenuGroupItem[]>([]);
   selectedCategories = signal<iface.IMenuGroupItem[]>([]);
-  activeCategory=signal<iface.IMenuGroupItem>({} as iface.IMenuGroupItem);
+  activeCategory = signal<iface.IMenuGroupItem>({} as iface.IMenuGroupItem);
   categoryId: number = 0;
 
+  //gercek productlara bagli olanlar.
+  realCategories = signal<iface.ICategory[]>([]);
+   excludedCategoryIds = [12, 13,14]; 
   //claude dizayn için
-  products = signal<iface.IProduct[]>([]); 
+  products = signal<iface.IProduct[]>([]);
   selectedSubCategoryId = signal<number | null>(null);
 
   totalCount = computed(() => CartUtils.totalCount());
@@ -96,63 +99,68 @@ export class HomePage implements OnInit {
   private router = inject(Router);
   private modalCtrl = inject(ModalController);
   private account = inject(AccountService);
-  private translate = inject(TranslationService);
+  private storeageService = inject(StateStorageService);
   public orderService = inject(OrderStateService); // HTML'den erişmek için public
-  productService=inject(ProductService);
-  menuGroupService = inject(MenuGroupService);
-  menuGroupItemService = inject(MenuGroupItemService);
-  protected ngZone = inject(NgZone);  
+  private productService = inject(ProductService);
+  private menuGroupService = inject(MenuGroupService);
+  private menuGroupItemService = inject(MenuGroupItemService);
+   private categoryService = inject(CategoryService);
+  private ngZone = inject(NgZone);
   private menuCtrl = inject(MenuController);
   private sortService = inject(SortService);
+  private toast = inject(ToastController);
+  private ts = inject(TranslationService);
+  public cartService = inject(CartService);
 
   constructor() {}
 
- ngOnInit() {
-  if (this.account.isAuthenticated()) {
-    this.account.getAuthenticationState().subscribe(account => {
-      if (account) {
-        this.orderService.setCurrentUser(account);
-          const pageToLoad={
-            lang: this.translate.getActiveLang(),
-            page:0,
-            size: 2000
-            
+  ngOnInit() {
+    if (this.account.isAuthenticated()) {
+      this.account.getAuthenticationState().subscribe((account) => {
+        if (account) {
+          this.orderService.setCurrentUser(account);
+          const pageToLoad = {
+            lang: this.storeageService.getLocale() || 'en',
+            page: 0,
+            size: 2000,
           };
-        forkJoin({
-          groups: this.menuGroupService.getRecords(pageToLoad),
-          items: this.menuGroupItemService.getRecords()
-        }).subscribe(({ groups, items }) => {
+          forkJoin({
+            groups: this.menuGroupService.getRecords(pageToLoad),
+            items: this.menuGroupItemService.getRecords(),
+            subCategories: this.categoryService.query(),
+          }).subscribe(({ groups, items, subCategories }) => {
+            this.menuGroups.set(groups.body ?? []);
+            this.categories.set(items.body ?? []);
+            this.realCategories.set(subCategories.body ?? []);
 
-          this.menuGroups.set(groups.body ?? []);
-          this.categories.set(items.body ?? []);
-
-          // 👇 artık ikisi de hazır
-          this.initSelection();
-
-        });
-      }
-    });
+            // 👇 artık ikisi de hazır
+            this.initSelection();
+          });
+        }
+      });
+    }
   }
-}
 
-private initSelection() {
-  const groups = this.menuGroups();
-  const categories = this.categories();
+  private initSelection() {
+    const groups = this.menuGroups();
+    const categories = this.categories();
 
-  if (groups.length === 0) return;
+    if (groups.length === 0) return;
 
-  this.selectedGroup = groups[0];
-  this.selectedGroupId.set(this.selectedGroup.id);
+    this.selectedGroup = groups[0];
+    this.selectedGroupId.set(this.selectedGroup.id);
 
-  const items = categories.filter(t => t.menuGroup?.id === this.selectedGroup?.id);
-  this.selectedCategories.set(items);
+    const items = categories.filter(
+      (t) => t.menuGroup?.id === this.selectedGroup?.id,
+    );
+    this.selectedCategories.set(items);
 
-  if (items.length > 0) {
-    this.setCategory(items[0].id);
-  } else {
-    this.products.set([]);
+    if (items.length > 0) {
+      this.setCategory(items[0].id);
+    } else {
+      this.products.set([]);
+    }
   }
-}
 
   initAfterLogin() {
     this.router.events.subscribe((event) => {
@@ -161,11 +169,9 @@ private initSelection() {
     });
   }
 
-
-
-  async presentOrderTypeModal() {
-    this.openAddressList();
-    /*const currentUser = this.account.trackCurrentAccount()();
+ /* async presentOrderTypeModal() {
+   
+ const currentUser = this.account.trackCurrentAccount()();
     const modal = await this.modalCtrl.create({
       component: AdreseTeslimPage,
       cssClass: 'delivery-selection-modal', // CSS ile resimdeki gibi yuvarlatılmış köşeler yapabiliriz
@@ -186,8 +192,8 @@ private initSelection() {
       if (data && data.type === 'delivery') {
         this.openAddressListModal();
       }
-    }*/
-  }
+    } 
+  }/** */
 
   // Adres Listesi Modalını açan ayrı metod
   // 2. CEPHE: Adres Listesi ve Seçimi
@@ -205,120 +211,120 @@ private initSelection() {
       console.log('Seçilen adres:', data);
       // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
     }
-  }
+  } 
 
-
-  //yeni menu grup methodlari
-  loadMenuGroups() {
-    const pageToLoad={
-      lang: this.translate.getActiveLang(),
-      page:0,
-      size: 20,
-      sort: this.sortService.startSort({ predicate: 'id', order: 'asc' })
-    };
-    this.menuGroupService.getRecords(pageToLoad).subscribe(res => {
-      this.menuGroups.set(res.body ?? []);
-      if(body.length > 0) {
-        this.selectedGroup = res.body ? res.body[0] : null;
-        this.selectedGroupId.set(this.selectedGroup?.id ?? null );
-        if (this.selectedGroup) {
-            /* Gruba bağlı alt kategorileri filtrele*/
-          const items = this.categories().filter(t => t.menuGroup?.id === this.selectedGroup?.id) ?? [];
-          this.selectedCategories.set(items);
-          /* Eğer alt kategori varsa, ilkinin ürünlerini otomatik yükle*/
-          if (items.length > 0) {
-            this.setCategory(items[0].id);
-          } else {
-            this.products.set([]);
-          }
-  }
-
+  // 1. Ana Gruba Tıklayınca (Yiyecekler)
+  selectGroup(event: any) {
+    const selectedId = event.detail.value;
+    this.selectedGroupId.set(event.detail.value);
+    const selectedGroup = this.menuGroups().find(
+      (group) => group.id === selectedId,
+    );
+    if (selectedGroup) {
+      this.selectedGroup = selectedGroup;
+      // Gruba bağlı alt kategorileri filtrele
+      const items =
+        this.categories().filter((t) => t.menuGroup?.id === selectedGroup.id) ??
+        [];
+      this.selectedCategories.set(items);
+      // Eğer alt kategori varsa, ilkinin ürünlerini otomatik yükle
+      if (items.length > 0) {
+        this.setCategory(items[0].id);
+      } else {
+        this.products.set([]);
       }
-    });
-  }
-
-   loadMenuGroupItems() {
-    this.menuGroupItemService.query().subscribe(res => {
-      this.categories.set(res.body ?? []);
-      this.setCategory(this.categories()[0]?.id ?? 0); // İlk kategoriyi seçili yap
-    });
-  }
-
-    // 1. Ana Gruba Tıklayınca (Yiyecekler)
-selectGroup(event: any) {
-  const selectedId = event.detail.value;
-  this.selectedGroupId.set(event.detail.value);
-  const selectedGroup = this.menuGroups().find(group => group.id === selectedId);
-  if (selectedGroup) {
-    this.selectedGroup = selectedGroup;
-    // Gruba bağlı alt kategorileri filtrele
-    const items = this.categories().filter(t => t.menuGroup?.id === selectedGroup.id) ?? [];
-    this.selectedCategories.set(items);
-    // Eğer alt kategori varsa, ilkinin ürünlerini otomatik yükle
-    if (items.length > 0) {
-      this.setCategory(items[0].id);
-    } else {
-      this.products.set([]);
     }
   }
-}
 
   setCategory(id: number): void {
-    this.activeCategory.set(this.categories().find(cat => cat.id === id) || {} as iface.IMenuGroupItem);
+    this.activeCategory.set(
+      this.categories().find((cat) => cat.id === id) ||
+        ({} as iface.IMenuGroupItem),
+    );
 
-      this.productService.query({ 'categoryId':id }).subscribe({
+    this.productService.query({ categoryId: id }).subscribe({
       next: (res) => {
         this.products.set(res.body ?? []);
       },
-      error: () => console.error('Ürünler yüklenirken hata oluştu kanki!')
+      error: () => {
+        this.showToast(
+          'danger',
+          'top',
+          this.ts.instant('ERROR_OCCURRED_WHILE_LOAD'),
+        );
+      },
     });
   }
 
- 
-
-// 2. Alt Kategoriye Tıklayınca (KEBAB)
-onSubCategoryChange(event: any) {
-  const targetCategoryId = event.detail.value;
-  this.loadProducts(targetCategoryId);
-}
-
-// 3. Ürünleri Getiren Metot
-loadProducts(categoryId: number) {
-  // Senin SQL sorgunun ProductService karşılığı
-  this.productService.query({ 'categoryId.equals': categoryId }).subscribe(res => {
-    let products = res.body ?? [];
-    this.products.set(products);
-  });
-
+  async showToast(
+    color: any,
+    position: 'top' | 'middle' | 'bottom',
+    mesaj: string,
+  ) {
+    const toast = await this.toast.create({
+      message: mesaj,
+      duration: 2500,
+      cssClass: 'custom-toast-success',
+      icon: 'checkmark-done-outline',
+      position: position,
+      color: color,
+    });
+    await toast.present();
   }
 
+  // 2. Alt Kategoriye Tıklayınca (KEBAB)
+  onSubCategoryChange(event: any) {
+    const targetCategoryId = event.detail.value;
+    this.loadProducts(targetCategoryId);
+  }
 
- addToCart(product: iface.IProduct) {
+  // 3. Ürünleri Getiren Metot
+  loadProducts(categoryId: number) {
+    // Senin SQL sorgunun ProductService karşılığı
+    this.productService
+      .query({ 'categoryId.equals': categoryId })
+      .subscribe((res) => {
+        let products = res.body ?? [];
+        this.products.set(products);
+      });
+  }
+
+  addToCart(product: iface.IProduct) {
+    /*this.realCategories().forEach((cat) => {
+       if (cat.categoryId && !this.excludedCategoryIds.includes(cat.categoryId)) {
+        return;
+      }
+    });/* */
+
     this.ngZone.run(() => {
-      this.router.navigate(['/products', product.id]);      
+      this.router.navigate(['/products', product.id]);
     });
   }
 
   EMOJI_MAP: Record<string, string> = {
-      elma: '🍎',
-      armut: '🍐',
-      muz: '🍌',
-      hamburger: '🍔',
-      pizza: '🍕',
-      sandwich: '🥪'   
+    elma: '🍎',
+    armut: '🍐',
+    muz: '🍌',
+    hamburger: '🍔',
+    pizza: '🍕',
+    sandwich: '🥪',
   };
 
-getEmoji(name?: string): string {
-  if (!name) return '🍽️';
-  return this.EMOJI_MAP[name.toLowerCase()] ?? '🍽️';
-}
+  getEmoji(name?: string): string {
+    if (!name) return '🍽️';
+    return this.EMOJI_MAP[name.toLowerCase()] ?? '🍽️';
+  }
 
-quickAdd($event: PointerEvent,arg1: iface.IProduct) {
+  quickAdd($event: PointerEvent, arg1: iface.IProduct) {
     throw new Error('Method not implemented.');
-}
+  }
 
   toggleMenu() {
-    this.menuCtrl.toggle();    
+    this.menuCtrl.toggle();
   }
-}
 
+    go(path: string) {
+    this.router.navigateByUrl(path);
+  }
+
+}

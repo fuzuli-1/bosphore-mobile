@@ -3,11 +3,11 @@
      <ion-buttons slot="start">
       <ion-back-button defaultHref="/home"></ion-back-button>
      </ion-buttons>
-     <ion-title>Ürün Yönetimi</ion-title>
+     <ion-title>{{ 'PRODUCT_MANAGEMENT' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openForm()">
         <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        Yeni Ürün
+        {{ 'ADD_PRODUCT' | translate }}
       </ion-button>
     </ion-buttons>
 
@@ -15,7 +15,7 @@
 
   <ion-toolbar>
     <ion-searchbar 
-      placeholder="Ürün adı ile ara..." 
+      placeholder= "{{ 'SEARCH_PRODUCT' | translate }}" 
       (ionInput)="search($event)" 
       [debounce]="500">
     </ion-searchbar>
@@ -34,8 +34,8 @@
         <ion-label>
           <h2>{{ product.name }}</h2>
           <p>
-            <ion-text color="medium">Kat: </ion-text> {{ product.category?.id || 'Belirtilmemiş' }} 
-            | <ion-text color="medium">Dil: </ion-text> {{ product.language?.id || '-' }}
+            <ion-text color="medium"> {{ 'CATEGORY' | translate }}: </ion-text> {{ product.category?.id || 'Belirtilmemiş' }} 
+            | <ion-text color="medium"> {{ 'LANGUAGE' | translate }}: </ion-text> {{ product.language?.id || '-' }}
           </p>
           <ion-badge color="success" mode="ios">{{ product.price | number:'1.2-2' }} TL</ion-badge>
         </ion-label>
@@ -46,18 +46,18 @@
             [color]="product.isActive ? 'success' : 'danger'"
             size="large">
           </ion-icon>
-          <p style="font-size: 10px;">{{ product.isActive ? 'Aktif' : 'Pasif' }}</p>
+          <p style="font-size: 10px;">product.isActive ?  {{ 'ACTIVE' | translate }} : {{ 'INACTIVE' | translate }} </p>
         </ion-note>
       </ion-item>
 
       <ion-item-options side="end">
         <ion-item-option color="warning" (click)="openForm(product)">
           <ion-icon name="create-outline" slot="top"></ion-icon>
-          Düzenle
+          {{ 'EDIT' | translate }}
         </ion-item-option>
         <ion-item-option color="danger" (click)="delete(product.id!)">
           <ion-icon name="trash-outline" slot="top"></ion-icon>
-          Sil
+          {{ 'DELETE' | translate }}
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
@@ -65,14 +65,14 @@
 
   <div *ngIf="products().length === 0" class="ion-padding ion-text-center">
     <ion-text color="medium">
-      <p>Ürün bulunamadı veya yükleniyor...</p>
+      <p>{{ 'NO_PRODUCTS_FOUND' | translate }}</p>
     </ion-text>
   </div>
 
   <ion-infinite-scroll (ionInfinite)="loadAll($event)">
     <ion-infinite-scroll-content 
       loadingSpinner="bubbles" 
-      loadingText="Daha fazla ürün yükleniyor...">
+      loadingText= "{{ 'LOADING_MORE_PRODUCTS' | translate }}">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

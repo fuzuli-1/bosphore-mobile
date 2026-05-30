@@ -1,22 +1,22 @@
  <ion-content class="ion-padding ion-text-center">
   <div class="success-container">
     <ion-icon name="checkmark-circle" color="success" style="font-size:96px;"></ion-icon>
-    <h1>Siparişin Alındı!</h1>
-     <p>Harika bir seçim yaptın. Şefimiz pizzanı hazırlamaya başladı bile.</p>
+    <h1>{{ 'ORDER_PLACED' | translate }}</h1>
+     <p>{{ 'ORDER_PLACED_MESSAGE' | translate }}</p>
      <ion-card mode="ios" class="order-card">
       <ion-card-content>
-        <p>Sipariş Numarası</p>
+        <p>{{ 'ORDER_NUMBER' | translate }}</p>
         <h2>#{{ orderId }}</h2>
       </ion-card-content>
 
      </ion-card>
 
      <ion-button expand="block" shape="round" routerLink="/home" color="danger" (click)="goHome()">
-      Ana Sayfaya Dön
+       {{ 'GO_HOME' | translate }}
     </ion-button>
     
     <ion-button fill="clear" [routerLink]="['/orders', orderId]" (click)="goToTracking()">
-      Siparişi Takip Et
+      {{ 'TRACK_ORDER' | translate }}
     </ion-button>
   </div>
 

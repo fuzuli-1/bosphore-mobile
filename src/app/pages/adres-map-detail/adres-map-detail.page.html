@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Adres Detayları</ion-title>
+    <ion-title> {{ 'ADDRESS_DETAILS' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="close()">Kapat</ion-button>
     </ion-buttons>
@@ -10,37 +10,37 @@
 <ion-content class="ion-padding">
   <ion-list>
     <ion-item>
-      <ion-label position="stacked">Adres Başlığı (Örn: Ev, İş)</ion-label>
+      <ion-label position="stacked"> {{ 'ADDRESS_TITLE' | translate }}</ion-label>
       <ion-input [(ngModel)]="address.title" placeholder="Evim"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-label position="stacked">Açık Adres (Haritadan Gelen)</ion-label>
+      <ion-label position="stacked"> {{ 'OPEN_ADDRESS' | translate }}</ion-label>
       <ion-textarea [(ngModel)]="address.addressText" readonly></ion-textarea>
     </ion-item>
 
     <ion-row>
       <ion-col size="6">
         <ion-item>
-          <ion-label position="stacked">Bina No</ion-label>
+          <ion-label position="stacked"> {{ 'BUILDING_NUMBER' | translate }}</ion-label>
           <ion-input [(ngModel)]="address.buildingNo"></ion-input>
         </ion-item>
       </ion-col>
       <ion-col size="6">
         <ion-item>
-          <ion-label position="stacked">Kat / Daire</ion-label>
+          <ion-label position="stacked"> {{ 'FLOOR_AND_APARTMENT' | translate }}</ion-label>
           <ion-input [(ngModel)]="address.floorAndApartment"></ion-input>
         </ion-item>
       </ion-col>
     </ion-row>
 
     <ion-item>
-      <ion-label position="stacked">Adres Tarifi (Opsiyonel)</ion-label>
+      <ion-label position="stacked"> {{ 'ADDRESS_DESCRIPTION' | translate }}</ion-label>
       <ion-input [(ngModel)]="address.description" placeholder="Zile basmayın..."></ion-input>
     </ion-item>
   </ion-list>
 
   <ion-button expand="block" color="success" (click)="saveAddress()" class="ion-margin-top">
-    Kaydet ve Devam Et
+     {{ 'SAVE_AND_CONTINUE' | translate }}
   </ion-button>
 </ion-content>

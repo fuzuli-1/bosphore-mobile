@@ -1,41 +1,105 @@
-import { Component, computed, inject, NgZone, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  computed,
+  inject,
+  NgZone,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { PageHeaderPage } from '../page-header/page-header.page';
- 
+
 import { CartService } from './cart.service';
-import { CartItem, IOptionGroupWithItems, IOptionItem } from 'src/app/interfaces/interfaces';
+import {
+  CartItem,
+  IOptionGroupWithItems,
+  IOptionItem,
+} from 'src/app/interfaces/interfaces';
 import { ITEMS_PER_PAGE } from 'src/app/config/pagination.constants';
-import { ExtraOptionGroupPage } from '../options/extra-options/extra-group.page';
 import { OrderStateService } from 'src/app/services/order-state-service';
 import { AdresListPage } from '../adres-list/adres-list.page';
-import { ModalController } from '@ionic/angular';
+
 import { PaymentMethod } from '../enumerations/payment-method.model';
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
 import { AccountService } from 'src/app/core/auth/account.service';
 import { Account } from 'src/app/core/auth/account.model';
-import dayjs from 'dayjs/esm';
 import { OrderService } from 'src/app/services/order-service';
-import { NavController,ToastController } from '@ionic/angular';
-import { AndroidWebViewOptions, InAppBrowser, iOSAnimation, iOSViewStyle, iOSWebViewOptions, ToolbarPosition } from '@capacitor/inappbrowser'; // Mobil tarayıcı için
-import { Platform } from '@ionic/angular'; // Web/Mobil ayrımı için
+
+import {
+  AndroidWebViewOptions,
+  InAppBrowser,
+  iOSAnimation,
+  iOSViewStyle,
+  iOSWebViewOptions,
+  ToolbarPosition,
+} from '@capacitor/inappbrowser'; // Mobil tarayıcı için
+
 import { firstValueFrom } from 'rxjs';
 import { App } from '@capacitor/app';
-import {  DeliveryType} from '../../interfaces/interfaces';
+import { DeliveryType } from '../../interfaces/interfaces';
 import { Router } from '@angular/router';
 import { Bosp } from 'src/app/shared/utils/Bosp';
-import { TooltipDirective } from "ngx-bootstrap/tooltip";
+import { TooltipDirective } from 'ngx-bootstrap/tooltip';
+import { TranslatePipe } from '../../services/TranslatePipe';
+import { TranslationService } from 'src/app/services/translation-service';
+
+import {
+  ToastController,
+  NavController,
+  ModalController,
+  Platform,
+  IonFooter,
+  IonCard,
+  IonCardContent,
+  IonLabel,
+  IonItemOption,
+  IonHeader,
+  IonItem,
+  IonList,
+  IonBadge,
+  IonButtons,
+  IonButton,
+  IonIcon,
+  IonToolbar,
+  IonBackButton,
+  IonTitle,
+  IonContent,
+  IonItemSliding,
+  IonItemOptions,
+} from '@ionic/angular/standalone';
+import { AppUtil } from 'src/app/shared/utils/app-util';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.page.html',
   styleUrls: ['./cart.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, TooltipDirective],
+  imports: [
+    IonFooter,
+    IonCard,
+    IonCardContent,
+    IonLabel,
+    IonItemOptions,
+    IonItemOption,
+    IonItemSliding,
+    IonHeader,
+    IonItem,
+    IonList,
+    IonBadge,
+    IonButtons,
+    IonButton,
+    IonIcon,
+    IonToolbar,
+    IonBackButton,
+    IonTitle,
+    IonContent,
+    CommonModule,
+    FormsModule,
+    TooltipDirective,
+    TranslatePipe,
+  ],
 })
 export class CartPage implements OnInit {
-
   deliveryType = signal<DeliveryType>('delivery');
   private platform = inject(Platform);
 
@@ -45,17 +109,15 @@ export class CartPage implements OnInit {
   isSubmitting = signal(false);
   cartItems: CartItem[] = [];
   orderPlaced = signal(false);
- 
-  
+
   // Signal kullanarak (Modern Angular Yaklaşımı)
- 
+
   optionGroups = signal<IOptionGroupWithItems[]>([]);
   itemsPerPage = ITEMS_PER_PAGE;
   private account: Account = {} as Account;
   productId = 0;
- 
 
-  protected readonly cartService = inject(CartService);
+  private cartService = inject(CartService);
   private accountService = inject(AccountService);
   public orderStateService = inject(OrderStateService);
   private modalCtrl = inject(ModalController);
@@ -65,8 +127,9 @@ export class CartPage implements OnInit {
   private toastController = inject(ToastController);
   private zone = inject(NgZone); // 🔥 Zone'u ekle
   private router = inject(Router);
+  private ts = inject(TranslationService);
   // HTML'deki seçimi tam eşitlemek için: senin HTML'de CARD ve ONLINE var
-  selectedPayment = signal<PaymentMethod>(PaymentMethod.ONLINE);
+  selectedPayment = signal<PaymentMethod>(PaymentMethod.CASH);
 
   // -------------------------
   // INIT
@@ -89,7 +152,8 @@ export class CartPage implements OnInit {
     const base = item.product.price ?? 0;
     const optionTotal =
       item.children?.reduce(
-        (sum, child) => sum + Bosp.getValue(child,"additionalPrice") * (child.quantity || 1),
+        (sum, child) =>
+          sum + Bosp.getValue(child, 'additionalPrice') * (child.quantity || 1),
         0,
       ) ?? 0;
     const productTotal = (base + optionTotal) * item.quantity;
@@ -135,14 +199,13 @@ export class CartPage implements OnInit {
     this.recalculateCart();
   }
 
- 
   changeAddress() {
     this.openAddressList();
   }
 
   getAdressText(): string {
     const address = this.orderStateService.selectedAddress();
-    return address ? address.addressText : 'Adres seçiniz';
+    return address ? address.addressText : this.ts.instant('SELECT_ADDRESS');
   }
 
   async openAddressList() {
@@ -161,10 +224,10 @@ export class CartPage implements OnInit {
     }
   }
 
-    async presentToast(
+  async presentToast(
     type: any,
     position: 'top' | 'middle' | 'bottom',
-    mesaj: string
+    mesaj: string,
   ) {
     //type 1 success , 0   error
 
@@ -187,11 +250,10 @@ export class CartPage implements OnInit {
       });
       await toast0.present();
     }
-  }  
+  }
 
   async confirmOrder() {
     try {
-
       // Double submit engeli
       if (this.isSubmitting()) {
         return;
@@ -201,7 +263,7 @@ export class CartPage implements OnInit {
 
       // Sepet kontrolü
       if (this.cartItems.length === 0) {
-        this.presentToast(0, 'bottom', 'Sepetiniz boş.');
+        this.presentToast(0, 'bottom', this.ts.instant('CART_IS_EMPTY'));
         return;
       }
 
@@ -209,13 +271,17 @@ export class CartPage implements OnInit {
       const address = this.orderStateService.selectedAddress();
 
       if (!address) {
-        this.presentToast(0, 'bottom', 'Lütfen adres seçiniz.');
+        this.presentToast(
+          0,
+          'bottom',
+          this.ts.instant('PLEASE_SELECT_ADDRESS'),
+        );
         return;
       }
 
       // Login kullanıcıyı güvenli şekilde al
       const user = await firstValueFrom(
-        this.accountService.getAuthenticationState()
+        this.accountService.getAuthenticationState(),
       );
 
       this.account = user || ({} as Account);
@@ -243,13 +309,10 @@ export class CartPage implements OnInit {
 
         paymentStatus: 'PENDING',
 
-        status:
-          this.selectedPayment() === 'ONLINE'
-            ? 'PENDING'
-            : 'PREPARING',
+        status: this.selectedPayment() === 'ONLINE' ? 'PENDING' : 'PREPARING',
 
         // Backend üretmeli ama compatibility için bırakıldı
-        clientRequestId: crypto.randomUUID(),
+        clientRequestId: AppUtil.generateUUID(),
 
         orderItems: cart.map((item) => ({
           quantity: item.quantity,
@@ -261,7 +324,7 @@ export class CartPage implements OnInit {
             id: item.product.id,
           },
           // Option isim değil ID gönder
-          options: item.children
+          options: item.children,
         })),
       };
 
@@ -274,21 +337,12 @@ export class CartPage implements OnInit {
       else {
         await this.executeStandardOrder(newOrder);
       }
-
     } catch (err) {
-
       console.error('confirmOrder error:', err);
 
-      this.presentToast(
-        0,
-        'bottom',
-        'Sipariş işlemi sırasında hata oluştu.'
-      );
-
+      this.presentToast(0, 'bottom', this.ts.instant('ORDER_PROCESS_ERROR'));
     } finally {
-
       this.isSubmitting.set(false);
-
     }
   }
 
@@ -296,32 +350,25 @@ export class CartPage implements OnInit {
    * Online ödeme akışı
    */
   private async handleOnlinePayment(orderRequest: any) {
-
     try {
-
       const res: any = await firstValueFrom(
-        this.orderService.initiateOnlinePayment(orderRequest)
+        this.orderService.initiateOnlinePayment(orderRequest),
       );
 
       const paymentUrl = res.body?.paymentPageUrl;
 
       if (!paymentUrl) {
-
         this.presentToast(
           0,
           'bottom',
-          'Ödeme linki alınamadı.'
+          this.ts.instant('PAYMENT_LINK_NOT_AVAILABLE'),
         );
 
         return;
       }
 
       // WEB
-      if (
-        !this.platform.is('capacitor') &&
-        !this.platform.is('cordova')
-      ) {
-
+      if (!this.platform.is('capacitor') && !this.platform.is('cordova')) {
         window.location.assign(paymentUrl);
 
         return;
@@ -346,60 +393,41 @@ export class CartPage implements OnInit {
 
       // Deep link dinleme
       App.addListener('appUrlOpen', async (event: any) => {
-
         const url = event?.url || '';
 
         console.log('Payment callback url:', url);
 
         // Başarılı ödeme
         if (url.includes('payment-success')) {
-
           try {
-
             const parsedUrl = new URL(url);
 
-            const orderId =
-              parsedUrl.searchParams.get('orderId');
+            const orderId = parsedUrl.searchParams.get('orderId');
 
             // Sepeti temizle
-            CartUtils.clearCart();
+           this.clearCart();
 
-            await this.navCtrl.navigateRoot(
-              ['/order-success'],
-              {
-                queryParams: {
-                  orderId,
-                },
-              }
-            );
-
+            await this.navCtrl.navigateRoot(['/order-success'], {
+              queryParams: {
+                orderId,
+              },
+            });
           } catch (err) {
-
-            console.error(
-              'payment-success parse error:',
-              err
-            );
+            console.error('payment-success parse error:', err);
           }
         }
 
         // Başarısız ödeme
         else if (url.includes('payment-failed')) {
-
-          this.presentToast(
-            0,
-            'bottom',
-            'Ödeme başarısız oldu.'
-          );
+          this.presentToast(0, 'bottom', this.ts.instant('PAYMENT_FAILED'));
         }
       });
 
       // WebView aç
       await InAppBrowser.openInWebView({
-
         url: paymentUrl,
 
         options: {
-
           showURL: true,
 
           showToolbar: true,
@@ -410,7 +438,7 @@ export class CartPage implements OnInit {
 
           mediaPlaybackRequiresUserAction: true,
 
-          closeButtonText: 'Kapat',
+          closeButtonText: this.ts.instant('CLOSE'),
 
           toolbarPosition: ToolbarPosition.BOTTOM,
 
@@ -424,26 +452,16 @@ export class CartPage implements OnInit {
         },
 
         customHeaders: {
-          title: 'Paiement Sécurisé',
+          title: this.ts.instant('SECURE_PAYMENT'),
         },
       });
-
     } catch (err: any) {
-
-      console.error(
-        'handleOnlinePayment error:',
-        err
-      );
+      console.error('handleOnlinePayment error:', err);
 
       const backendMessage =
-        err?.error?.message ||
-        'Ödeme işlemi başlatılamadı.';
+        err?.error?.message || this.ts.instant('PAYMENT_INIT_ERROR');
 
-      this.presentToast(
-        0,
-        'bottom',
-        backendMessage
-      );
+      this.presentToast(0, 'bottom', backendMessage);
     }
   }
 
@@ -451,26 +469,25 @@ export class CartPage implements OnInit {
    * Kapıda ödeme / nakit / pos
    */
   private async executeStandardOrder(newOrder: any) {
-
     try {
-
-      const res = await firstValueFrom(
-        this.orderService.create(newOrder)
-      );
+      const res = await firstValueFrom(this.orderService.create(newOrder));
 
       const savedOrder = res.body;
 
       if (!savedOrder?.id) {
+        this.presentToast(
+          0,
+          'bottom',
+          this.ts.instant('ORDER_PROCESS_ERROR') +
+            ':' +
+            this.ts.instant('ORDER_ID_NOT_RECEIVED'),
+        );
         throw new Error('Sipariş ID alınamadı');
       }
 
-      // Başarılıysa sepet temizle
-      CartUtils.clearCart();
-
-      console.log(
-        'Sipariş başarıyla oluşturuldu. Sipariş ID:',
-        savedOrder.id
-      );
+      // Başarılıysa sepet temizle  
+        this.clearCart();
+      console.log('Sipariş başarıyla oluşturuldu. Sipariş ID:', savedOrder.id);
 
       // Success ekranı
       await this.navCtrl.navigateRoot(['/order-success'], {
@@ -478,43 +495,38 @@ export class CartPage implements OnInit {
           orderId: savedOrder.id,
         },
       });
-
     } catch (err: any) {
-
       console.error('executeStandardOrder error:', err);
 
       // Backend hata mesajı varsa göster
       const backendMessage =
-        err?.error?.message ||
-        'Sipariş sırasında hata oluştu.';
+        err?.error?.message || this.ts.instant('ORDER_PROCESS_ERROR');
 
-      this.presentToast(
-        0,
-        'bottom',
-        backendMessage
-      );
+      this.presentToast(0, 'bottom', backendMessage);
     }
   }
 
-  clearCart() {  
-    CartUtils.clearCart();
+  clearCart() {   
     this.cartItems = [];
     this.total = 0;
-    this.presentToast(1, 'bottom', 'Sepet temizlendi.');  
+    this.cartService.clear();
+    this.presentToast(1, 'bottom', this.ts.instant('CART_CLEARED'));
   }
 
   setDelivery(type: DeliveryType): void {
     this.deliveryType.set(type);
   }
 
-    getExtrasLabel(item: CartItem): string {
-    const parts = [item.children?.length ? `${item.children.length} ekstra` : null].filter(Boolean) as string[];
-    if (item.children!=null && item.children.length > 0) {
-      parts.push(item.children.map(c => c.name).join(', '));
+  getExtrasLabel(item: CartItem): string {
+    const parts = [
+      item.children?.length ? `${item.children.length} ekstra` : null,
+    ].filter(Boolean) as string[];
+    if (item.children != null && item.children.length > 0) {
+      parts.push(item.children.map((c) => c.name).join(', '));
     }
     return parts.join(' · ');
   }
- 
+
   placeOrder(): void {
     this.orderPlaced.set(true);
     setTimeout(() => {
@@ -526,10 +538,7 @@ export class CartPage implements OnInit {
     }, 2500);
   }
 
-  selectPayment(odeme:string) {
+  selectPayment(odeme: string) {
     this.selectedPayment.set(odeme as PaymentMethod);
- 
+  }
 }
-
-}
- 

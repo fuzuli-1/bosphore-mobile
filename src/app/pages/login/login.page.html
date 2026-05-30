@@ -1,3 +1,6 @@
+
+ 
+
 <ion-content class="login-content">
   <div class="center-wrapper">
     <div class="login-card">
@@ -5,13 +8,14 @@
 
       <!--segment-->
       <ion-segment [(ngModel)]="loginType">
- 
-
         <ion-segment-button value="phone">
-          {{'PHONE_NUMBER'|translate}}
+          <ion-icon name="call-outline" style="display: block; margin: 2px auto;"></ion-icon>
+          <ion-label style="font-size: 12px;">{{ 'PHONE_NUMBER' | translate }}</ion-label>
         </ion-segment-button>
+        
         <ion-segment-button value="email">
-          {{'EMAIL_ADDRESS'|translate}}
+          <ion-icon name="mail-outline" style="display: block; margin: 2px auto;"></ion-icon>
+          <ion-label style="font-size: 12px;">{{ 'EMAIL_ADDRESS' | translate }}</ion-label>
         </ion-segment-button>
       </ion-segment>
       <!-- e-mail-->
@@ -19,7 +23,7 @@
       <div class="form-group">
         <ion-label>{{'EMAIL_ADDRESS'|translate}}</ion-label>
         <ion-input
-          type="e-mail"
+          type="email"
           placeholder="xxx@gmail.com"
           [(ngModel)]="loginData.username"
         >
@@ -66,14 +70,14 @@
       <div class="form-group">
         <ion-select
         [(ngModel)]="langKey"
-        name="lang"
+         name="lang"
          interface="popover"
          placeholder="English(EN)"
-         [cancelText]="'LOGIN.CANCEL' | translate"
-         [okText]="'LOGIN.CHOOSE' | translate"
+         cancelText="{{ 'LOGIN.CANCEL' | translate }}"
+         okText="{{ 'LOGIN.CHOOSE' | translate }}"
           (ionChange)="changeLanguege()"          
         >
-          @for (language of languages; track language) {
+          @for (language of languages; track   language.code) {
               <ion-select-option [value]="language.code"> {{ language.lang }} </ion-select-option>
             }
         </ion-select>
@@ -81,3 +85,6 @@
     </div>
   </div>
 </ion-content>
+
+
+

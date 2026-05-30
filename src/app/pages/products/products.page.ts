@@ -5,12 +5,13 @@ import { ModalController, AlertController, IonicModule } from '@ionic/angular';
 import { ProductFormComponent } from './product-form';
 import { TranslationService } from 'src/app/services/translation-service';
 import { CommonModule } from '@angular/common';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 @Component({
   selector: 'products',
   templateUrl: './products.page.html',
   standalone: true,
-  imports: [IonicModule,CommonModule]
+  imports: [IonicModule, CommonModule, TranslatePipe]
 })
 export class ProductsPage implements OnInit {
   private productService = inject(ProductService);
@@ -103,11 +104,11 @@ export class ProductsPage implements OnInit {
 
   async delete(id: number) {
     const alert = await this.alertCtrl.create({
-      header: this.translate.instant('delete'),
+      header: this.translate.instant('DELETE_PRODUCT'),
       message: this.translate.instant('CONFIRM_DELETE'),
       buttons: [
-        { text: this.translate.instant('cancel'), role: 'cancel' },
-        { text: this.translate.instant('delete'), handler: () => {
+        { text: this.translate.instant('CANCEL'), role: 'cancel' },
+        { text: this.translate.instant('DELETE'), handler: () => {
           this.resetList();
           this.productService.delete(id).subscribe(() => this.loadAll()) 
 

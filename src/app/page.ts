@@ -1,6 +1,22 @@
 /**
  * Uygulama içerisindeki Dinamik Renk Tanımlarını İçerir.
  */
+import { Capacitor } from '@capacitor/core';
+import { environment } from 'src/environments/environment';
+
+const getApiUrl = (): string => {
+  const platform = Capacitor.getPlatform();
+  if (platform === 'android') {
+    return 'http://192.168.1.7:8080';   // emülatör
+  }
+  if (platform === 'ios') {
+    return 'http://localhost:8080';
+  }
+
+ return environment.apiUrl
+ // return 'http://192.168.1.7:8080';     // browser
+};
+
 export let genelStyle: any = {
   //GENEL RENK START
   ANA_RENK: 'rgb(6, 136, 153)',
@@ -26,9 +42,11 @@ export let GeneralSettings: {
   title?: string;
   logo?: any;
 } = {
-  url: 'http://localhost:8080', // '../akgun-mobile/api'
+   // Android emülatörü için:
+  url: getApiUrl(),
+  //url: 'http://localhost:8080',
   //couchDB: 'http://ivitaldata.akgun.com.tr/',
-  lang: 'tr',
+  lang: 'fr',
   code: '',
   title: '',
   logo: null,

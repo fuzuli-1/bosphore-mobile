@@ -61,7 +61,7 @@
         fill="outline"
         (click)="openItemModal()"
       >
-        <ion-icon name="add" slot="start"></ion-icon> Item Ekle
+        <ion-icon name="add" slot="start"></ion-icon> {{ 'ADD_ITEM' | translate }}
       </ion-button>
     </ion-item>
 
@@ -79,10 +79,10 @@
         </ion-item>
                 <ion-item-options side="end">
           <ion-item-option color="warning" (click)="editItem(item)"
-            >Düzenle</ion-item-option
+            >{{ 'EDIT' | translate }}</ion-item-option
           >
           <ion-item-option color="danger" (click)="deleteItem(item)"
-            >Sil</ion-item-option
+            >{{ 'DELETE' | translate }}</ion-item-option
           >
         </ion-item-options>
       </ion-item-sliding>

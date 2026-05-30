@@ -11,19 +11,22 @@ import { ToastController } from '@ionic/angular';
 import { Bosp } from 'src/app/shared/utils/Bosp';
 import { OrderStateService } from 'src/app/services/order-state-service';
 import dayjs from 'dayjs/esm';
+import { TranslatePipe } from "../../services/TranslatePipe";
+import { TranslationService } from 'src/app/services/translation-service';
  
 @Component({
   selector: 'app-order-history',
   templateUrl: './order-history.page.html',
   styleUrls: ['./order-history.page.scss'],
   standalone: true,
-  imports: [IonicModule,CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe]
 })
 export class OrderHistoryPage implements OnInit {
 
 
   orders: IOrder[] = [];
   public orderStateService = inject(OrderStateService);
+  private ts = inject(TranslationService);
  constructor(
     private orderService: OrderService,
     private navCtrl: NavController,
@@ -95,7 +98,7 @@ async reorder(order: IOrder, event: Event) {
     });
 
     const toast = await this.toastCtrl.create({
-      message: 'Hadi yine iyisin kanki, ürünleri sepete attık! 🚀',
+      message: this.ts.instant('REORDER_SUCCESS'),
       duration: 2000,
       color: 'success',
       position: 'bottom',

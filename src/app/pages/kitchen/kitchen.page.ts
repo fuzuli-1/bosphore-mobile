@@ -10,12 +10,13 @@ import dayjs from 'dayjs/esm';
 import { Subscription } from 'rxjs';
 import { interval } from 'rxjs';
 import { switchMap, startWith } from 'rxjs/operators';
+import { TranslatePipe } from "../../services/TranslatePipe";
 @Component({
   selector: 'app-kitchen',
   templateUrl: './kitchen.page.html',
   styleUrls: ['./kitchen.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
 })
 export class KitchenPage implements OnInit {
 

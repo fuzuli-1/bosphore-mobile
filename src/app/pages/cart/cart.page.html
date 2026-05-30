@@ -2,15 +2,15 @@
   <ion-toolbar color="dark">
 
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home" text="Menüye Dön" color="light"></ion-back-button>
+      <ion-back-button defaultHref="/home" text="{{ 'BACK_TO_MENU' | translate }}" color="light"></ion-back-button>
     </ion-buttons>
 
-    <ion-title class="cart-title">Sepetim</ion-title>
+    <ion-title class="cart-title">{{'MY_BASKET' | translate}}</ion-title>
 
     <ion-buttons slot="end">
       @if (cartItems.length > 0) {
         <ion-button fill="clear" (click)="clearCart()" class="clear-btn">
-          Temizle
+           {{ 'CLEAR_BASKET' | translate }}
         </ion-button>
       }
     </ion-buttons>
@@ -24,10 +24,10 @@
   @if (cartItems.length === 0) {
     <div class="empty-state">
       <span class="empty-emoji">🛒</span>
-      <h2 class="empty-title">Sepetiniz boş</h2>
-      <p class="empty-desc">Menüden ürün ekleyerek başlayın</p>
+      <h2 class="empty-title"> {{ 'EMPTY_BASKET' | translate }}</h2>
+      <p class="empty-desc"> {{ 'ADD_ITEMS_TO_BASKET' | translate }}</p>
       <ion-button color="primary" shape="round" routerLink="/home">
-        Menüye Git
+         {{ 'GO_TO_MENU' | translate }}
       </ion-button>
     </div>
   }
@@ -40,19 +40,19 @@
         <ion-icon name="location" color="primary"></ion-icon>
       </div>
       <div class="addr-info">
-        <span class="addr-label">Teslimat Adresi</span>
+        <span class="addr-label"> {{ 'DELIVERY_ADDRESS' | translate }}</span>
         <span class="addr-value">{{ getAdressText() }}</span>
       </div>
       <ion-button fill="clear" color="primary" size="small" class="addr-change" (click)="openAddressList()" tooltip="Adresi Değiştir">
-        Değiştir
+        {{ 'CHANGE_ADDRESS' | translate }}
       </ion-button>
     </div>
  
 
     <!-- ÜRÜNLER BAŞLIĞI -->
     <div class="section-header">
-      <h2 class="section-title">Ürünler</h2>
-      <ion-badge color="medium" class="item-count">{{ cartItems.length }} ürün</ion-badge>
+      <h2 class="section-title"> {{ 'PRODUCTS' | translate }}</h2>
+      <ion-badge color="medium" class="item-count">{{ cartItems.length }} {{ 'PRODUCT' | translate }}</ion-badge>
     </div>
 
     <!-- ÜRÜN KARTLARI -->
@@ -102,7 +102,7 @@
     <ion-card class="summary-card">
       <ion-card-content>
          <div class="sum-row sum-row--total">
-          <span class="sum-total-label">Toplam</span>
+          <span class="sum-total-label"> {{ 'TOTAL' | translate }}</span>
           <span class="sum-total-val">{{ total | number:'1.2-2' }} TL</span>
         </div>
 
@@ -113,7 +113,7 @@
 @if(cartItems.length > 0) {
 
   <div class="payment-row">
-    <p class="section-title">Ödeme Yöntemi Seçin</p>
+    <p class="section-title"> {{ 'SELECT_PAYMENT_METHOD' | translate }}</p>
 
     <div class="payment-options">
 
@@ -122,7 +122,7 @@
            [class.method-box--active]="selectedPayment() === 'CASH'">
 
         <ion-icon name="cash-outline"></ion-icon>
-        <div class="pay-name">Kapıda Nakit</div>
+        <div class="pay-name"> {{ 'CASH_ON_DELIVERY' | translate }}</div>
 
       </div>
 
@@ -131,7 +131,7 @@
            [class.method-box--active]="selectedPayment() === 'CREDIT_CARD'">
 
         <ion-icon name="card-outline"></ion-icon>
-        <div class="pay-name">Kapıda Kart</div>
+        <div class="pay-name"> {{ 'CREDIT_CARD' | translate }}</div>
 
       </div>
 
@@ -140,7 +140,7 @@
            [class.method-box--active]="selectedPayment() === 'ONLINE'">
 
         <ion-icon name="cloud-outline"></ion-icon>
-        <div class="pay-name">Online Ödeme</div>
+        <div class="pay-name"> {{ 'ONLINE_PAYMENT' | translate }}</div>
 
       </div>
 
@@ -164,11 +164,11 @@
 
         @if (orderPlaced()) {
           <ion-icon slot="start" name="checkmark-circle-outline"></ion-icon>
-          <span>Sipariş Alındı!</span>
+          <span> {{ 'ORDER_PLACED' | translate }}</span>
         } @else {
-          <span>Siparişi Onayla</span>
+          <span> {{ 'CONFIRM_ORDER' | translate }}</span>
           <ion-badge slot="end" color="dark" class="checkout-total">
-            {{ total | number:'1.2-2' }} TL
+            {{ total | number:'1.2-2' }}
           </ion-badge>
         }
 

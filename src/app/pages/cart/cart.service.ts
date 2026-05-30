@@ -13,6 +13,7 @@ import { IProduct } from 'src/app/interfaces/interfaces';
 import { NavController, ToastController } from '@ionic/angular';
 import { NewAddress } from 'src/app/interfaces/interfaces';
 import { OrderService } from 'src/app/services/order-service';
+import { AppUtil } from 'src/app/shared/utils/app-util';
 /* -----------------------------
    JHIPSTER TYPES (DEĞİŞMEDİ)
 -------------------------------- */
@@ -59,11 +60,47 @@ getCart(): Observable<CartItem[]> {
      CART OPERATIONS
   ---------------------------------- */
 
-  add(item: CartItem) {
-    const cart = [...this.cart$.value, this.recalculateItem(item)];
-    this.cart$.next(cart);
-    this.save();
+add(item: CartItem) {
+  const currentCart = this.cart$.value;
+
+  // Sepette tamamen aynı ürün ID'sine ve AYNI seçilmiş alt opsiyonlara sahip ürün var mı?
+  const existingItemIndex = currentCart.findIndex(cartItem => 
+    cartItem.product.id === item.product.id && 
+    this.areOptionsEqual(cartItem.children, item.children)
+  );
+
+  if (existingItemIndex > -1) {
+    // Varsa: Sadece miktarını artır ve yeniden hesapla
+    const updatedCart = [...currentCart];
+    const existingItem = updatedCart[existingItemIndex];
+    
+    updatedCart[existingItemIndex] = this.recalculateItem({
+      ...existingItem,
+      quantity: (existingItem.quantity ?? 1) + (item.quantity ?? 1)
+    });
+    
+    this.cart$.next(updatedCart);
+  } else {
+    // Yoksa veya opsiyonlar farklıysa: Yeni bir UUID ile sepete yeni satır olarak ekle
+    const newItem = { ...item, uuid: item.uuid || AppUtil.generateUUID() };
+    this.cart$.next([...currentCart, this.recalculateItem(newItem)]);
   }
+  
+  this.save();
+}
+
+// Opsiyonların aynı olup olmadığını kontrol eden yardımcı metot
+private areOptionsEqual(opts1?: any[], opts2?: any[]): boolean {
+  if (!opts1 && !opts2) return true;
+  if (!opts1 || !opts2) return false;
+  if (opts1.length !== opts2.length) return false;
+
+  // ID'ye veya koda göre sıralayıp karşılaştırma yapıyoruz
+  const ids1 = opts1.map(o => o.id).sort();
+  const ids2 = opts2.map(o => o.id).sort();
+  
+  return ids1.every((id, index) => id === ids2[index]);
+}
 
   updateQuantity(uuid: string, quantity: number) {
     const cart = this.cart$.value.map(item =>
@@ -130,20 +167,24 @@ getCart(): Observable<CartItem[]> {
      PRICE CALCULATION (TEK KAYNAK)
   ---------------------------------- */
 
-  private recalculateItem(item: CartItem): CartItem {
-    const base = item.product.price ?? 0;
+ private recalculateItem(item: CartItem): CartItem {
+  const base = item.product.price ?? 0;
 
-    const childrenTotal =
-      item.children?.reduce(
-        (sum, c) => sum + (c.additionalPrice ?? 0) * c.quantity,
-        0
-      ) ?? 0;
-    const productTotal = (base + childrenTotal);
-    return {
-      ...item,
-      totalPrice: productTotal 
-    };
-  } 
+  // Çocuk bileşenlerin (sos, ekstra et vb.) kendi ek ücretleri ve miktarları
+  const childrenTotal =
+    item.children?.reduce(
+      (sum, c) => sum + (c.additionalPrice ?? 0) * (c.quantity ?? 1),
+      0
+    ) ?? 0;
+
+  // TOPLAM: (Ürünün yalın fiyatı + ekstraları) * Sipariş adedi
+  const productTotal = (base + childrenTotal) * (item.quantity ?? 1);
+
+  return {
+    ...item,
+    totalPrice: productTotal 
+  };
+}
 
   /* --------------------------------
      STORAGE

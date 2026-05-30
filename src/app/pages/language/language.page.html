@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
-    <ion-title>Dil Yönetimi</ion-title>
+    <ion-title>{{ 'LANGUAGE_MANAGEMENT' | translate }}</ion-title>
     <ion-buttons slot="start">
         <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
@@ -8,14 +8,14 @@
       <!-- Yeni Dil Ekleme Butonu -->
       <ion-button (click)="openLanguageModal()">
         <ion-icon name="add-outline" slot="start"></ion-icon>
-        Yeni Kayıt
+        {{ 'ADD_NEW_RECORD' | translate }}
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar> <!-- Arama Çubuğu -->
     <ion-searchbar       
       (ionInput)="onSearch($event)"
-      placeholder="Dil ara..."
+      placeholder="{{ 'SEARCH_LANGUAGE' | translate }}"
       debounce="500"
       show-clear-button="always">
       
@@ -49,11 +49,11 @@
       <ion-item-options side="end">
         <ion-item-option color="warning" (click)="openLanguageModal(lang)">
           <ion-icon name="create-outline" slot="top"></ion-icon>
-          Düzenle
+          {{ 'EDIT' | translate }}
         </ion-item-option>
         <ion-item-option color="danger" (click)="deleteLanguage(lang)">
           <ion-icon name="trash-outline" slot="top"></ion-icon>
-          Sil
+          {{ 'DELETE' | translate }}
         </ion-item-option>
       </ion-item-options>
     </ion-item-sliding>
@@ -62,7 +62,7 @@
   <!-- Veri Yoksa Gösterilecek Alan -->
   <div *ngIf="languages().length === 0" class="ion-text-center ion-padding">
     <ion-text color="medium">
-      <p>Kayıtlı dil bulunamadı.</p>
+      <p>{{ 'NO_RECORDS_FOUND' | translate }}</p>
     </ion-text>
   </div>
 
@@ -72,17 +72,17 @@
       <ion-buttons slot="start">
         <ion-button (click)="previousPage()" [disabled]="page === 0">
           <ion-icon name="arrow-back-outline"></ion-icon>
-          Geri
+          {{ 'PREVIOUS' | translate }}
         </ion-button>
       </ion-buttons>
       
       <ion-title class="ion-text-center" style="font-size: 0.9rem;">
-        Sayfa {{ page + 1 }}
+         {{ 'PAGE' | translate }} {{ page + 1 }}
       </ion-title>
 
       <ion-buttons slot="end">
         <ion-button (click)="nextPage()" [disabled]="(page + 1) * itemsPerPage >= totalItems">
-          İleri
+           {{ 'NEXT' | translate }}
           <ion-icon name="arrow-forward-outline"></ion-icon>
         </ion-button>
       </ion-buttons>

@@ -65,7 +65,7 @@
 }
 
 <h3 class="section-title">
-  Standart Malzemeler / Ekstra Malzemeler
+  {{ 'STANDARD_INGREDIENTS' | translate }} / {{ 'EXTRA_INGREDIENTS' | translate }}
   <ion-icon name="information-circle-outline"></ion-icon>
 </h3>
 
@@ -84,7 +84,7 @@
 </div>
 <ion-item lines="none" class="search-box">
   <ion-input
-    placeholder="Malzeme Ara..."
+    placeholder="{{ 'SEARCH_INGREDIENTS' | translate }}"
     [(ngModel)]="searchText"
   ></ion-input>
   <ion-icon name="search-outline"></ion-icon>

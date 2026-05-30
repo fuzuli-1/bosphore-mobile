@@ -19,7 +19,9 @@
         <div class="row">
           <div class="input-group">
             <label>{{'FIRST_NAME'|translate}}</label>
-            <ion-input formControlName="firstName" type="text" placeholder="{{'FIRST_NAME_PLACEHOLDER'|translate}}" mode="md" fill="outline"></ion-input>
+            <ion-input formControlName="firstName" type="text" 
+            [placeholder]="'FIRST_NAME_PLACEHOLDER' | translate"
+             mode="md" fill="outline"></ion-input>
           </div>
           <div class="input-group">
             <label>{{'LAST_NAME'|translate}}</label>

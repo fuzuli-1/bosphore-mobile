@@ -3,38 +3,29 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   inject,
   Input,
-  input,
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
 import { IonicModule } from '@ionic/angular';
 import { TranslationService } from 'src/app/services/translation-service';
 import { AccountService } from 'src/app/core/auth/account.service';
 import { Router } from '@angular/router';
 import { ModalController, ToastController } from '@ionic/angular';
 import { TranslatePipe } from '../../services/TranslatePipe';
-import { Address, IAddress, NewAddress } from 'src/app/interfaces/interfaces';
-import { add } from 'ngx-bootstrap/chronos';
+import {NewAddress } from 'src/app/interfaces/interfaces';
 import { AddressService } from '../address/address.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-adres-map-detail',
   templateUrl: './adres-map-detail.page.html',
   styleUrls: ['./adres-map-detail.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], // Hata mesajını bastırır
 })
 export class AdresMapDetailPage implements OnInit {
-  private translate = inject(TranslationService);
+  private ts = inject(TranslationService);
   private modalCtrl = inject(ModalController);
   private occount = inject(AccountService);
   private router = inject(Router);
@@ -71,9 +62,12 @@ export class AdresMapDetailPage implements OnInit {
       next: (res) => {
         // Başarılıysa tüm modalları kapat ve ana sayfaya dön
         this.modalCtrl.dismiss(res, 'confirm');
-        this.presentToast(1, 'top', 'Adresiniz başarıyla kaydedildi.');
+        this.presentToast(1, 'top',this.ts.instant('ADDRESS_SAVED_SUCCESS') );
       },
-      error: (err) => console.error('Hata:', err),
+      error: (err) =>{
+        console.error('Hata:', err);
+        this.presentToast(0, 'top', this.ts.instant('ADDRESS_SAVED_ERROR')+': ' + err.message);
+      }  
     });
   }
 

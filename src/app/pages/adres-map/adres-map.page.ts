@@ -1,17 +1,16 @@
 import { AfterViewInit, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonButtons, IonButton, IonSearchbar, IonFabButton, IonFab, IonFooter } from '@ionic/angular/standalone';
-import { IonicModule, NavController, ModalController, SearchbarInputEventDetail } from '@ionic/angular';
+import { IonicModule, ModalController} from '@ionic/angular';
 import L from 'leaflet';
 import { HttpClient } from '@angular/common/http';
-import { IonSearchbarCustomEvent } from '@ionic/core';
+import { TranslatePipe } from "../../services/TranslatePipe";
 @Component({
   selector: 'app-adres-map',
   templateUrl: './adres-map.page.html',
   styleUrls: ['./adres-map.page.scss'],
   standalone: true,
-  imports: [IonFooter, IonFab, IonFabButton, IonSearchbar, IonButton, IonButtons, IonIcon, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe]
 })
 export class AdresMapPage implements OnInit, AfterViewInit {
 

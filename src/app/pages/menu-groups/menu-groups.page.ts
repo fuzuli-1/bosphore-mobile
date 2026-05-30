@@ -8,13 +8,13 @@ import { FormsModule } from '@angular/forms';
 import { TranslationService } from 'src/app/services/translation-service';
 import { FooterService } from 'src/app/services/footer-service';
 import { LoadingService } from 'src/app/services/loading-service';
- import { NavController, ModalController, ToastController, RefresherEventDetail } from '@ionic/angular';
+ import { NavController, ModalController, ToastController } from '@ionic/angular';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IMenuGroup } from 'src/app/interfaces/interfaces';
 import { EntityArrayResponseType, MenuGroupService } from './menu-group-service';
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'src/app/config/pagination.constants';
-import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'src/app/config/navigation.constants';
-import { SortByDirective, SortDirective, SortService, type SortState, sortStateSignal }  from 'src/app/shared/sort';
+import { DEFAULT_SORT_DATA,SORT } from 'src/app/config/navigation.constants';
+import {SortService, type SortState, sortStateSignal }  from 'src/app/shared/sort';
  import * as iface from '../../interfaces/interfaces';
 import Swiper from 'swiper';
 

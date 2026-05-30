@@ -100,7 +100,9 @@ public static getValue(obj: any, propertyPath: string): number {
   return String(currentValue);
 }
 
-
+public static isPresent<T>(t: T | undefined | null): t is T {
+  return t !== undefined && t !== null;
+}
 
 
   public static getSearcCriters(data: any): any {

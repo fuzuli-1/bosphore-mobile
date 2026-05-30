@@ -9,7 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "serve:nginx": "ionic serve --host 0.0.0.0 --port 8100"
   },
   "private": true,
   "dependencies": {
@@ -23,11 +24,13 @@
     "@angular/platform-browser": "20.3.18",
     "@angular/platform-browser-dynamic": "20.3.18",
     "@angular/router": "20.3.18",
+    "@capacitor/android": "^8.3.4",
     "@capacitor/app": "7.1.0",
     "@capacitor/core": "^8.3.4",
     "@capacitor/haptics": "7.0.2",
     "@capacitor/inappbrowser": "^4.0.0",
-    "@capacitor/keyboard": "7.0.3",
+    "@capacitor/keyboard": "^8.0.3",
+    "@capacitor/preferences": "^8.0.1",
     "@capacitor/status-bar": "7.0.3",
     "@fortawesome/angular-fontawesome": "^3.0.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",

@@ -1,6 +1,6 @@
 <ion-header lines="none">
   <ion-toolbar>
-    <ion-title style="text-align: center;">{{ 'adreslerim' | translate }}</ion-title>
+    <ion-title style="text-align: center;">{{ 'MY_ADDRESSES' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="close()">
         <ion-icon  slot="icon-only" name="remove-outline"></ion-icon>
@@ -12,7 +12,7 @@
 <ion-content class="ion-padding">
   <ion-button expand="block" fill="outline" class="new-address-btn ion-margin-bottom"
   (click)="openAddressModal()">
-    {{ 'yeni_adres_ekle' | translate }}
+    {{ 'ADD_NEW_ADDRESS' | translate }}
   </ion-button>
  
     
@@ -34,14 +34,14 @@
 
   <div class="info-note ion-margin-top">
     <ion-icon name="information-circle-outline" color="warning"></ion-icon>
-    <p>Şube değişikliğiyle birlikte fiyatlar da güncellenecektir.</p>
+    <p>{{ 'PRICE_ADDRES_INFO' | translate }}</p>
   </div>
 </ion-content>
 
-<ion-footer lines="none">
+<ion-footer  class="addres-footer" lines="none">
   <ion-toolbar>
     <ion-button expand="block" color="success" (click)="confirmAddress()" [disabled]="!selectedAddressId">
-      Seçili Adres ile Devam Et
+      {{ 'CONTINUE_WITH_SELECTED_ADDRESS' | translate }}
     </ion-button>
   </ion-toolbar>
 </ion-footer>

@@ -10,18 +10,17 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   NavController,
-  ModalController,
-  ToastController,
-  RefresherEventDetail,
+ 
 } from '@ionic/angular';
 import { IonicModule } from '@ionic/angular';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 @Component({
   selector: 'app-order-success',
   templateUrl: './order-success.page.html',
   styleUrls: ['./order-success.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class OrderSuccessPage implements OnInit {

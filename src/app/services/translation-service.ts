@@ -13,8 +13,14 @@ export class TranslationService {
   private currentLang$ = new BehaviorSubject<string>('en');
   private translations = signal<{ [key: string]: any }>({}); 
   protected readonly applicationConfigService = inject(ApplicationConfigService);
-  protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/languages/translations');
+ 
   constructor(private http: HttpClient) {}
+
+
+  // ✅ DOĞRU - her çağrıda güncel prefix'i al
+private get resourceUrl(): string {
+  return this.applicationConfigService.getEndpointFor('/api/languages/translations');
+}
 
   /** ✔ kullanılabilir dilleri ekle */
   addLangs(langs: string[]) {
@@ -36,21 +42,24 @@ export class TranslationService {
   }
 
   /** ✔ backend’den çeviri çekme */
-  private load(lang: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.http.get(`${this.resourceUrl}?lang=${lang}`)       
-        .subscribe({
-          next: (data: any) => {
-            this.translations.set(data);
-            resolve();
-          },
-          error: (err) => {
-            console.error('Translation load error:', err);
-            reject(err);
-          }
-        });
+ private load(lang: string): Promise<void> {
+  const url = `${this.resourceUrl}?lang=${lang}`;
+  console.log('🌐 Translation URL:', url);  // ← hangi URL'e gidiyor
+  
+  return new Promise((resolve, reject) => {
+    this.http.get(url).subscribe({
+      next: (data: any) => {
+        console.log('✅ Çeviri yüklendi:', Object.keys(data).length, 'anahtar');
+        this.translations.set(data);
+        resolve();
+      },
+      error: (err) => {
+        console.error('❌ Çeviri hatası:', err.status, err.message, url);
+        reject(err);
+      }
     });
-  }
+  });
+}
   
 
   /** ✔ Anında çeviri */
@@ -83,8 +92,5 @@ export class TranslationService {
     }
     return null;
   }
-
-  public getActiveLang():string   {
-    return this.currentLang$.getValue();
-  }
+ 
 }

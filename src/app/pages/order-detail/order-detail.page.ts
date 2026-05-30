@@ -1,30 +1,35 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule,ToastController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { IOrder } from '../../../app/interfaces/interfaces';
 import { ActivatedRoute } from '@angular/router';
 import { OrderService } from '../../services/order-service';
 import { interval } from 'rxjs';
 import { switchMap, startWith } from 'rxjs/operators';
+import { TranslationService } from 'src/app/services/translation-service';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 @Component({
   selector: 'app-order-detail',
   templateUrl: './order-detail.page.html',
   styleUrls: ['./order-detail.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
 })
 export class OrderDetailPage implements OnInit {
 
   orderId: number | null = null;
   order: IOrder | null = null;
   private pollingSub?: Subscription;
+  private ts = inject(TranslationService);
+  private toastc = inject(ToastController);
 
   constructor(
     private route: ActivatedRoute,
     private orderService: OrderService
+
   ) {}
 
   ngOnInit() {
@@ -54,7 +59,10 @@ export class OrderDetailPage implements OnInit {
             this.pollingSub?.unsubscribe();
           }
         },
-        error: (err) => console.error('Sipariş bilgisi alınamadı:', err)
+        error: (err) =>{
+            this.showToast(this.ts.instant('ORDER_FETCH_ERROR'), 'top');
+            console.error('Sipariş bilgisi alınamadı:', err)
+        }
       });
   }
 
@@ -95,13 +103,23 @@ export class OrderDetailPage implements OnInit {
 
     getStatusLabel(status?: any): string {
     const statusMap: { [key: string]: string } = {
-      PENDING: 'Yeni Sipariş',
-      PREPARING: 'Hazırlanıyor',
-      COOKING: 'Fırında 🔥',
-      ON_THE_WAY: 'Kuryede 🛵',
-      DELIVERED: 'Teslim Edildi',
-      CANCELLED: 'İptal',
+      PENDING: this.ts.instant('ORDER_STATUS_PENDING'),
+      PREPARING: this.ts.instant('ORDER_STATUS_PREPARING'),
+      COOKING: this.ts.instant('ORDER_STATUS_COOKING'),
+      ON_THE_WAY: this.ts.instant('ORDER_STATUS_ON_THE_WAY'),
+      DELIVERED: this.ts.instant('ORDER_STATUS_DELIVERED'),
+      CANCELLED: this.ts.instant('ORDER_STATUS_CANCELLED'),
     };
     return statusMap[status || ''] || 'Bilinmiyor';
+  }
+
+  showToast(msg: string, position: 'top' | 'middle' | 'bottom') {
+    this.toastc.create({
+      message: msg,
+      duration: 2500,
+      cssClass: 'custom-toast-success',
+      icon: 'checkmark-done-outline',
+      position: position,
+    }).then(toast => toast.present());
   }
 }

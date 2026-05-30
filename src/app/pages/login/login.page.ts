@@ -1,18 +1,27 @@
-import {  Component,  CUSTOM_ELEMENTS_SCHEMA,  inject,  OnInit,  Signal,  ViewChild,} from '@angular/core';
-import {FormsModule,} from '@angular/forms';
-import {   IonModal,  } from '@ionic/angular/common';
+import { Component, inject,  OnInit,  Signal,  ɵInputSignalNode} from '@angular/core';
+import { FormsModule,} from '@angular/forms';
 import { appCode, appVersion } from '../../../app/page';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { OverlayEventDetail } from 'src/app/shared/typeahead/typeahead.component'; 
 import { Langs } from '../lang';
+ // 1. Üstteki eski @ionic/angular importunu tamamen silin veya şununla değiştirin:
+import { 
+  IonContent, 
+  IonSegment, 
+  IonSegmentButton, 
+  IonLabel, 
+  IonInput, 
+  IonItem, 
+  IonIcon, 
+  IonSelect,
+IonSelectOption,
 
-import {  AlertController,  LoadingController,  NavController,  MenuController,  ToastController,  IonicModule,} from '@ionic/angular';
-import { DomSanitizer } from '@angular/platform-browser';
-import { FooterService } from 'src/app/services/footer-service'; 
-
-import { MenuService } from 'src/app/services/menu-service';
-import { HttpClient } from '@angular/common/http';
-import { LoadingService } from 'src/app/services/loading-service';
+  IonButton 
+} from '@ionic/angular/standalone'; // 👈 'standalone' paketinden çekiyoruz
+import { NavController } from '@ionic/angular/standalone';
+import { MenuController } from '@ionic/angular/standalone';
+import { ToastController } from '@ionic/angular/standalone';
+import { LoadingController } from '@ionic/angular/standalone';
+import { AlertController } from '@ionic/angular/standalone';
  
 import { LoginService } from 'src/app/services/login-service';
 import { Login } from './login.model';
@@ -24,7 +33,8 @@ import { AccountService } from 'src/app/core/auth/account.service';
 import {   ModalController } from '@ionic/angular/standalone';
 
 import { RegisterPage } from 'src/app/account/register/register.page';
-const initialAccount: Account = {} as Account;
+import { StateStorageService } from 'src/app/core/auth/state-storage.service';
+ 
 
 
 @Component({
@@ -33,22 +43,33 @@ const initialAccount: Account = {} as Account;
   styleUrls: ['./login.page.scss'],
   standalone: true,
   imports: [
-    IonicModule,
-    CommonModule, 
+   CommonModule, 
     FormsModule, 
     TranslatePipe,
-  ],
+    // 2. Buraya 'IonicModule' yerine kullandığımız bileşenleri tek tek ekliyoruz:
+    IonContent, 
+    IonSegment, 
+    IonSegmentButton, 
+    IonLabel, 
+    IonInput, 
+    IonItem, 
+    IonIcon, 
+    IonButton,
+      IonSelect,
+IonSelectOption,
+  ]
 })
 export class LoginPage implements OnInit {
 
 
-  langKey: string | null = "en";
-  loginType: 'email' | 'phone' = 'email';
+// 1. Değişkenlerinizi doğrudan tanımlandığı yerde başlatın:
+langKey: string | null = 'fr';
+loginType: 'email' | 'phone' = 'email'; // setTimeout kullanmayın
  
 
   appVersion = appVersion;
   identificationNumber = '';
-  @ViewChild(IonModal) modal?: IonModal;
+ 
   loginData = new Login('', '', false, '', '', '');
   appCode = appCode;
   showPassword: boolean = false;
@@ -56,42 +77,54 @@ export class LoginPage implements OnInit {
   incorrectAttempts: number = 0;
   languages = Langs;
   isButtonDisabled: boolean = false;
-
-  @ViewChild('modall', { static: true }) modall!: IonModal;
+ 
   myerror: string = '';
  
   private ts = inject(TranslationService);
-  private footerService = inject(FooterService);
-  private loadingCtrl = inject(LoadingService);
-  private router = inject(Router);
-  private activeRoute = inject(ActivatedRoute);
   private navCtrl = inject(NavController);
-  private sanitizer = inject(DomSanitizer);
   private loginService = inject(LoginService);
   private menuCtrl = inject(MenuController);
   private toastController = inject(ToastController);
-  private menuService = inject(MenuService);
-  private http = inject(HttpClient);
   public loadingController = inject(LoadingController);
   public alertCtrl = inject(AlertController);
   private accountService = inject(AccountService);
   private modalCtrl = inject(ModalController);
+  private storageService = inject(StateStorageService);
  
   account: Signal<Account | null> =
     this.accountService.trackCurrentAccount();
 
   constructor() {
+      console.log('LoginPage constructor çalıştı');
     this.menuCtrl.enable(false);
   }
 
-  ngOnInit() {
-    const acc=this.account();
-    this.langKey=acc?.langKey??'fr';
-     
+ionViewWillEnter() {
+  // Ionic bazen ion-page-invisible'ı kaldırmayı unutuyor
+  const el = document.querySelector('app-login');
+  if (el) {
+    el.classList.remove('ion-page-invisible');
   }
+}
+
+ngOnInit() {
+  console.log(' LoginPage ngOnInit çalıştı ');
+  
+  // Signal değerini güvenli bir şekilde effect veya subscribe gibi izleyin ya da korumaya alın:
+  try {
+    const acc = this.account();
+    if (acc) {
+      this.langKey = acc.langKey ?? 'fr';
+    }
+  } catch (e) {
+    console.warn('Account signal henüz hazır değil, varsayılan fr dili yükleniyor.');
+  }
+}
+ 
 
   kullanimSozlesmesi() {}
-  
+
+  // login.page.ts içindeki login fonksiyonunu bununla değiştirin:
 login() {
   if (this.loginData.username && this.loginData.password) {
     const loginData = new Login(
@@ -105,22 +138,89 @@ login() {
 
     this.loginService.login(loginData).subscribe({
       next: () => {
-        // 🔴 EN KRİTİK SATIR
-        this.accountService.identity(true).subscribe(() => {
-          this.navCtrl.navigateRoot('/home');
+        console.log('Giriş başarılı, token hafızaya alındı. Kimlik doğrulanıyor...');
+        
+        // 🟢 UNUTULAN KRİTİK ADIM: Hafızaya yazılan token ile kullanıcının kimlik bilgisini JHipster'a işletiyoruz
+        this.accountService.identity(true).subscribe({
+          next: (account) => {
+            if (account) {
+              console.log('Kimlik başarıyla işlendi, ana sayfaya yönlendiriliyor:', account);
+              this.navCtrl.navigateRoot('/home');
+            } else {
+              // Eğer identity null dönerse önlem olarak yine de home'a zorla
+              this.navCtrl.navigateRoot('/home');
+            }
+          },
+          error: (err) => {
+            console.error('Identity alınırken hata oluştu, yine de ana sayfayı dene:', err);
+            this.navCtrl.navigateRoot('/home');
+          }
         });
       },
       error: async (error: any) => {
         let errorMessage = '';
+        if (error == null) {
+          errorMessage = this.ts.instant('NOT_CONNECT_SERVER');
+        } else {
+          if (error.status === 401) {
+            errorMessage = this.ts.instant('user-bag-hata');
+          } else if (error.status === 403) {
+            errorMessage = this.ts.instant('NOT_ALLOWED');
+          } else {
+            errorMessage = this.ts.instant('NOT_CONNECT_SERVER');
+          }
+        }
+
+        const alert = await this.alertCtrl.create({
+          header: errorMessage,
+          cssClass: 'custom-alert',
+          buttons: ['OK'],
+        });
+        alert.present();
+      },
+    });
+  } else {
+    this.presentToast(
+      0,
+      'top',
+      this.ts.instant('USER_PASSWORD_REQUIRED')
+    );
+  }
+}
+
+
+  /*
+login() {
+  if (this.loginData.username && this.loginData.password) {
+    const loginData = new Login(
+      this.loginData.username,
+      this.loginData.password,
+      false,
+      '',
+      '',
+      ''
+    );
+
+    this.loginService.login(loginData).subscribe({
+      next: () => {
+       
+        this.navCtrl.navigateRoot('/home');
+        // 🔴 EN KRİTİK SATIR
+      /*  this.accountService.identity(true).subscribe(() => {
+          this.navCtrl.navigateRoot('/home');
+        });/**//*
+      },
+      error: async (error: any) => {
+        let errorMessage = '';
         if (error==null) {
-          errorMessage = this.ts.instant('ERROR.NOT_CONNECT_SERVER');
+          errorMessage = this.ts.instant('NOT_CONNECT_SERVER');
         } else{
            if(error.status === 401) {
             errorMessage = this.ts.instant('user-bag-hata');
           } else if (error.status === 403) {
-            errorMessage = this.ts.instant('user-engelleme-hata');
+            errorMessage = this.ts.instant('NOT_ALLOWED');
           } else {
-            errorMessage = this.ts.instant('ERROR.NOT_CONNECT_SERVER');
+            errorMessage = this.ts.instant('NOT_CONNECT_SERVER');
           }
         }
  
@@ -137,10 +237,10 @@ login() {
     this.presentToast(
       0,
       'top',
-      this.ts.instant('ERROR.USERPASS')
+      this.ts.instant('USER_PASSWORD_REQUIRED')
     );
   }
-}
+}/** */
 
 
   changeLangue() {
@@ -153,6 +253,7 @@ login() {
   forgotPassword() {}
 
   changeLanguege() {   
+    this.storageService.storeLocale(this.langKey || 'en');
     this.ts.use(this.langKey||'fr');
     if (this.loginData.lang === 'ar') {
       document.documentElement.dir = 'rtl';
@@ -168,18 +269,7 @@ login() {
   }
 
   forgetPassword() {}
-
  
-
-  cancel() {
-    if (this.modal?.isCmpOpen) {
-      this.modal?.dismiss(null, 'cancel');
-    }
-  }
-
-  confirm() {
-    this.modal?.dismiss(this.myerror, 'confirm');
-  }
 
   onWillDismiss(event: Event) {
     const ev = event as CustomEvent<OverlayEventDetail<string>>;
@@ -188,7 +278,7 @@ login() {
   }
 
   ionViewDidEnter() {
-    this.modal?.dismiss();
+ 
   }
 
   togglePassword() {

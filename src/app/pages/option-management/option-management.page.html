@@ -3,11 +3,11 @@
     <ion-buttons>
       <ion-back-button defaultHref="/home"></ion-back-button>
     </ion-buttons>
-    <ion-title>Seçenek Yönetimi</ion-title>
+    <ion-title>{{ 'OPTION_MANAGEMENT' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openGroupForm()">
-        <ion-icon name="add-outline" slot="start"></ion-icon>
-        Yeni Grup
+        <ion-icon name="add-outline" slot="start"></ion-icon>         
+        {{ 'NEW_OPTION_GROUP' | translate }}
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -35,10 +35,10 @@
               <ion-icon name="trash-outline"></ion-icon>
             </ion-button>
             <ion-button fill="clear" size="small" (click)="openGroupForm(group)">
-              <ion-icon name="create-outline"></ion-icon> Düzenle
+              <ion-icon name="create-outline"></ion-icon> {{ 'EDIT' | translate }}
             </ion-button>
             <ion-button fill="solid" size="small" color="success" (click)="addOptionItem(group)">
-              <ion-icon name="add-outline" slot="start"></ion-icon> Seçenek Ekle
+              <ion-icon name="add-outline" slot="start"></ion-icon> {{ 'ADD_OPTION' | translate }}
             </ion-button>
           </div>
         </ion-row>
@@ -51,7 +51,7 @@
             </ion-avatar>
             <ion-label>
               <h3>{{ item.name }}</h3>
-              <p>Ek Fiyat: {{ item.additionalPrice | number:'1.2-2' }} ₺</p>
+              <p> {{ 'ADDITIONAL_PRICE' | translate }}: {{ item.additionalPrice | number:'1.2-2' }} ₺</p>
             </ion-label>
             <ion-badge slot="end" [color]="item.isDefault ? 'warning' : 'light'">
               {{ item.isDefault ? 'Default' : '' }}
@@ -66,6 +66,6 @@
   </ion-accordion-group>
 
   <div *ngIf="allGroups().length === 0" class="ion-padding ion-text-center">
-    <p>Henüz bir seçenek grubu oluşturulmadı.</p>
+    <p> {{ 'NO_OPTION_GROUPS_CREATED' | translate }}</p>
   </div>
 </ion-content>

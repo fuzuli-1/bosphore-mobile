@@ -1,20 +1,50 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { IonicModule, NavController, ToastController } from '@ionic/angular';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators,
+} from '@angular/forms';
+
 import { RegisterService } from './register-service';
 import { OtpVerificationPage } from 'src/app/pages/otp-verification/otp-verification.page';
-import { ModalController } from '@ionic/angular';
-import { TranslatePipe } from "../../services/TranslatePipe";
+
+import { TranslatePipe } from '../../services/TranslatePipe';
+import {
+  IonContent,
+  IonInput,
+  IonButton,
+  IonCheckbox,
+  IonLabel,
+  IonIcon,
+  IonItem,
+  NavController,
+  ToastController,
+  ModalController,
+} from '@ionic/angular/standalone';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule, TranslatePipe]
+  imports: [
+    IonContent,
+    IonInput,
+    IonButton,
+    IonCheckbox,
+    IonLabel,
+    IonIcon,
+    IonItem,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    TranslatePipe,
+  ],
 })
 export class RegisterPage implements OnInit {
-
   // Sınıfın içine ekle
   showPassword = false;
   registerForm!: FormGroup;
@@ -33,22 +63,25 @@ export class RegisterPage implements OnInit {
   initForm() {
     this.registerForm = this.fb.group({
       // 5 ile başlayan 10 haneli telefon no (Örn: 5551234567)
-      phoneNumber: ['', [Validators.required, Validators.pattern(/^5[0-9]{9}$/)]],
+      phoneNumber: [
+        '',
+        [Validators.required, Validators.pattern(/^5[0-9]{9}$/)],
+      ],
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.email]], // Opsiyonel olduğu için sadece format kontrolü
       password: ['', [Validators.required, Validators.minLength(4)]],
       kvkkCheck: [false, [Validators.requiredTrue]], // KVKK zorunlu
-      marketingCheck: [false] // Kampanya izni opsiyonel
+      marketingCheck: [false], // Kampanya izni opsiyonel
     });
   }
 
   async onRegister() {
-  if (this.registerForm.valid) {
-    const userData = this.registerForm.value;
-     this.completeRegistration(userData);
-    // 1. Önce SMS'i gönder ve Modal'ı aç
-    /*const modal = await this.modalCtrl.create({
+    if (this.registerForm.valid) {
+      const userData = this.registerForm.value;
+      this.completeRegistration(userData);
+      // 1. Önce SMS'i gönder ve Modal'ı aç
+      /*const modal = await this.modalCtrl.create({
       component: OtpVerificationPage,
       componentProps: { 
         phoneNumber: userData.phoneNumber // Parametre gönderiyoruz
@@ -65,34 +98,34 @@ export class RegisterPage implements OnInit {
       // 3. BİNGO! Telefon doğrulandı, şimdi asıl kaydı yapalım
       this.completeRegistration(userData);
     }/**/
+    }
   }
-}
 
-private completeRegistration(userData: any) {
-  // Backend'e gidip DB'ye yazma vakti
-  this.registerService.save(userData).subscribe({
-    next: () => {
-      console.log('Kayıt başarılı, lezzet dünyasına hoş geldin!');
-      this.showSuccess('Kayıt başarılı, lezzet dünyasına hoş geldin!');
-      this.navCtrl.navigateRoot('/login');
-      this.modalCtrl.dismiss();
-     // this.navCtrl.navigateRoot('/home');
-    },
-    error: () => this.showError('Kayıt sırasında bir hata oluştu.')
-  });
-} 
+  private completeRegistration(userData: any) {
+    // Backend'e gidip DB'ye yazma vakti
+    this.registerService.save(userData).subscribe({
+      next: () => {
+        console.log('Kayıt başarılı, lezzet dünyasına hoş geldin!');
+        this.showSuccess('Kayıt başarılı, lezzet dünyasına hoş geldin!');
+        this.navCtrl.navigateRoot('/login');
+        this.modalCtrl.dismiss();
+        // this.navCtrl.navigateRoot('/home');
+      },
+      error: () => this.showError('Kayıt sırasında bir hata oluştu.'),
+    });
+  }
 
   async showError(msg: string) {
     const toast = await this.toastCtrl.create({
       message: msg,
       duration: 3000,
       color: 'danger',
-      position: 'bottom'
+      position: 'bottom',
     });
     await toast.present();
   }
 
-    async showSuccess(message: string) {
+  async showSuccess(message: string) {
     const toast = await this.toastCtrl.create({
       message: message,
       duration: 3000,
@@ -102,6 +135,7 @@ private completeRegistration(userData: any) {
   }
 
   goToLogin() {
-    this.navCtrl.navigateBack('/login');
+    this.modalCtrl.dismiss();
+    this.navCtrl.navigateRoot('/login');
   }
 }

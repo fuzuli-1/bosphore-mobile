@@ -10,23 +10,23 @@
 <ion-content class="ion-padding">
   <div *ngIf="orders.length === 0" class="ion-text-center" style="margin-top: 50px;">
     <ion-icon name="fast-food-outline" style="font-size: 64px; opacity: 0.2;"></ion-icon>
-    <p>Henüz bir siparişin yok kanki. Hemen bir kebap söyle!</p>
+    <p>{{ 'NO_ORDERS' | translate }}</p>
   </div>
 
   <ion-card *ngFor="let order of orders" mode="ios" (click)="viewDetail(order.id)">
     <ion-item>
             <ion-button fill="solid" color="success" size="small" (click)="reorder(order, $event)">
         <ion-icon slot="start" name="refresh-outline"></ion-icon>
-        Tekrarla
+        {{ 'REORDER' | translate }}
       </ion-button>
     </ion-item>
     <ion-item lines="none">
       <ion-label>
-        <h2>Sipariş #{{order.id}}</h2>
+        <h2>{{ 'ORDER' | translate }} #{{order.id}}</h2>
         <p>{{order.orderDate?.toDate() | date:'dd.MM.yyyy HH:mm'}}</p>
       </ion-label>
       <ion-badge slot="end" [color]="getStatusColor(order.status)">
-        {{order.status}}
+        {{ getStatusLabel(order.status) }}
       </ion-badge>
     </ion-item>
     
@@ -37,7 +37,7 @@
         </span>
       </div>
       <div class="ion-text-right ion-margin-top">
-        <strong>Toplam: {{order.totalAmount}} TL</strong>
+        <strong>{{ 'TOTAL' | translate }}: {{order.totalAmount}} TL</strong>
       </div>
     </ion-card-content>
  

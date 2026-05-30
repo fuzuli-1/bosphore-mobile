@@ -4,6 +4,7 @@ import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IMenuGroup } from 'src/app/interfaces/interfaces';
 import { LanguageSelectorComponent } from '../language/language-selector.component';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 @Component({
   selector: 'app-group-form',
@@ -12,38 +13,38 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
       <ion-toolbar color="primary">
         <ion-title>{{ group ? 'Grubu Düzenle' : 'Yeni Grup' }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="cancel()">Kapat</ion-button>
+          <ion-button (click)="cancel()">{{ 'CLOSE' | translate }}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
       <form [formGroup]="groupForm">
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Grup Başlığı</ion-label>
+          <ion-label position="stacked">{{ 'GROUP_TITLE' | translate }}</ion-label>
           <ion-input formControlName="title" placeholder="Örn: İçecekler"></ion-input>
         </ion-item>
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Sıra No</ion-label>
+          <ion-label position="stacked">{{ 'ORDER_NUMBER' | translate }}</ion-label>
           <ion-input type="number" formControlName="orderNo"></ion-input>
         </ion-item>
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">İkon Yolu (icon_path)</ion-label>
+          <ion-label position="stacked">{{ 'ICON_PATH' | translate }}</ion-label>
           <ion-input formControlName="iconPath" placeholder="Örn: beverage-icon"></ion-input>
         </ion-item>
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Dil ID</ion-label>
+          <ion-label position="stacked">{{ 'LANGUAGE_ID' | translate }}</ion-label>
           <ion-input type="number" formControlName="languageId"></ion-input>
           <ion-button (click)="selectLanguage()">Seç </ion-button>
         </ion-item>
 
         <ion-button expand="block" (click)="save()" [disabled]="!groupForm.valid">
-          {{ group ? 'Güncelle' : 'Kaydet' }}
+           group ?  {{'UPDATE' | translate}} : {{'SAVE' | translate }}
         </ion-button>
       </form>
     </ion-content>
   `,
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule]
+  imports: [IonicModule, CommonModule, ReactiveFormsModule, TranslatePipe]
 })
 export class GroupFormComponent implements OnInit {
 

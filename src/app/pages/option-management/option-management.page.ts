@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { ToastController } from '@ionic/angular';
-import { MenuGroupService } from '../menu-groups/menu-group-service';
-import { IMenuGroup, IMenuGroupItem, IOptionGroup, IOptionItem, NewMenuGroup, NewOptionGroup } from 'src/app/interfaces/interfaces';
+import { IOptionGroup, IOptionItem, NewOptionGroup } from 'src/app/interfaces/interfaces';
 import { AccountService } from 'src/app/core/auth/account.service';
 import { TranslationService } from 'src/app/services/translation-service';
 import {
@@ -17,21 +16,20 @@ import { combineLatest, Subscription, tap } from 'rxjs';
 import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
 import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
 import { HttpResponse } from '@angular/common/http';
-import { MenuGroupItemService } from '../menu-group-item/menu-group-item-service';
 import { ModalController } from '@ionic/angular'; 
 import { AlertController } from '@ionic/angular';
 import { OptionGroupService } from '../option-group/option-group-service';
 import { OptionItemService } from '../option-group-item/option-item-service';
 import { OptionGroupFormComponent } from './option-group-form';
-import { ItemFormComponent } from '../menu-management/item-form.component';
 import { OptionItemFormComponent } from './option-item-form';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 @Component({
   selector: 'app-option-management',
   templateUrl: './option-management.page.html',
   styleUrls: ['./option-management.page.scss'],
   standalone: true,
- imports: [IonicModule, CommonModule, FormsModule],
+ imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
 })
 export class OptionManagementPage implements OnInit {
 
@@ -47,7 +45,7 @@ export class OptionManagementPage implements OnInit {
   private optionGroupService = inject(OptionGroupService);
   private optionItemService=inject(OptionItemService);
   private account = inject(AccountService);
-  private translate = inject(TranslationService);
+  private ts = inject(TranslationService);
   private modalCtrl = inject(ModalController);
   private activatedRoute = inject(ActivatedRoute);
   private sortService = inject(SortService);
@@ -220,15 +218,15 @@ export class OptionManagementPage implements OnInit {
 
   deleteItem(item:any){
     this.alertCtrl.create({
-      header: 'Öğeyi Sil',
-       message: 'Bu öğeyi silmek istediğinize emin misiniz?',  
+      header:  this.ts.instant('DELETE_ITEM'),
+       message: this.ts.instant('CONFIRM_DELETE_ITEM'),  
        buttons:[
-         { text: 'İptal', role: 'cancel' },
-         {  text: 'Sil', role: 'destructive',handler:()=>{
+         { text: this.ts.instant('CANCEL'), role: 'cancel' },
+         {  text: this.ts.instant('DELETE'), role: 'destructive',handler:()=>{
              this.optionItemService.delete(item.id)
              .subscribe({
               next:(res=>{
-                  this.showToast('Grup başarıyla silindi!', 'bottom');
+                  this.showToast( this.ts.instant('ITEM_DELETED_SUCCESSFULLY'), 'bottom');
                   this.loadOptionItems(this.selectedGroup.id);
               }),
               error:(err=>{
@@ -250,20 +248,20 @@ export class OptionManagementPage implements OnInit {
 
   deleteGroup(group:any){
     this.alertCtrl.create({
-      header:'Grubu Sil',
-      message:'Bu grubu silmek istediginizden emin misiniz',
+      header: this.ts.instant('DELETE_GROUP'),
+      message: this.ts.instant('CONFIRM_DELETE_GROUP'),
       buttons:[
-        {text:'Iptal',role:'cancel'},
-        {text:'Sil',role:'destructive',
+        {text: this.ts.instant('CANCEL'), role: 'cancel'},
+        {text: this.ts.instant('DELETE'), role: 'destructive',
           handler:()=>{
             this.optionGroupService.delete(group.id).subscribe({
               next:()=>{
-                this.showToast('Grup basari ile silindi!.','bottom');
+                this.showToast( this.ts.instant('GROUP_DELETED_SUCCESSFULLY'), 'bottom');
                 this.load();
               },
               error:(res)=>{
                 console.error(res.error.detail);
-                this.showToast('Silme islemi basarisiz!','bottom');
+                this.showToast( this.ts.instant('DELETE_GROUP_FAILED'), 'bottom');
               }
             })
           }
@@ -280,7 +278,7 @@ export class OptionManagementPage implements OnInit {
       id:null,
     };
     this.optionGroupService.create(nop).subscribe((res)=>{
-      this.showToast('Group basari ile silindi!.','bottom');
+      this.showToast( this.ts.instant('GROUP_CREATED_SUCCESSFULLY'), 'bottom');
       this.load();
     })
   }

@@ -45,7 +45,7 @@ export class MenuManagementPage implements OnInit {
   private menuGroupService = inject(MenuGroupService);
   private menuItemService=inject(MenuGroupItemService);
   private account = inject(AccountService);
-  private translate = inject(TranslationService);
+  private ts = inject(TranslationService);
   private modalCtrl = inject(ModalController);
   private activatedRoute = inject(ActivatedRoute);
   private sortService = inject(SortService);
@@ -217,14 +217,14 @@ async openItemModal(item?: IMenuGroupItem) {
 deleteItem(item: any) {
 
   this.alertCtrl.create({
-    header: 'Öğeyi Sil',
-    message: 'Bu öğeyi silmek istediğinize emin misiniz?',  
+    header: this.ts.instant('DELETE_ITEM'),
+    message: this.ts.instant('CONFIRM_DELETE_ITEM'),
     buttons: [
-      { text: 'İptal', role: 'cancel' },
-      { text: 'Sil', role: 'destructive', handler: () => {
+      { text:  this.ts.instant('CANCEL'), role: 'cancel' },
+      { text: this.ts.instant('DELETE'), role: 'destructive', handler: () => {
            this.menuItemService.delete(item.id).subscribe({
             next:(res=>{ 
-              this.showToast('Öğe başarıyla silindi!', 'bottom');
+              this.showToast(this.ts.instant('ITEM_DELETED_SUCCESSFULLY'), 'bottom');
               this.loadCategoryItems(this.selectedGroup.id); // Listeyi yenile
   
             }),
@@ -248,22 +248,22 @@ editItem(item: any) {
 
 deleteGroup(group: any) {
   this.alertCtrl.create({
-    header: 'Grubu Sil',
-    message: 'Bu grubu silmek istediğinize emin misiniz?',
+    header: this.ts.instant('DELETE_GROUP'),
+    message: this.ts.instant('CONFIRM_DELETE_GROUP'),
     buttons: [
-      { text: 'İptal', role: 'cancel' },
+      { text: this.ts.instant('CANCEL'), role: 'cancel' },
       {
-        text: 'Sil',
+        text: this.ts.instant('DELETE'),
         role: 'destructive',
         handler: () => {
           this.menuGroupService.delete(group.id).subscribe({
             next: () => {
-              this.showToast('Grup başarıyla silindi!', 'bottom');
+              this.showToast(this.ts.instant('GROUP_DELETED_SUCCESSFULLY'), 'bottom');
               this.loadGroups();
             },
             error: (resp) => {
               console.error(resp.error.detail);
-              this.showToast('Silme işlemi başarısız!'+resp.error.detail , 'bottom');
+              this.showToast(this.ts.instant('DELETE_OPERATION_FAILED') + resp.error.detail, 'bottom');
             }
           });
         }

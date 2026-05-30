@@ -30,9 +30,8 @@ export class CategoryPage implements OnInit {
   //injection
   private modalCtrl = inject(ModalController);
   private alertCtrl = inject(AlertController);
- // private translatePipe = inject(TranslatePipe);
   private service=inject(CategoryService); // Bu servisi oluşturman gerekecek, backend ile iletişim için.
-  private translate = inject(TranslationService);
+  private ts = inject(TranslationService);
   private toastCtrl = inject(ToastController);
   constructor() {}
 
@@ -58,9 +57,9 @@ export class CategoryPage implements OnInit {
       this.locadCategories();
     } else {
       this.alertCtrl.create({
-        header: 'Son Sayfa',
-        message: 'Daha fazla kategori bulunmamaktadır.',
-        buttons: ['Tamam']  
+        header:  this.ts.instant('LAST_PAGE'),
+        message:  this.ts.instant('NO_MORE_CATEGORIES'),
+        buttons: [ this.ts.instant('OK') ]  
       }).then(alert => alert.present());
     }
   }
@@ -71,9 +70,9 @@ export class CategoryPage implements OnInit {
       this.locadCategories();
     } else {
       this.alertCtrl.create({
-        header: 'İlk Sayfa',
-        message: 'Zaten ilk sayfadasınız.',
-        buttons: ['Tamam']
+        header:  this.ts.instant('FIRST_PAGE'),
+        message:  this.ts.instant('ALREADY_FIRST_PAGE'),
+        buttons: [ this.ts.instant('OK') ]
       }).then(alert => alert.present());
     }
   }
@@ -114,6 +113,7 @@ export class CategoryPage implements OnInit {
           'Yeni oluşturulan veya seçilen Dil ID:',
           selectedLanguageId,
         );
+        this.showToast('success', this.ts.instant('LANGUAGE_SELECTED_OR_CREATED')+':'+ { id: selectedLanguageId }, 'top');
         // Bu ID'yi ana formuna (Ürün/Grup) set edebilirsin.
       }
     });
@@ -128,8 +128,10 @@ export class CategoryPage implements OnInit {
     modal.onDidDismiss().then((result) => {
       if (result.data) {
         const selectedLang = result.data;
+        
         // result.data burada ILanguage objesi döner.
         console.log('Seçilen Dil ID:', selectedLang.id);
+        this.showToast('success',  `Seçilen Dil: ${selectedLang.desc}`,'top');
 
         // Kategori formunu güncelle
       /*  this.categoryForm.patchValue({
@@ -171,12 +173,12 @@ export class CategoryPage implements OnInit {
 
   async deleteCategory(cat:ICategory){
     const alert=await this.alertCtrl.create({
-      header:this.translate.instant("delete"),
-      message:this.translate.instant('CONFIRM_DELETE'),
+      header:this.ts.instant("DELETE"),
+      message:this.ts.instant('CONFIRM_DELETE'),
       buttons:[
-        {text:this.translate.instant("cancel"),role:"cancel"},
+        {text:this.ts.instant("CANCEL"),role:"cancel"},
         {
-          text:this.translate.instant('delete'),
+          text:this.ts.instant('DELETE'),
           role:"destructive",
           handler:()=>{
              this.service.delete(cat.id).subscribe({
@@ -185,7 +187,7 @@ export class CategoryPage implements OnInit {
               },
               error:(res:any)=>{
                 this.locadCategories();
-                this.presentToast(res.error,'bottom');
+                this.showToast('danger', res.error, 'bottom');
                 
               }
              });
@@ -198,12 +200,12 @@ export class CategoryPage implements OnInit {
 
   }
 
-  async presentToast(message:string,position:'top'|'middle'|'bottom'){
-    const toast=await this.toastCtrl.create({
-      message:message,
-      duration:250,
-      cssClass: 'custom-toast-success',
-       icon: 'checkmark-done-outline',
+  async showToast(color: string, message: string, position: 'top' | 'middle' | 'bottom') {
+    const toast = await this.toastCtrl.create({
+      message: message,
+      duration: 250,
+      cssClass: `custom-toast-${color}`,
+      icon: 'checkmark-done-outline',
       position: position,
     });
     await toast.present();

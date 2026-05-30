@@ -2,13 +2,13 @@
  import { Component, EventEmitter, inject, Input, NgZone, OnChanges, OnInit, Output, signal } from '@angular/core';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
  import * as iface from '../../interfaces/interfaces';
-import { combineLatest, Observable, Subscription, tap } from 'rxjs';
+import { combineLatest, finalize, Observable, Subscription, switchMap, tap } from 'rxjs';
 import { ITEMS_PER_PAGE, PAGE_HEADER, TOTAL_COUNT_RESPONSE_HEADER } from 'src/app/config/pagination.constants';
 import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
-import { MenuGroupItemService } from './menu-group-item-service';
+import { EntityArrayResponseType, MenuGroupItemService } from './menu-group-item-service';
 import { SortService } from 'src/app/shared/sort/sort.service';
-import { NavController,ModalController,ToastController,RefresherEventDetail,} from '@ionic/angular';
-import { EntityArrayResponseType } from '../menu-groups/menu-group-service';
+import { ModalController} from '@ionic/angular';
+ 
 import { SortState, sortStateSignal } from 'src/app/shared/sort';
 import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
 import { HttpHeaders } from '@angular/common/http';
@@ -53,45 +53,52 @@ export class CategorySwiperComponent implements OnInit ,OnChanges{
       this.selectedGroupItemChange.emit(_t2);
     }
 
-     ngOnChanges() {
-      if (this.menuGroupId) {
+ ngOnChanges(): void {
 
-        this.subscription = combineLatest([
-          this.activatedRoute.paramMap,
-          this.activatedRoute.queryParamMap,
-          this.activatedRoute.data
-        ])
-          .pipe(
-            tap(([params]) => {
-              const id = Number(params.get('id'));
-              console.log('Route ID:', id);
-
-              // input yerine route id kullanabilirsin
-              //this.menuGroupId = id;
-            }),
-            tap(() => {
-                    const { page } = this;
-                      this.isLoading = true;
-                      const pageToLoad: number = page;
-                      const queryObject: any = {
-                        menuGroupId: this.menuGroupId,
-                        page: pageToLoad - 1,
-                        size: this.itemsPerPage,
-                        sort: this.sortService.buildSortParam(this.sortState()),
-                      };
-                      
-                      this.menuGroupItemService.query(queryObject).pipe(tap(() => (this.isLoading = false))).subscribe({
-                        next: (res: EntityArrayResponseType) => {
-                          this.totalItems = Number(res.headers.get(TOTAL_COUNT_RESPONSE_HEADER));
-                          this.menuGroupItems.set(res.body ?? []);
-                        },
-                      }); 
-            })
-          ).subscribe();
-
-       
-      }
+  if (!this.menuGroupId) {
+    return;
   }
+
+  this.subscription = combineLatest([
+    this.activatedRoute.paramMap,
+    this.activatedRoute.queryParamMap,
+    this.activatedRoute.data,
+  ])
+    .pipe(
+
+      tap(([params]) => {
+        const id = Number(params.get('id'));
+        console.log('Route ID:', id);
+      }),
+
+      switchMap(() => {
+
+        this.isLoading = true;
+
+        const queryObject = {
+          menuGroupId: this.menuGroupId,
+          page: this.page - 1,
+          size: this.itemsPerPage,
+          sort: this.sortService.buildSortParam(this.sortState()),
+        };
+
+        return this.menuGroupItemService.query(queryObject)
+          .pipe(
+            finalize(() => this.isLoading = false)
+          );
+      })
+
+    )
+    .subscribe({
+      next: (res: EntityArrayResponseType) => {
+        this.totalItems = Number(
+          res.headers.get(TOTAL_COUNT_RESPONSE_HEADER)
+        );
+
+        this.menuGroupItems.set(res.body ?? []);
+      }
+    });
+}
 
  ngOnInit() {
   this.subscription = combineLatest([

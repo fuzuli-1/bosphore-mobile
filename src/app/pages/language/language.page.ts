@@ -5,19 +5,22 @@ import { IonicModule, ModalController, AlertController } from '@ionic/angular';
 import { EntityArrayResponseType, LanguageService } from './language-service';
 import { ILanguage } from 'src/app/interfaces/interfaces';
 import { LanguageFormComponent } from './language-form.component';
+import { TranslatePipe } from "../../services/TranslatePipe";
+import { TranslationService } from 'src/app/services/translation-service';
 
 @Component({
   selector: 'app-language',
   templateUrl: './language.page.html',
   styleUrls: ['./language.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
 })
 export class LanguagePage implements OnInit {
 
   private languageService = inject(LanguageService);
   private modalCtrl = inject(ModalController);
   private alertCtrl = inject(AlertController);
+  private ts = inject(TranslationService);
 
   languages = signal<ILanguage[]>([]);
   searchTerm = ''; // Arama terimi için
@@ -97,15 +100,15 @@ export class LanguagePage implements OnInit {
 
   async deleteLanguage(language: ILanguage): Promise<void> {
     const alert = await this.alertCtrl.create({
-      header: 'Confirm delete',
-      message: `${language.translateCode} silinecek!`,      
+      header: this.ts.instant('CONFIRM_DELETE'),
+      message: `${language.translateCode}`+this.ts.instant('WILL_BE_DELETED')+'!',      
       buttons: [
         {
-          text: 'Cancel',
+          text:  this.ts.instant('CANCEL'),
           role: 'cancel',
         },  
         {
-          text: 'Delete',
+          text: this.ts.instant('DELETE'),
           role: 'destructive',
           handler: () => {
             this.languageService.delete(language.id).subscribe(() => {

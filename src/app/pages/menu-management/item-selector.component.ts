@@ -4,21 +4,22 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MenuGroupItemService } from '../menu-group-item/menu-group-item-service';
 import { IMenuGroupItem } from 'src/app/interfaces/interfaces';
+import { TranslatePipe } from "../../services/TranslatePipe";
 
 @Component({
   selector: 'app-menu-group-item-selector',
   template: `
     <ion-header>
       <ion-toolbar color="tertiary">
-        <ion-title>Menu Group Item Seç</ion-title>  
+        <ion-title> {{ 'SELECT_MENU_GROUP_ITEM' | translate }} </ion-title>  
         <ion-buttons slot="end">
-          <ion-button (click)="cancel()">Kapat</ion-button>
+          <ion-button (click)="cancel()"> {{ 'CLOSE' | translate }} </ion-button>
         </ion-buttons>  
       </ion-toolbar>
       <ion-toolbar>
         <ion-searchbar   
 
-          placeholder="Menu Group Item Ara (örn: kebab, en...)" 
+          placeholder=" {{ 'SEARCH_MENU_GROUP_ITEM' | translate }}" 
           show-clear-button="always"
           [(ngModel)]="searchTerm"    
           (ionInput)="search($event)">
@@ -35,7 +36,7 @@ import { IMenuGroupItem } from 'src/app/interfaces/interfaces';
           <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
         </ion-item>
         <ion-item *ngIf="results().length === 0 && searchTerm.length > 2" lines="none">
-          <ion-label color="medium">Sonuç bulunamadı...</ion-label>
+          <ion-label color="medium"> {{ 'NO_RESULTS_FOUND' | translate }} </ion-label>
         </ion-item>
  
       </ion-list>
@@ -43,7 +44,7 @@ import { IMenuGroupItem } from 'src/app/interfaces/interfaces';
 
   `,
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule] 
+  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe] 
 })
 export class MenuGroupItemSelectorComponent implements OnInit {
 

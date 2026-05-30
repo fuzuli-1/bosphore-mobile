@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar color="dark">
-    <ion-title>Mutfak Yönetimi 👨‍🍳</ion-title>
+    <ion-title>{{ 'KITCHEN_MANAGEMENT' | translate }} 👨‍🍳</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,7 +10,7 @@
       <ion-col size="12" size-md="6" *ngFor="let order of activeOrders">
         <ion-card mode="ios">
           <ion-card-header>
-            <ion-card-subtitle> Sipariş #{{order.id}} - {{ formatOrderDate(order.orderDate) }}</ion-card-subtitle>
+            <ion-card-subtitle> {{ 'ORDER' | translate }} #{{order.id}} - {{ formatOrderDate(order.orderDate) }}</ion-card-subtitle>
             <ion-card-title>{{order.customerName}}</ion-card-title>
           </ion-card-header>
 
@@ -32,16 +32,16 @@
               </ion-badge>
               
               <ion-button *ngIf="order.status === 'PREPARING'" color="warning" (click)="changeStatus(order, 'COOKING')">
-                Fırına At 🔥
+                {{ 'SEND_TO_OVEN' | translate }} 🔥
               </ion-button>
               
               <ion-button *ngIf="order.status === 'COOKING'" color="success" (click)="changeStatus(order, 'ON_THE_WAY')">
-                Yola Çıkar 🛵
+                {{ 'SEND_TO_DELIVERY' | translate }} 🛵
               </ion-button>
               <ion-buttons>
                 <ion-button fill="outline" color="dark" size="small" (click)="printOrder(order)">
                   <ion-icon slot="start" name="print-outline"></ion-icon>
-                    Yazdır
+                    {{ 'PRINT' | translate }}
                   </ion-button>
                   
               </ion-buttons>

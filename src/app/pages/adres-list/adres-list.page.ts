@@ -1,35 +1,20 @@
 import { Component, inject, NgZone, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import {
-  IonContent,
-  IonHeader,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { IonicModule, NavController, ModalController } from '@ionic/angular';
+import { IonicModule, ToastController, ModalController } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { TranslatePipe } from '../../services/TranslatePipe';
 import * as iface from '../../interfaces/interfaces';
 import { Address } from 'src/app/interfaces/ui-model';
-import {
-  AddressService,
-  EntityArrayResponseType,
-} from '../address/address.service';
-import { SortService, SortState, sortStateSignal } from 'src/app/shared/sort';
-import {
-  ITEMS_PER_PAGE,
-  PAGE_HEADER,
-  TOTAL_COUNT_RESPONSE_HEADER,
-} from 'src/app/config/pagination.constants';
-import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
-
-import { Observable, Subscription, tap } from 'rxjs';
+import { AddressService } from '../address/address.service';
+import { SortService } from 'src/app/shared/sort';
+ 
 import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
-import { HttpHeaders } from '@angular/common/http';
+ 
 import { AdresMapPage } from '../adres-map/adres-map.page';
 import { AdresMapDetailPage } from '../adres-map-detail/adres-map-detail.page';
-import { NewAddress } from '../../interfaces/interfaces';
+import { TranslationService } from 'src/app/services/translation-service';
+ 
 @Component({
   selector: 'app-adres-list',
   templateUrl: './adres-list.page.html',
@@ -43,12 +28,14 @@ export class AdresListPage implements OnInit {
   addresses: iface.IAddress[] = [];
   isLoading = false;
 
-  public readonly router = inject(Router);
-  protected readonly addressService = inject(AddressService);
-  protected readonly activatedRoute = inject(ActivatedRoute);
-  protected readonly sortService = inject(SortService);
-  protected modalService = inject(ModalController);
-  protected ngZone = inject(NgZone);
+  private   router = inject(Router);
+  private   addressService = inject(AddressService);
+  private   activatedRoute = inject(ActivatedRoute);
+  private   sortService = inject(SortService);
+  private   modalService = inject(ModalController);
+  private  ngZone = inject(NgZone);
+  private toast=inject(ToastController);
+  private ts=inject(TranslationService);
   trackId = (item: iface.IAddress): number =>
     this.addressService.getAddressIdentifier(item);
 
@@ -88,6 +75,7 @@ export class AdresListPage implements OnInit {
     if (selectedAddress) {
       this.modalService.dismiss(selectedAddress);
     } else {
+      this.showToast('warning', 'top', this.ts.instant('NO_ADDRESS_SELECTED'));
       console.warn('Hiçbir adres seçilmedi');
     }
   }
@@ -127,5 +115,19 @@ export class AdresListPage implements OnInit {
   }
   editAddress(_t24: Address) {
     throw new Error('Method not implemented.');
+  }
+
+  showToast(type:any,position:'top'|'middle'|'bottom',mesaj:string){
+    this.ngZone.run(async () => {
+      const toast = await this.toast.create({
+        message: mesaj,
+        duration: 2000,
+        cssClass: 'custom-toast-success',
+        icon: 'checkmark-done-outline',
+        position: position,
+        color: type,
+      });
+      await toast.present();
+    });
   }
 }

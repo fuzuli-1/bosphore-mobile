@@ -70,7 +70,7 @@ export class OptionGroupService {
   
   queryWithItems(req?: any): Observable<IOptionGroupWithItemsResponseType> {
     const options = createRequestOption(req);
-    return this.http.get<IOptionGroupWithItems[]>(this.resourceUrl, { params: options, observe: 'response' });
+    return this.http.get<IOptionGroupWithItems[]>(this.resourceUrl+ '/getRecords', { params: options, observe: 'response' });
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {

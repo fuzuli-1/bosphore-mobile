@@ -4,14 +4,20 @@
   align-items: center;
   justify-content: center;
 }
-
-.center-wrapper{
-   min-height: 100%;
+.center-wrapper {
+  min-height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 16px;
 }
+/*.center-wrapper{
+   min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px;
+}/***/
 
 .login-card{
   background: #ffff;
@@ -92,4 +98,41 @@ ion-segment-button{
 
 .login-card ion-button {
   text-transform: none;
+}
+
+
+
+ion-content.login-content {
+    --background: #f2f4f8;
+}
+
+.login-card {
+  background: #fff; // Beyaz değil, test için farklı renk
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+
+// login.page.scss
+:host {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: 100% !important;
+  width: 100% !important;
+}
+
+:host(.ion-page-invisible), 
+:host(.ion-page-hidden) {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: block !important;
+}
+
+ion-content {
+  --background: #fff; // Ekranın tamamen boş görünmemesi için arka planı zorlayın
+  visibility: visible !important;
+  opacity: 1 !important;
 }

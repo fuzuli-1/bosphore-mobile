@@ -1,3 +1,4 @@
+
 import { HttpInterceptorFn } from '@angular/common/http';
 import { StateStorageService } from '../core/auth/state-storage.service';
 import { inject } from '@angular/core';
@@ -16,6 +17,15 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   const token = getToken(stateStorage);
+  const isPublic =
+    req.url.includes('/api/languages') ||
+    req.url.includes('/api/authenticate') ||
+    req.url.includes('/i18n') ||
+    req.url.includes('/content');
+
+  if (isPublic || !token) {
+    return next(req);
+  }
   if (token) {
     const cloned = req.clone({
       setHeaders: {
@@ -37,4 +47,7 @@ function getToken(stateStorage: StateStorageService): string {
 
   // 2️⃣ Son çare: global account objesi
   return '';
-}
+}  
+
+
+

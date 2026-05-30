@@ -7,6 +7,7 @@ import { CategoryService } from '../category/category-service';
 import { LanguageService } from '../language/language-service';
 import { icon } from 'leaflet';
 import { LanguageSelectorComponent } from '../language/language-selector.component';
+import { TranslatePipe } from "../../services/TranslatePipe";
  
 @Component({
   selector: 'app-item-form',
@@ -15,29 +16,29 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
       <ion-toolbar color="secondary">
         <ion-title>{{ item ? 'Item Düzenle' : 'Yeni Item Ekle' }}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="cancel()">Vazgeç</ion-button>
+          <ion-button (click)="cancel()"> {{ 'CLOSE' | translate }}</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
       <form [formGroup]="itemForm">
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Etiket (Label)</ion-label>
-          <ion-input formControlName="label" placeholder="Örn: Kebaplar"></ion-input>
+          <ion-label position="stacked">{{ 'LABEL' | translate }}</ion-label>
+          <ion-input formControlName="label" placeholder=" {{ 'PLACEHOLDER_LABEL' | translate }}"></ion-input>
         </ion-item>
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Icon Path</ion-label>
-          <ion-input formControlName="iconPath" placeholder="Örn: assets/icons/kebap.png"></ion-input>
+          <ion-label position="stacked">{{ 'ICON_PATH' | translate }}</ion-label>
+          <ion-input formControlName="iconPath" placeholder=" {{ 'PLACEHOLDER_ICON_PATH' | translate }}"></ion-input>
         </ion-item>
  
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Dil</ion-label>
-          <ion-input formControlName="languageId" placeholder="Dil Seçiniz"></ion-input>
-          <ion-button (click)="loadLanguages()">Dil Seç </ion-button>
+          <ion-label position="stacked">{{ 'LANGUAGE' | translate }}</ion-label>
+          <ion-input formControlName="languageId" placeholder=" {{ 'PLACEHOLDER_LANGUAGE' | translate }}"></ion-input>
+          <ion-button (click)="loadLanguages()"> {{ 'SELECT_LANGUAGE' | translate }} </ion-button>
         </ion-item>
 
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">Sıralama</ion-label>
+          <ion-label position="stacked">{{ 'ORDER_NUMBER' | translate }}</ion-label>
           <ion-input type="number" formControlName="orderNo"></ion-input>
         </ion-item>
 
@@ -48,7 +49,7 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
     </ion-content>
   `,
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule]
+  imports: [IonicModule, CommonModule, ReactiveFormsModule, TranslatePipe]
 })
 export class ItemFormComponent implements OnInit {
   private fb = inject(FormBuilder);

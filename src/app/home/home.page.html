@@ -2,7 +2,11 @@
  <ion-header class="ion-no-border">  
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
-      <ion-menu-button (click)="toggleMenu()">
+      <ion-menu-button 
+      menu="mainMenu"
+      (click)="toggleMenu()" 
+      autoHide="false"
+      >
         <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
@@ -15,12 +19,15 @@
         <ion-icon name="location-outline" color="warning"></ion-icon>
         <ion-label>{{'SELECT_ADDRESS'|translate}}</ion-label>
       </ion-chip>
-
-      <ion-button fill="solid" color="primary" class="cart-btn" [routerLink]="['/cart']">
-        <ion-icon slot="start" name="cart-outline"></ion-icon>
-         {{'BASKET'|translate}}
-        @if (totalCount() > 0) {
-          <ion-badge color="light" class="cart-badge">{{ totalCount() }}</ion-badge>
+ 
+      <ion-button fill="clear" (click)="go('/payments/cart')" style="position: relative; margin-right: 8px;">
+        <ion-icon slot="icon-only" name="cart-outline" color="light"></ion-icon>
+        @if ((cartService.getCart() | async); as cartItems) {
+          @if (cartItems.length > 0) {
+            <ion-badge color="white" style="position: absolute; top: -2px; right: -2px; font-size: 10px; padding: 3px 6px; border-radius: 50%;">
+              {{ cartItems.length }}
+            </ion-badge>
+          }
         }
       </ion-button>
     </div>
@@ -63,45 +70,6 @@
 
   <!-- ÜRÜN GRID -->
   <div class="product-grid">
-
-    <!-- İLK ÜRÜN — GENİŞ KART (featured) -->
-  <!--  @if (products().length > 0) {
-      <ion-card class="product-card product-card--wide"
-        (click)="addToCart(products()[0])">
-        <div class="card-img-wrap">
-          @if (products()[0].badge === 'HOT') {
-            <ion-badge color="primary" class="img-badge">⭐ Çok Satan</ion-badge>
-          }
-           <span class="food-emoji">{{ getEmoji('elma') }}</span>
-         <!--  @if (products()[0].imageUrl) {
-               <img [src]=" 'assets/products/' + products()[0].imageUrl + '.png'" 
-                class="product-img"
-               alt="product"/>
-            } @else {
-              <span class="food-emoji">{{ products()[0].emoji }}</span>
-            } --><!--
-        </div>
-        <ion-card-content class="card-content">
-          <div class="card-top">
-            <div>
-              <ion-card-title class="card-name">{{ products()[0].name }}</ion-card-title>
-              <ion-card-subtitle class="card-desc">{{ products()[0].description }}</ion-card-subtitle>
-            </div>
-            <div class="price-tag">{{ products()[0].price | number:'1.2-2' }} €</div>
-          </div>
-          <div class="card-footer">
-            <ion-chip color="medium" class="rating-chip">
-              <ion-icon name="star" color="warning"></ion-icon>
-              <ion-label>{{ products()[0].rating }} ({{ products()[0].reviewCount }})</ion-label>
-            </ion-chip>
-            <ion-button fill="outline" color="dark" size="small"
-              (click)="quickAdd($event, products()[0])">
-              <ion-icon slot="icon-only" name="add"></ion-icon>
-            </ion-button>
-          </div>
-        </ion-card-content>
-      </ion-card>
-    }-->
 
     <!-- DİĞER ÜRÜNLER — 2'Lİ GRID -->
     <div class="two-col-grid">

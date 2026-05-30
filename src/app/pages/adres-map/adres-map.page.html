@@ -5,10 +5,10 @@
         <ion-icon  slot="icon-only" name="remove-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Yeni Adres Ekle</ion-title>
+    <ion-title>{{ 'ADD_NEW_ADDRESS' | translate }}</ion-title>
   </ion-toolbar>
   <ion-searchbar
-   placeholder="Adres arayın" 
+   placeholder="{{ 'SEARCH_ADDRESS' | translate }}"
   debounce="500" showCancelButton="focus" 
    [(ngModel)]="currentAddressText"
   (ionInput)="searchAddress($event)"></ion-searchbar>
@@ -28,10 +28,10 @@
  <ion-footer  class="ion-padding">
   <div class="info-box">
     <ion-icon name="information-circle" color="warning"></ion-icon>
-    <p>Siparişiniz seçtiğiniz adrese teslim edilecektir.</p>
+    <p>{{ 'ORDER_DELIVERY_INFO' | translate }}</p>
   </div>
   <ion-button expand="block" color="success" (click)="saveAndContinue()">
-    Bu Adresle Devam Et
+     {{ 'CONTINUE_WITH_THIS_ADDRESS' | translate }}
   </ion-button>
 </ion-footer>
  
