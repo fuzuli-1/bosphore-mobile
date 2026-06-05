@@ -246,6 +246,7 @@ login() {
   changeLangue() {
     this.navCtrl.navigateRoot('/select-language');
   }
+  
   showPasswords(input: any): any {
     input.type = input.type === 'password' ? 'text' : 'password';
   }

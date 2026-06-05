@@ -7,14 +7,14 @@ import { environment } from 'src/environments/environment';
 const getApiUrl = (): string => {
   const platform = Capacitor.getPlatform();
   if (platform === 'android') {
-    return 'http://192.168.1.7:8080';   // emülatör
+    return 'https://192.168.1.7:8080';   // emülatör
   }
   if (platform === 'ios') {
-    return 'http://localhost:8080';
+    return 'https://localhost:8080';
   }
 
  return environment.apiUrl
- // return 'http://192.168.1.7:8080';     // browser
+ // return 'https://192.168.1.7:8080';     // browser
 };
 
 export let genelStyle: any = {
@@ -44,8 +44,8 @@ export let GeneralSettings: {
 } = {
    // Android emülatörü için:
   url: getApiUrl(),
-  //url: 'http://localhost:8080',
-  //couchDB: 'http://ivitaldata.akgun.com.tr/',
+  //url: 'https://localhost:8080',
+  //couchDB: 'https://ivitaldata.akgun.com.tr/',
   lang: 'fr',
   code: '',
   title: '',

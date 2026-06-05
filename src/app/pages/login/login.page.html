@@ -4,7 +4,7 @@
 <ion-content class="login-content">
   <div class="center-wrapper">
     <div class="login-card">
-      <h2>{{'login'|translate}}</h2>
+      <h2>{{'LOGIN'|translate}}</h2>
 
       <!--segment-->
       <ion-segment [(ngModel)]="loginType">
@@ -37,8 +37,10 @@
             [type]="showPassword?'text':'password'"
             [(ngModel)]="loginData.password"
           ></ion-input>
-          <ion-icon name="eye" slot="end" (click)="togglePassword()">
-          </ion-icon>
+          <ion-button fill="clear" size="small"  (click)="togglePasswordVisibility()">
+             <ion-icon name="eye" slot="end" />
+          </ion-button>
+          
         </ion-item>
       </div>
       } 
@@ -52,6 +54,20 @@
           [(ngModel)]="loginData.username"
         >
         </ion-input>
+      </div>
+        <!--password-->
+      <div class="form-group">
+        <ion-label>{{'password'|translate}}</ion-label>
+        <ion-item class="password-item">
+          <ion-input
+            [type]="showPassword?'text':'password'"
+            [(ngModel)]="loginData.password"
+          ></ion-input>
+          <ion-button fill="clear" size="small"  (click)="togglePasswordVisibility()">
+             <ion-icon name="eye" slot="end" />
+          </ion-button>
+         
+        </ion-item>
       </div>
       }
 

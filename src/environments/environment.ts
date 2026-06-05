@@ -4,12 +4,12 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://api.le-bosphore.com.tr',
+  apiUrl: 'https://localhost:8080',
   appVersion: '1.0.0',
   appCode: 'BosphoreApp',
-  url: 'http://api.le-bosphore.com.tr',
+  url: 'https://localhost:8080',
  /* GeneralSettings: {
-    url: 'http://api.le-bosphore.com.tr',
+    url: 'https://api.le-bosphore.com.tr',
   },/** */
   firebase: {
     apiKey: "AIzaSyAs9Vqi6uXGsqakomYiyqK--EdoLiG5zHk",
