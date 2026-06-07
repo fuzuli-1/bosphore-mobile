@@ -10,7 +10,7 @@ const routes: Routes = [
         path: 'adrese-teslim',
         loadComponent: () =>{
           console.log('Adrese Teslim sayfası yükleniyor...'); // Debug için
-          return import('../pages/adrese-teslim/adrese-teslim.page').then(
+          return import('../pages/adres/adrese-teslim/adrese-teslim.page').then(
             (m) => m.AdreseTeslimPage
           )
         }
@@ -19,7 +19,7 @@ const routes: Routes = [
         path: 'adres-list',
         loadComponent: () =>{
           console.log('Adres List sayfası yükleniyor...'); // Debug için
-          return import('../pages/adres-list/adres-list.page').then(
+          return import('../pages/adres/adres-list/adres-list.page').then(
             (m) => m.AdresListPage,
           ) 
         }
@@ -27,7 +27,7 @@ const routes: Routes = [
         path: 'adres-map',
         loadComponent: () =>{
           console.log('Adres Map sayfası yükleniyor...'); // Debug için
-          return import('../pages/adres-map/adres-map.page').then(
+          return import('../pages/adres/adres-map/adres-map.page').then(
             (m) => m.AdresMapPage,
           )}
       },
@@ -35,7 +35,7 @@ const routes: Routes = [
         path: 'adres-map-detail',
         loadComponent: () =>{
           console.log('Adres Map Detail sayfası yükleniyor...'); // Debug için
-          return import('../pages/adres-map-detail/adres-map-detail.page').then(
+          return import('../pages/adres/adres-map-detail/adres-map-detail.page').then(
             (m) => m.AdresMapDetailPage,
           )}
       },

@@ -32,7 +32,10 @@ import {
   checkmarkCircle,
   checkmarkDoneCircleOutline,
   chevronBack,
+  chevronBackOutline,
+  chevronDownCircleOutline,
   chevronForward,
+  chevronForwardOutline,
   closeCircle,
   cloudOutline,
   cloudUploadOutline,
@@ -106,6 +109,7 @@ register();
 
 // İkonları ekleyin
 addIcons({
+  'chevron-down-circle-outline': chevronDownCircleOutline,
   'arrow-back-outline': arrowForwardOutline,
   'folder-outline': folderOpenOutline,
   'refresh-outline': refreshOutline,
@@ -135,8 +139,8 @@ addIcons({
   'images-outline': imagesOutline,
   'settings-outline': settingsOutline,
   'airplane-outline': airplaneOutline,
-  'chevron-forward-outline': arrowForwardOutline,
-  'chevron-back-outline': arrowForwardOutline,
+  'chevron-forward-outline': chevronForwardOutline,
+  'chevron-back-outline': chevronBackOutline,
   "search-outline": searchOutline,
   'cart-outline':cartOutline,
   "person-outline":personOutline,

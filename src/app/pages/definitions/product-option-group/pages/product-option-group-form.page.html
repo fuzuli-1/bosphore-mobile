@@ -1,0 +1,158 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="form-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/product-option-groups"
+        text=""
+        class="custom-back">
+      </ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <div class="title-wrap">
+        {{ isEdit ? 'Kaydı Düzenle' : 'Yeni Ekle' }}
+      </div>
+    </ion-title>
+    <ion-buttons slot="end" *ngIf="!isLoadingPage">
+      <ion-button
+        class="save-btn-header"
+        [disabled]="!isFormValid || isSaving"
+        (click)="save()">
+        <ion-spinner *ngIf="isSaving" name="crescent"></ion-spinner>
+        <ion-icon *ngIf="!isSaving" name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="form-content">
+
+  <!-- Loading overlay -->
+  <div *ngIf="isLoadingPage" class="loading-overlay">
+    <div class="loading-card">
+      <ion-spinner name="crescent" class="loading-spinner"></ion-spinner>
+      <p>Yükleniyor...</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoadingPage" class="form-container">
+
+    <!-- Header Card -->
+    <div class="form-hero">
+      <div class="hero-icon-wrap">
+        <ion-icon name="{{ isEdit ? 'options-outline' : 'cube-outline' }}"></ion-icon>
+      </div>
+      <div class="hero-text">
+        <h2>{{ isEdit ? 'Bağlantıyı Düzenle' : 'Yeni Bağlantı' }}</h2>
+        <p>Ürün ile seçenek grubunu ilişkilendirin</p>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-card">
+
+      <!-- Product Select -->
+      <div class="field-group">
+        <div class="field-label">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>Ürün</span>
+          <span class="required-mark">*</span>
+        </div>
+        <div class="select-wrapper" [class.has-value]="selectedProductId">
+          <ion-item>
+              <ion-icon name="cube-outline" slot="start"></ion-icon>
+              <ion-input
+                type="text"             
+                [value]="selectedProductId ? selectedProductId + '-' + productName : ''"
+                placeholder="Ürün seçin..."
+                
+                (click)="openProductSelect()">
+              </ion-input>
+            
+             <ion-button fill="outline" slot="end" (click)="openProductSelect()">
+                 <ion-icon name="search"></ion-icon>
+              </ion-button>
+          </ion-item> 
+        </div>
+        <div class="field-hint" *ngIf="!selectedProductId">
+          Lütfen bir ürün seçin
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="field-divider">
+        <div class="divider-line"></div>
+        <div class="divider-icon">
+          <ion-icon name="options-outline"></ion-icon>
+        </div>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Option Group Select -->
+      <div class="field-group">
+        <div class="field-label">
+          <ion-icon name="options-outline"></ion-icon>
+          <span>Seçenek Grubu</span>
+          <span class="required-mark">*</span>
+        </div>
+        <div class="select-wrapper" [class.has-value]="selectedOptionGroupId">
+          <ion-select
+            [(ngModel)]="selectedOptionGroupId"
+            placeholder="Seçenek grubu seçin..."
+            interface="action-sheet"
+            [interfaceOptions]="{ header: 'Seçenek Grubu Seçin', cssClass: 'custom-action-sheet' }"
+            class="custom-select">
+            <ion-select-option
+              *ngFor="let group of optionGroups"
+              [value]="group.id">
+              {{ group.name }}
+            </ion-select-option>
+          </ion-select>
+          <div class="select-indicator" *ngIf="selectedOptionGroupId">
+            <span class="selected-badge">{{ getSelectedGroupName() }}</span>
+          </div>
+        </div>
+        <div class="field-hint" *ngIf="!selectedOptionGroupId">
+          Lütfen bir seçenek grubu seçin
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Card -->
+    <div class="preview-card" *ngIf="selectedProductId && selectedOptionGroupId">
+      <div class="preview-label">Önizleme</div>
+      <div class="preview-content">
+        <div class="preview-item">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span> {{ selectedProductId ? selectedProductId + '-' + productName : '' }} </span>
+        </div>
+        <div class="preview-arrow">→</div>
+        <div class="preview-item">
+          <ion-icon name="options-outline"></ion-icon>
+          <span>{{ selectedOptionGroupId ? getSelectedGroupName() : '' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Save Button -->
+    <ion-button
+      expand="block"
+      class="main-save-btn"
+      [disabled]="!isFormValid || isSaving"
+      (click)="save()">
+      <ion-spinner *ngIf="isSaving" name="crescent" slot="start"></ion-spinner>
+      <ion-icon *ngIf="!isSaving" name="save-outline" slot="start"></ion-icon>
+      {{ isSaving ? 'Kaydediliyor...' : (isEdit ? 'Güncelle' : 'Kaydet') }}
+    </ion-button>
+
+    <!-- Cancel Button -->
+    <ion-button
+      expand="block"
+      fill="clear"
+      class="cancel-btn"
+      (click)="goBack()">
+      <ion-icon name="close" slot="start"></ion-icon>
+      İptal
+    </ion-button>
+
+  </div>
+</ion-content>

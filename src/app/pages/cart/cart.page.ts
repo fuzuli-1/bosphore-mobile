@@ -17,7 +17,7 @@ import {
 } from 'src/app/interfaces/interfaces';
 import { ITEMS_PER_PAGE } from 'src/app/config/pagination.constants';
 import { OrderStateService } from 'src/app/services/order-state-service';
-import { AdresListPage } from '../adres-list/adres-list.page';
+ 
 
 import { PaymentMethod } from '../enumerations/payment-method.model';
 import { CartUtils } from 'src/app/shared/utils/CartUtils';
@@ -68,6 +68,7 @@ import {
   IonItemOptions,
 } from '@ionic/angular/standalone';
 import { AppUtil } from 'src/app/shared/utils/app-util';
+import { AdresListPage } from '../adres/adres-list/adres-list.page';
 
 @Component({
   selector: 'app-cart',

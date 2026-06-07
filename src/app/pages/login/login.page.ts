@@ -1,4 +1,4 @@
-import { Component, inject,  OnInit,  Signal,  ɵInputSignalNode} from '@angular/core';
+import { AfterViewInit, Component, inject,  OnDestroy,  OnInit,  Signal,  ɵInputSignalNode} from '@angular/core';
 import { FormsModule,} from '@angular/forms';
 import { appCode, appVersion } from '../../../app/page';
 import { OverlayEventDetail } from 'src/app/shared/typeahead/typeahead.component'; 
@@ -24,7 +24,7 @@ import { LoadingController } from '@ionic/angular/standalone';
 import { AlertController } from '@ionic/angular/standalone';
  
 import { LoginService } from 'src/app/services/login-service';
-import { Login } from './login.model';
+import { LoginVM } from './login.model';
 import { TranslationService } from 'src/app/services/translation-service';
 import { TranslatePipe } from '../../services/TranslatePipe';
 import { Account } from 'src/app/core/auth/account.model';
@@ -34,8 +34,11 @@ import {   ModalController } from '@ionic/angular/standalone';
 
 import { RegisterPage } from 'src/app/account/register/register.page';
 import { StateStorageService } from 'src/app/core/auth/state-storage.service';
+import { NgZone } from '@angular/core';
+import { NgxTurnstileModule } from 'ngx-turnstile';
  
 
+ 
 
 @Component({
   selector: 'app-login',
@@ -45,6 +48,8 @@ import { StateStorageService } from 'src/app/core/auth/state-storage.service';
   imports: [
    CommonModule, 
     FormsModule, 
+    NgxTurnstileModule,
+    
     TranslatePipe,
     // 2. Buraya 'IonicModule' yerine kullandığımız bileşenleri tek tek ekliyoruz:
     IonContent, 
@@ -65,15 +70,13 @@ export class LoginPage implements OnInit {
 // 1. Değişkenlerinizi doğrudan tanımlandığı yerde başlatın:
 langKey: string | null = 'fr';
 loginType: 'email' | 'phone' = 'email'; // setTimeout kullanmayın
- 
-
   appVersion = appVersion;
   identificationNumber = '';
  
-  loginData = new Login('', '', false, '', '', '');
+  loginData = new LoginVM('', '', false, '', '', '', '');
   appCode = appCode;
   showPassword: boolean = false;
-  isCaptchaRequired: boolean = false;
+  
   incorrectAttempts: number = 0;
   languages = Langs;
   isButtonDisabled: boolean = false;
@@ -90,35 +93,29 @@ loginType: 'email' | 'phone' = 'email'; // setTimeout kullanmayın
   private accountService = inject(AccountService);
   private modalCtrl = inject(ModalController);
   private storageService = inject(StateStorageService);
+  private ngZone = inject(NgZone);
  
   account: Signal<Account | null> =
     this.accountService.trackCurrentAccount();
 
   constructor() {
-      console.log('LoginPage constructor çalıştı');
+    console.log('LoginPage constructor çalıştı');
     this.menuCtrl.enable(false);
-  }
+  }  
 
-ionViewWillEnter() {
-  // Ionic bazen ion-page-invisible'ı kaldırmayı unutuyor
-  const el = document.querySelector('app-login');
-  if (el) {
-    el.classList.remove('ion-page-invisible');
-  }
-}
+
 
 ngOnInit() {
-  console.log(' LoginPage ngOnInit çalıştı ');
-  
+  console.log(' LoginPage ngOnInit çalıştı ');  
   // Signal değerini güvenli bir şekilde effect veya subscribe gibi izleyin ya da korumaya alın:
-  try {
-    const acc = this.account();
-    if (acc) {
-      this.langKey = acc.langKey ?? 'fr';
+    try {
+      const acc = this.account();
+      if (acc) {
+        this.langKey = acc.langKey ?? 'fr';
+      }
+    } catch (e) {
+      console.warn('Account signal henüz hazır değil, varsayılan fr dili yükleniyor.');
     }
-  } catch (e) {
-    console.warn('Account signal henüz hazır değil, varsayılan fr dili yükleniyor.');
-  }
 }
  
 
@@ -126,14 +123,21 @@ ngOnInit() {
 
   // login.page.ts içindeki login fonksiyonunu bununla değiştirin:
 login() {
+
+  if(!this.captchaToken) {
+    this.presentToast(0, 'top', this.ts.instant('CAPTCHA_REQUIRED'));
+    return;
+  }
+
   if (this.loginData.username && this.loginData.password) {
-    const loginData = new Login(
+    const loginData = new LoginVM(
       this.loginData.username,
       this.loginData.password,
       false,
       '',
       '',
-      ''
+      '',
+      this.captchaToken // Captcha token'ını Login modeline ekleyin 
     );
 
     this.loginService.login(loginData).subscribe({
@@ -187,61 +191,7 @@ login() {
     );
   }
 }
-
-
-  /*
-login() {
-  if (this.loginData.username && this.loginData.password) {
-    const loginData = new Login(
-      this.loginData.username,
-      this.loginData.password,
-      false,
-      '',
-      '',
-      ''
-    );
-
-    this.loginService.login(loginData).subscribe({
-      next: () => {
-       
-        this.navCtrl.navigateRoot('/home');
-        // 🔴 EN KRİTİK SATIR
-      /*  this.accountService.identity(true).subscribe(() => {
-          this.navCtrl.navigateRoot('/home');
-        });/**//*
-      },
-      error: async (error: any) => {
-        let errorMessage = '';
-        if (error==null) {
-          errorMessage = this.ts.instant('NOT_CONNECT_SERVER');
-        } else{
-           if(error.status === 401) {
-            errorMessage = this.ts.instant('user-bag-hata');
-          } else if (error.status === 403) {
-            errorMessage = this.ts.instant('NOT_ALLOWED');
-          } else {
-            errorMessage = this.ts.instant('NOT_CONNECT_SERVER');
-          }
-        }
  
-   
-        const alert = await this.alertCtrl.create({
-          header: errorMessage,
-          cssClass: 'custom-alert',
-          buttons: ['OK'],
-        });
-        alert.present();
-      },
-    });
-  } else {
-    this.presentToast(
-      0,
-      'top',
-      this.ts.instant('USER_PASSWORD_REQUIRED')
-    );
-  }
-}/** */
-
 
   changeLangue() {
     this.navCtrl.navigateRoot('/select-language');
@@ -276,10 +226,6 @@ login() {
     const ev = event as CustomEvent<OverlayEventDetail<string>>;
     if (ev.detail.role === 'confirm') {
     }
-  }
-
-  ionViewDidEnter() {
- 
   }
 
   togglePassword() {
@@ -327,5 +273,34 @@ async register(){
     }
 
 }
+ 
+captchaToken: string | null = null;
+captchaWidgetId: string | null = null;
+captchaSiteKey: string = '0x4AAAAAADfkphPs1Nn3ATaI'; // Cloudflare Turnstile test anahtarı, kendi anahtarınızla değiştirin
+isCaptchaRequired: boolean = false;
+isCaptchaVisible: boolean = false;
 
+// Doğrulama başarılı olduğunda tetiklenir
+  onTurnstileResolved(token: string | null): void {
+    debugger;
+    this.captchaToken = token;
+    console.log('Alınan Turnstile Token:', token);
+  }
+
+    // Token geçersiz olduğunda veya süresi dolduğunda tetiklenir
+  onTurnstileError(): void {
+     debugger;
+    this.captchaToken = null;
+    console.log('Turnstile doğrulama hatası oluştu.');
+  }
+ 
+  onSubmit(): void {
+     debugger;
+    if (!this.captchaToken) {
+      alert('Lütfen bot doğrulamasını tamamlayın.');
+      return;
+    }
+    // Token bilgisini backend servisinize gönderin
+    console.log('Form backend\'e gönderiliyor, token:', this.captchaToken);
+  }
 }

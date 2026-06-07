@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth-guard';
 import { AdminGuard } from './guards/admin-guard';
-//app.routes.ts
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -36,7 +35,7 @@ export const routes: Routes = [
         path: 'menus',
         loadChildren: () =>{
           console.log('Menus sayfası yükleniyor...'); // Debug için
-          return import('./pages/menu/menu.routes').then((m) => m.default)
+          return import('./pages/menu-grup/menu.routes').then((m) => m.default)
         }
       },
       {
@@ -59,7 +58,7 @@ export const routes: Routes = [
         path: 'address',
         loadComponent: () =>{
           console.log('Address sayfası yükleniyor...'); // Debug için
-          return import('./pages/address/address.page').then((m) => m.AddressPage)
+          return import('./pages/adres/address/address.page').then((m) => m.AddressPage)
         } 
       },
       {
@@ -76,7 +75,7 @@ export const routes: Routes = [
     path: 'menu-management',
     loadComponent: () =>  {
       console.log('Menu Management sayfası yükleniyor...'); // Debug için
-      return   import('./pages/menu-management/menu-management.page').then( m => m.MenuManagementPage)
+      return   import('./pages/definitions/menu-management/menu-management.page').then( m => m.MenuManagementPage)
     }
   },
   
@@ -111,29 +110,25 @@ export const routes: Routes = [
     path: 'category',
     loadComponent: () => {
       console.log('Category sayfası yükleniyor...'); // Debug için
-      return import('./pages/category/category.page').then( m => m.CategoryPage)
+      return import('./pages/definitions/category/category.page').then( m => m.CategoryPage)
     }
   },
   {
     path: 'language',
     loadComponent: () => {
       console.log('Language sayfası yükleniyor...'); // Debug için
-      return import('./pages/language/language.page').then( m => m.LanguagePage)
+      return import('./pages/definitions/language/language.page').then( m => m.LanguagePage)
     }
   },
   {
     path: 'option-management',
     loadComponent: () => {
       console.log('Option Management sayfası yükleniyor...'); // Debug için
-      return import('./pages/option-management/option-management.page').then( m => m.OptionManagementPage)
+      return import('./pages/definitions/option-management/option-management.page').then( m => m.OptionManagementPage)
     }
-  },
-
- 
-
- 
-
- 
-
- 
-];
+  },{
+  path: 'product-option-group',
+  loadChildren: () =>
+    import('./pages/definitions/product-option-group/product-option-group.routes')
+      .then(m => m.default)
+}];

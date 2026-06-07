@@ -10,18 +10,18 @@ import { NavigationEnd, Router } from '@angular/router';
 
 import { FormsModule } from '@angular/forms';
 
-import * as iface from '../interfaces/interfaces';
+import * as iface from 'src/app/interfaces/interfaces';
 import { TranslationService } from '../services/translation-service';
 import { AccountService } from '../core/auth/account.service';
 
-import { AdresListPage } from '../pages/adres-list/adres-list.page';
+import { AdresListPage } from '../pages/adres/adres-list/adres-list.page';
 import { OrderStateService } from '../services/order-state-service';
 import { CommonModule } from '@angular/common';
 
 import { body } from 'ionicons/icons';
 import { ProductService } from '../pages/products/product-service';
-import { MenuGroupService } from '../pages/menu-groups/menu-group-service';
-import { MenuGroupItemService } from '../pages/menu-group-item/menu-group-item-service';
+import { MenuGroupService } from '../pages/menu-grup/menu-groups/menu-group-service';
+import { MenuGroupItemService } from '../pages/menu-grup/menu-group-item/menu-group-item-service';
 import { CartUtils } from '../shared/utils/CartUtils';
 import { forkJoin } from 'rxjs';
 import { TranslatePipe } from '../services/TranslatePipe';
@@ -46,7 +46,8 @@ import {
   IonTitle,
   ModalController,MenuController,ToastController, IonHeader, IonButtons, IonButton } from '@ionic/angular/standalone';
 import { CartService } from '../pages/cart/cart.service';
-import { CategoryService } from '../pages/category/category-service';
+import { CategoryService } from '../pages/definitions/category/category-service';
+ 
 
 @Component({
   selector: 'app-home',
@@ -112,8 +113,11 @@ export class HomePage implements OnInit {
   private ts = inject(TranslationService);
   public cartService = inject(CartService);
 
-  constructor() {}
+constructor( ) {
+   
 
+  console.log(JSON.stringify(this.router.config, null, 2));
+}
   ngOnInit() {
     if (this.account.isAuthenticated()) {
       this.account.getAuthenticationState().subscribe((account) => {

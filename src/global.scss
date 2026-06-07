@@ -37,4 +37,70 @@
 @import '@ionic/angular/css/palettes/dark.system.css';
 @import "leaflet/dist/leaflet.css";
 
+/*
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
+*/
+/*
+:root {
+  --ion-font-family: 'Sora', sans-serif;
+  --ion-background-color: #0A0C12;
+  --ion-text-color: #F5F0E8;
+
+  --ion-color-primary: #FF6B35;
+  --ion-color-primary-rgb: 255, 107, 53;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #e05f2e;
+  --ion-color-primary-tint: #ff7a49;
+
+  --ion-color-danger: #E84040;
+  --ion-color-success: #2ECC71;
+
+  --ion-item-background: #1C1F2A;
+  --ion-toolbar-background: #0F1117;
+  --ion-tab-bar-background: #0F1117;
+  --ion-card-background: #1C1F2A;
+}*/
+
+// ─── Alert Customization ───────────────────────
+.custom-alert {
+  --background: #1C1F2A;
+  --header-color: #F5F0E8;
+  --message-color: #9BA0AF;
+
+  .alert-wrapper {
+    border: 1px solid #2A2D3A;
+    border-radius: 20px;
+  }
+
+  .alert-head {
+    font-family: 'Sora', sans-serif;
+  }
+
+  .alert-cancel {
+    color: #6B7080 !important;
+  }
+
+  .alert-danger {
+    color: #E84040 !important;
+    font-weight: 700;
+  }
+}
+
+// ─── Toast Customization ───────────────────────
+.custom-toast {
+  --border-radius: 12px;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+// ─── Action Sheet ───────────────────────
+.custom-action-sheet {
+  .action-sheet-wrapper {
+    font-family: 'Sora', sans-serif;
+    background: #1C1F2A;
+  }
+}
+
 

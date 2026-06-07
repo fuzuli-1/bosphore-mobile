@@ -3,7 +3,7 @@ import { AccountService } from '../core/auth/account.service';
 import { AuthServerProvider } from '../core/auth/auth-jwt.service';
 import { mergeMap, Observable } from 'rxjs';
 import { Account } from '../core/auth/account.model';
-import { Login } from '../pages/login/login.model';
+import { LoginVM } from '../pages/login/login.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +12,7 @@ import { Login } from '../pages/login/login.model';
   private readonly accountService = inject(AccountService);
   private readonly authServerProvider = inject(AuthServerProvider);
 
-  login(credentials: Login): Observable<Account | null> {
+  login(credentials: LoginVM): Observable<Account | null> {
     return this.authServerProvider.login(credentials).pipe(mergeMap(() => this.accountService.identity(true)));
   }
 

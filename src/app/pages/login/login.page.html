@@ -70,13 +70,23 @@
         </ion-item>
       </div>
       }
-
-
+      <ngx-turnstile
+      [siteKey]="captchaSiteKey"
+      theme="auto"
+      size="normal"
+      (resolved)="onTurnstileResolved($event)"
+      (error)="onTurnstileError()">
+    </ngx-turnstile>   
+    
       <div class="forgot">
         <a href="#">{{'FORGET_PASSWORD'|translate}}</a>
       </div>
 
-      <ion-button expand="block" class="login-btn" (click)="login()">
+      <ion-button
+       expand="block"
+       class="login-btn" 
+       [disabled]="!loginData.username || !loginData.password || (isCaptchaVisible && !captchaToken)"
+       (click)="login()">
         {{'login'|translate}}
       </ion-button>
 

@@ -79,6 +79,7 @@ export class AppComponent implements OnInit {
     { title: 'MENU_MANAGEMENT', url: '/menu-management', icon: 'grid-outline' },
     { title: 'CATEGORY_MANAGEMENT', url: '/category', icon: 'grid-outline' },
     { title: 'PRODUCT_MANAGEMENT', url: '/products', icon: 'grid-outline' },
+    { title: 'PRODUCT_OPTION_GROUP', url: '/product-option-group', icon: 'grid-outline' },
     {
       title: 'OPTION_MANAGEMENT',
       url: '/option-management',

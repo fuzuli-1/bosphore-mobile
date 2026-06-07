@@ -1,0 +1,111 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="main-toolbar">
+    <ion-title>
+      <div class="title-wrap">
+        <ion-icon name="layers-outline" class="title-icon"></ion-icon>
+        <span>Ürün Seçenek Grupları</span>
+      </div>
+    </ion-title>
+  </ion-toolbar>
+  <ion-toolbar class="search-toolbar">
+    <ion-searchbar
+      placeholder="Ürün veya grup ara..."
+      animated="true"
+      (ionInput)="onSearch($event)"
+      class="custom-searchbar">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="list-content">
+  <ion-refresher slot="fixed" (ionRefresh)="load($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      refreshingSpinner="crescent">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Stats Bar -->
+  <div class="stats-bar" *ngIf="!isLoading">
+    <div class="stat-item">
+      <span class="stat-number">{{ items.length }}</span>
+      <span class="stat-label">Toplam</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-number">{{ filtered.length }}</span>
+      <span class="stat-label">Gösterilen</span>
+    </div>
+  </div>
+
+  <!-- Skeleton Loading -->
+  <div *ngIf="isLoading" class="skeleton-container">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3,4,5]">
+      <div class="skeleton-left">
+        <ion-skeleton-text animated style="width: 44px; height: 44px; border-radius: 12px;"></ion-skeleton-text>
+      </div>
+      <div class="skeleton-content">
+        <ion-skeleton-text animated style="width: 70%; height: 16px; border-radius: 6px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 45%; height: 13px; border-radius: 6px; margin-top: 6px;"></ion-skeleton-text>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && filtered.length === 0" class="empty-state">
+    <div class="empty-icon-wrap">
+      <ion-icon name="layers-outline"></ion-icon>
+    </div>
+    <h3>Kayıt Bulunamadı</h3>
+    <p>Henüz ürün seçenek grubu eklenmemiş veya arama kriterinize uygun kayıt yok.</p>
+    <ion-button class="add-btn-empty" (click)="goToAdd()">
+      <ion-icon slot="start" name="add"></ion-icon>
+      İlk Kaydı Ekle
+    </ion-button>
+  </div>
+
+  <!-- List -->
+  <div class="list-container" *ngIf="!isLoading && filtered.length > 0">
+    <ion-item-sliding *ngFor="let item of filtered; let i = index" class="slide-item">
+      <ion-item class="list-card" (click)="goToEdit(item.id!)" detail="false">
+        <div class="item-avatar" slot="start"
+             [style.background]="getAvatarColor(item.product?.name??'')">
+          {{ getInitials(item.product?.name??'') }}
+        </div>
+        <ion-label>
+          <div class="item-product">
+            <ion-icon name="cube-outline" class="inline-icon"></ion-icon>
+            {{ item.product?.name }}
+          </div>
+          <div class="item-group">
+            <ion-icon name="options-outline" class="inline-icon"></ion-icon>
+            {{ item.optionGroup?.name }}
+          </div>
+          <div class="item-id">#{{ item.id }}</div>
+        </ion-label>
+        <div slot="end" class="item-actions-hint">
+          <ion-icon name="chevron-forward-outline"></ion-icon>
+        </div>
+      </ion-item>
+
+      <ion-item-options side="start">
+        <ion-item-option color="primary" (click)="goToEdit(item.id!)">
+          <ion-icon slot="icon-only" name="create"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="confirmDelete(item, slidingItem)" #slidingItem>
+          <ion-icon slot="icon-only" name="trash"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </div>
+
+  <!-- FAB Add Button -->
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button class="main-fab" (click)="goToAdd()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

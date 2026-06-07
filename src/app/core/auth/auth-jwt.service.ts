@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
  
 import { ApplicationConfigService } from '../config/application-config.service';
 import { StateStorageService } from './state-storage.service';
-import { Login } from 'src/app/pages/login/login.model';
+import { LoginVM } from 'src/app/pages/login/login.model';
 
 type JwtToken = {
   id_token: string;
@@ -22,7 +22,7 @@ export class AuthServerProvider {
     return this.stateStorageService.getAuthenticationToken() ?? '';
   }
 
-  login(credentials: Login): Observable<void> {
+  login(credentials: LoginVM): Observable<void> {
     return this.http
       .post<JwtToken>(this.applicationConfigService.getEndpointFor('/api/authenticate'), credentials)
       .pipe(map(response => this.authenticateSuccess(response, credentials.rememberMe)));

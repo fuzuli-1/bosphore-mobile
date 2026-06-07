@@ -1,4 +1,4 @@
-export class Login {
+export class LoginVM {
   constructor(
 
     public username: string,
@@ -6,7 +6,8 @@ export class Login {
     public rememberMe: boolean,
     public lang: string = 'en',
     public email:string,
-    public phone:string
+    public phone:string,
+    public captchaToken:string
 
   ) {}
 }

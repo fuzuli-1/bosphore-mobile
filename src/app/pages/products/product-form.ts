@@ -1,16 +1,18 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ModalController, IonicModule } from '@ionic/angular';
-import { LanguageSelectorComponent } from '../language/language-selector.component';
+ 
 import { TranslationService } from 'src/app/services/translation-service';
 import { BadgeType, ICategory, IProduct } from 'src/app/interfaces/interfaces';
-import { CategorySelectorComponent } from '../category/category-selector';
+import { CategorySelectorComponent } from '../definitions/category/category-selector';
 import { ProductService } from './product-service';
 import { TranslatePipe } from '../../services/TranslatePipe';
-import { CategoryService } from '../category/category-service';
+import { CategoryService } from '../definitions/category/category-service';
 import { map } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { LanguageService } from '../language/language-service';
+import { LanguageService } from '../definitions/language/language-service';
+import { LanguageSelectorComponent } from '../definitions/language/language-selector.component';
+ 
 
 @Component({
   selector: 'app-product-form',

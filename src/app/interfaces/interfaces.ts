@@ -5,7 +5,7 @@ import dayjs from 'dayjs/esm';
 import { OrderStatus } from '../pages/enumerations/order-status.model';
 import { PaymentMethod } from '../pages/enumerations/payment-method.model';
 import { PaymentStatus } from '../pages/enumerations/payment-status.model';
-
+ 
 export interface IMenuGroup {
   id: number;
   title: string;
@@ -384,5 +384,20 @@ export interface CartItem {
   // Savaşın sonucu: Bu sipariş nereye ve nasıl gidecek?
   address: NewAddress;
     
+}
+
+
+export interface IProductOptionGroup {
+  id: number;
+  comment?: string | null;
+  product?: Pick<IProduct, 'id' | 'name'> | null;
+  optionGroup?: Pick<IOptionGroup, 'id' | 'name'> | null;
+}
+
+export type NewProductOptionGroup = Omit<IProductOptionGroup, 'id'> & { id: null };
+
+export interface ProductOptionGroupRequest {
+  productId: number;
+  optionGroupId: number;
 }
 

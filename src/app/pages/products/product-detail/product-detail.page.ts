@@ -17,9 +17,9 @@ import { Bosp } from 'src/app/shared/utils/Bosp';
 import { OrderItemDraft } from 'src/app/interfaces/ui-model';
 
 import { OrderStateService } from 'src/app/services/order-state-service';
-import { AdresListPage } from '../../adres-list/adres-list.page';
+ 
 import { TranslatePipe } from '../../../services/TranslatePipe';
-import { OptionGroupService } from '../../option-group/option-group-service';
+import { OptionGroupService } from '../../menu-extra/option-group/option-group-service';
 import { CartService } from '../../cart/cart.service';
 
 import { StateStorageService } from 'src/app/core/auth/state-storage.service';
@@ -42,6 +42,7 @@ import {
   ModalController,
   NavController, IonRow,IonCol } from '@ionic/angular/standalone';
 import { AppUtil } from 'src/app/shared/utils/app-util';
+import { AdresListPage } from '../../adres/adres-list/adres-list.page';
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-detail.page.html',
