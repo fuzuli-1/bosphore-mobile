@@ -22,13 +22,11 @@
     <ion-item-sliding *ngFor="let group of allGroups()">
       <ion-item
         (click)="selectGroup(group)"
-        [color]="selectedGroup.id === group.id ? 'light' : ''"
+        [color]="selectedGroup()?.id === group.id ? 'light' : ''"
       >
         <ion-avatar slot="start" *ngIf="group.iconPath">
           <img
-            [src]="group?.iconPath
-    ? 'assets/menus/' + group?.iconPath + '.png'
-    : 'assets/menus/default.png'"
+            [src]="appUtil.getImageUrl(url, group.iconPath)"
             alt="product"
           />
         </ion-avatar>
@@ -42,7 +40,7 @@
       </ion-item>
 
       <ion-item-options side="end">
-        <ion-item-option color="warning" (click)="editGroup(group)"
+        <ion-item-option color="warning" (click)="openGroupModal(group)"
           >{{'EDIT'|translate}}</ion-item-option
         >
         <ion-item-option color="danger" (click)="deleteGroup(group)"
@@ -54,31 +52,40 @@
 
   <div *ngIf="selectedGroup" class="ion-padding-top">
     <ion-item lines="none">
-      <ion-label><strong>{{ selectedGroup.title }}</strong> {{'CONTENT'|translate}}</ion-label>
+      <ion-label><strong>{{ selectedGroup()?.title }}</strong> {{'CONTENT'|translate}}</ion-label>
       <ion-button
         slot="end"
         size="small"
         fill="outline"
         (click)="openItemModal()"
       >
-        <ion-icon name="add" slot="start"></ion-icon> {{ 'ADD_ITEM' | translate }}
+        <ion-icon name="add-outline" slot="start"></ion-icon> {{ 'ADD_ITEM' | translate }}
       </ion-button>
     </ion-item>
 
     <ion-list>
       <ion-item-sliding *ngFor="let item of selectedCategories()">
-        <ion-item >
+        <ion-item>
+          @if(item.iconPath){
+            <ion-avatar slot="start">
+              <img
+                [src]="appUtil.getImageUrl(url, item.iconPath)"
+                alt="product"
+              />
+            </ion-avatar>
+          }
+          
           <ion-label>
             <h3>{{ item.label }}</h3>
             <p>
-              Sıra: {{ item.orderNo }} | Kategori ID: {{ item.targetCategoryId
-              }}
+              Sıra: {{ item.orderNo }} | Kategori ID: {{ item.targetCategoryId }}
             </p>
           </ion-label>
           <ion-icon name="chevron-forward-outline" slot="end"></ion-icon>
         </ion-item>
-                <ion-item-options side="end">
-          <ion-item-option color="warning" (click)="editItem(item)"
+ 
+       <ion-item-options side="end">
+          <ion-item-option color="warning" (click)="openItemModal(item)"
             >{{ 'EDIT' | translate }}</ion-item-option
           >
           <ion-item-option color="danger" (click)="deleteItem(item)"

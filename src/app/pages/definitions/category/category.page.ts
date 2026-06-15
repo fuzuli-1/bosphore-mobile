@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule,ToastController, ModalController,AlertController } from '@ionic/angular';
+ 
  
 import { ICategory } from 'src/app/interfaces/interfaces';
 import { CategoryService } from './category-service';
@@ -10,7 +10,11 @@ import { TranslationService } from 'src/app/services/translation-service';
 import { TranslatePipe } from 'src/app/services/TranslatePipe';
 import { LanguageFormComponent } from '../language/language-form.component';
 import { LanguageSelectorComponent } from '../language/language-selector.component';
- 
+ import {
+  IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+  IonBackButton, IonButton, IonIcon, IonList, IonItem, IonLabel,
+  IonBadge, IonItemSliding, IonItemOptions, IonItemOption,
+  IonSpinner, IonSearchbar, IonFab, IonFabButton,ModalController,AlertController,ToastController, IonListHeader, IonAvatar, IonFooter, IonGrid, IonRow, IonCol } from '@ionic/angular/standalone';
  
  
 @Component({
@@ -18,7 +22,13 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
   templateUrl: './category.page.html',
   styleUrls: ['./category.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
+  imports: [IonCol, IonRow, IonGrid, IonFooter, IonAvatar, IonListHeader, 
+    CommonModule, FormsModule, TranslatePipe,
+    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonBackButton, IonButton, IonIcon, IonList, IonItem, IonLabel,
+    IonBadge, IonItemSliding, IonItemOptions, IonItemOption,
+    IonSpinner, IonFab, IonFabButton
+  ],
 })
 export class CategoryPage implements OnInit {
   page=0;
@@ -96,6 +106,8 @@ export class CategoryPage implements OnInit {
     await modal.present();
   }
 
+
+
    selectCategory(cat :ICategory){
      this.selectedCategory =cat;
       let data: ICategory[]=this.categories().filter(t=>t.id==cat.id)??[];
@@ -160,18 +172,16 @@ export class CategoryPage implements OnInit {
   return this.EMOJI_MAP[name.toLowerCase()] ?? '🍽️';
   }
 
-  addCategory() {
-     const modal = this.modalCtrl.create({
-      component: CategoryFormComponent,
-    }).then(modal => {
-      modal.present();
-      modal.onDidDismiss().then(result => {
-        if (result.data) {
-          this.locadCategories(); // Yeni kategori eklendikten sonra listeyi yenile
-        }
-      });
-    });
+ async addCategory() {
+  const modal = await this.modalCtrl.create({
+    component: CategoryFormComponent,
+  });
+  await modal.present();
+  const result = await modal.onDidDismiss();
+  if (result.data) {
+    this.locadCategories();
   }
+} 
 
   async deleteCategory(cat:ICategory){
     const alert=await this.alertCtrl.create({
@@ -205,7 +215,7 @@ export class CategoryPage implements OnInit {
   async showToast(color: string, message: string, position: 'top' | 'middle' | 'bottom') {
     const toast = await this.toastCtrl.create({
       message: message,
-      duration: 250,
+      duration: 2500,
       cssClass: `custom-toast-${color}`,
       icon: 'checkmark-done-outline',
       position: position,

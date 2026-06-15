@@ -28,8 +28,7 @@ import {
   AlertController,
   ToastController,
   LoadingController,
-  NavController,
-} from '@ionic/angular/standalone';
+  NavController,IonBackButton, IonButtons } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   add,
@@ -49,14 +48,14 @@ import { ProductOptionGroupService } from '../pages/product-option-group.service
   templateUrl: './product-option-group-list.page.html',
   styleUrls: ['./product-option-group-list.page.scss'],
   standalone: true,
-  imports: [
+  imports: [IonButtons, 
     CommonModule,
     RouterModule,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
-    IonList,
+    IonBackButton,
     IonItem,
     IonLabel,
     IonButton,

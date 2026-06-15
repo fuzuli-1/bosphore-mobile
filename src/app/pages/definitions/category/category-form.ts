@@ -12,39 +12,35 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
   selector: 'app-category-form',
   template: `   <ion-header>
         <ion-toolbar color="primary">
-            <ion-title>{{ category ? ['edit'|translate] : ['newRecord'|translate] }}</ion-title>    
+            <ion-title>{{ category ? ['EDIT'|translate] : ['NEW_RECORD'|translate] }}</ion-title>    
             <ion-buttons slot="end">
-                <ion-button (click)="cancel()">Kapat</ion-button>
+                <ion-button (click)="cancel()">{{'CLOSE'|translate}}</ion-button>
             </ion-buttons>
         </ion-toolbar>
     </ion-header>
     <ion-content class="ion-padding">
         <form [formGroup]="editForm">
             <ion-item fill="outline" class="ion-margin-bottom">
-                <ion-label position="stacked">{{'name'|translate}}</ion-label>
+                <ion-label position="stacked">{{'NAME'|translate}}</ion-label>
                 <ion-input formControlName="name"></ion-input>
             </ion-item> 
-            <ion-item fill="outline" class="ion-margin-bottom">
-                <ion-label position="stacked">{{'categoryId'|translate}}</ion-label>
-                <ion-input formControlName="categoryId"></ion-input>
-            </ion-item>
             <ion-item fill="outline" class="ion-margin-bottom">     
-                <ion-label position="stacked">{{'menuGroupItem'|translate}}</ion-label>
+                <ion-label position="stacked">{{'MENU_GROUP_ITEM'|translate}}</ion-label>
                 <ion-input formControlName="menuGroupItemId"></ion-input>
                 <ion-button fill="outline" slot="end" (click)="openMenuGroupItemSelector()">
-                    <ion-icon name="search" slot="start"></ion-icon> {{'seç'|translate}}
+                    <ion-icon name="search" slot="start"></ion-icon> {{'CHOOSE'|translate}}
                 </ion-button>
             </ion-item>
                 <ion-item fill="outline" class="ion-margin-bottom">
-                <ion-label position="stacked">{{'language'|translate}}</ion-label>
+                <ion-label position="stacked">{{'LANGUAGE'|translate}}</ion-label>
                 <ion-input formControlName="languageId"></ion-input>
                 <ion-button fill="outline" slot="end" (click)="openLanguageSelector()">
-                    <ion-icon name="search" slot="start"></ion-icon> {{'seç'|translate}}
+                    <ion-icon name="search" slot="start"></ion-icon> {{'CHOOSE'|translate}}
                 </ion-button>
             </ion-item>
 
             <ion-item fill="outline" class="ion-margin-bottom">
-                <ion-label position="stacked">{{'description'|translate}}</ion-label>
+                <ion-label position="stacked">{{'DESCRIPTION'|translate}}</ion-label>
                 <ion-input formControlName="description"></ion-input>
             </ion-item>
             <ion-item fill="outline" class="ion-margin-bottom">
@@ -52,20 +48,20 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
                 <ion-input formControlName="imageUrl"></ion-input>
             </ion-item>
             <ion-item fill="outline" class="ion-margin-bottom">
-                <ion-label position="stacked">{{'displayOrder'|translate}}</ion-label>        
+                <ion-label position="stacked">{{'DISPLAY_ORDER'|translate}}</ion-label>        
                 <ion-input formControlName="displayOrder"></ion-input>
             </ion-item>
             <ion-item fill="outline" class="ion-margin-bottom">     
                 <ion-label position="stacked">{{'active'|translate}}</ion-label>
                 <ion-select formControlName="active">
-                    <ion-select-option [value]="true">{{'yes'|translate}}</ion-select-option>
-                    <ion-select-option [value]="false">{{'no'|translate}}</ion-select-option>
+                    <ion-select-option [value]="true">{{'YES'|translate}}</ion-select-option>
+                    <ion-select-option [value]="false">{{'NO'|translate}}</ion-select-option>
                 </ion-select>
             </ion-item>
 
 
             <ion-button expand="block" (click)="save()" [disabled]="editForm.invalid">
-                {{'save'|translate}} ve ID Dön
+                {{'SAVE'|translate}}
             </ion-button>
         </form>
     </ion-content>`,
@@ -82,7 +78,6 @@ export class CategoryFormComponent implements OnInit {
     editForm: FormGroup= this.fb.group({
         id: [null], 
         name: [null, [Validators.required]],
-        categoryId: [null, [Validators.required]],
         description:[null],
         imageUrl:[null],
         displayOrder:[null],
@@ -96,11 +91,10 @@ export class CategoryFormComponent implements OnInit {
             this.editForm.patchValue({
                 id: this.category.id,
                 name: this.category.name,
-                categoryId: this.category.categoryId,
                 description: this.category.description,
                 imageUrl: this.category.imageUrl,
                 displayOrder: this.category.displayOrder,
-                active: this.category.active,
+                active: this.category.isActive,
                 menuGroupItemId: this.category.menuGroupItem?.id,
                 languageId: this.category.language?.id
             });

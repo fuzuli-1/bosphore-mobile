@@ -20,6 +20,13 @@ export class MenuGroupItemService {
    protected readonly applicationConfigService = inject(ApplicationConfigService);
    protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/menu-group-items');
 
+  uploadImage(formData: FormData){
+    return this.http.post(
+      `${this.resourceUrl}/upload-image`,
+      formData,
+      { responseType: 'text' }
+    );
+  }
 
   getMenuGroupItems(menuGroupId: number): Observable<EntityArrayResponseType> {
      const options = createRequestOption(menuGroupId);

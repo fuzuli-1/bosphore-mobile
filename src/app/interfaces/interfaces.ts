@@ -151,8 +151,7 @@ export interface ICategory {
   imageUrl?: string | null;
   displayOrder?: number | null;
   createdAt?: dayjs.Dayjs | null;
-  icon: String;
-  active: boolean;
+  icon: String; 
   menuGroupItem?:Pick<IMenuGroupItem, 'id'> | null;
   language?: Pick<ILanguage, 'id'> | null;
 }

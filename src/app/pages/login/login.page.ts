@@ -69,7 +69,7 @@ export class LoginPage implements OnInit {
 
 // 1. Değişkenlerinizi doğrudan tanımlandığı yerde başlatın:
 langKey: string | null = 'fr';
-loginType: 'email' | 'phone' = 'email'; // setTimeout kullanmayın
+loginType: 'email' | 'phone' = 'phone'; // setTimeout kullanmayın
   appVersion = appVersion;
   identificationNumber = '';
  
@@ -278,24 +278,24 @@ captchaToken: string | null = null;
 captchaWidgetId: string | null = null;
 captchaSiteKey: string = '0x4AAAAAADfkphPs1Nn3ATaI'; // Cloudflare Turnstile test anahtarı, kendi anahtarınızla değiştirin
 isCaptchaRequired: boolean = false;
-isCaptchaVisible: boolean = false;
+isCaptchaVisible: boolean = true;
 
 // Doğrulama başarılı olduğunda tetiklenir
   onTurnstileResolved(token: string | null): void {
-    debugger;
+    
     this.captchaToken = token;
     console.log('Alınan Turnstile Token:', token);
   }
 
     // Token geçersiz olduğunda veya süresi dolduğunda tetiklenir
   onTurnstileError(): void {
-     debugger;
+    
     this.captchaToken = null;
     console.log('Turnstile doğrulama hatası oluştu.');
   }
  
   onSubmit(): void {
-     debugger;
+    
     if (!this.captchaToken) {
       alert('Lütfen bot doğrulamasını tamamlayın.');
       return;

@@ -4,10 +4,10 @@
 
 export const environment = {
   production: true,
-  apiUrl: 'https://api.le-bosphore.com.tr',
+  apiUrl: '',
   appVersion: '1.0.0',
   appCode: 'BosphoreApp',
-  url: 'https://api.le-bosphore.com.tr',
+  url: '',
  /* GeneralSettings: {
     url: 'http://api.le-bosphore.com.tr',
   },/** */

@@ -19,7 +19,7 @@ save(user: any): Observable<any> {
   // 🔥 responseType: 'text' ekleyerek Angular'ın JSON beklemesini engelliyoruz.
 }
 /* */
-  save(registration: Registration): Observable<{}> {
+  save(registration: any): Observable<{}> {
     return this.http.post(this.applicationConfigService.getEndpointFor('/api/register'), registration);
   }
   

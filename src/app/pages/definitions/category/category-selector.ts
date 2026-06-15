@@ -14,14 +14,14 @@ import { TranslatePipe } from 'src/app/services/TranslatePipe';
   template: `
     <ion-header>
       <ion-toolbar color="tertiary">
-        <ion-title>Category Seç</ion-title>
+        <ion-title>{{'CHOOSE_CATEGORY'|translate}}</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="cancel()">{{'kapat'|translate}}</ion-button>
+          <ion-button (click)="cancel()">{{'CLOSE'|translate}}</ion-button>
         </ion-buttons>
       </ion-toolbar>
       <ion-toolbar>
         <ion-searchbar 
-          placeholder="kategori veya Kod Ara (örn: tr, en...)" 
+          placeholder="{{'FIND_CATEGORY'|translate}}" 
           show-clear-button="always"
           [(ngModel)]="searchTerm"
           (ionInput)="search($event)">
@@ -40,9 +40,9 @@ import { TranslatePipe } from 'src/app/services/TranslatePipe';
         </ion-item>
 
         <ion-item *ngIf="results().length === 0 && searchTerm.length > 2" lines="none">
-          <ion-label color="medium">{{'sonucBulunamadi'|translate}}</ion-label>
+          <ion-label color="medium">{{'NO_RECORDS_FOUND'|translate}}</ion-label>
           <ion-button slot="end" fill="outline" (click)="addNewCategory()">
-            <ion-icon name="add" slot="start"></ion-icon> {{'yeniOlustur'|translate}}
+            <ion-icon name="add-outline" slot="start"></ion-icon> {{'yeniOlustur'|translate}}
           </ion-button>
         </ion-item>
       </ion-list>

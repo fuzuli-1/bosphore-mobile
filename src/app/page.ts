@@ -24,7 +24,7 @@ export let genelStyle: any = {
 
 export const appVersion = '1.0.0';
 
-export const appCode = 'Ekoloji'; //
+export const appCode = 'Bosphore'; //
 
 export let isAndroid: boolean[] = [false];
 export let isIos: boolean[] = [false];

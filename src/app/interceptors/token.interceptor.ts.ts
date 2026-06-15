@@ -18,7 +18,7 @@ export const TokenInterceptor: HttpInterceptorFn = (req, next) => {
 
   const token = getToken(stateStorage);
   const isPublic =
-    req.url.includes('/api/languages') ||
+    
     req.url.includes('/api/authenticate') ||
     req.url.includes('/i18n') ||
     req.url.includes('/content');

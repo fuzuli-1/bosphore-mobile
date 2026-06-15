@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { from, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 
  
 import { ApplicationConfigService } from '../config/application-config.service';
@@ -21,12 +21,27 @@ export class AuthServerProvider {
   getToken(): string {
     return this.stateStorageService.getAuthenticationToken() ?? '';
   }
+  
+login(credentials: LoginVM): Observable<void> {
+  return this.http
+    .post<JwtToken>(this.applicationConfigService.getEndpointFor('/api/authenticate'), credentials)
+    .pipe(
+      // ✅ map yerine switchMap + from kullan → async beklenir
+      switchMap(response => from(this.authenticateSuccess(response, credentials.rememberMe)))
+    );
+}
 
+// ✅ async Promise döndür
+private async authenticateSuccess(response: JwtToken, rememberMe: boolean): Promise<void> {
+  await this.stateStorageService.storeAuthenticationToken(response.id_token, rememberMe);
+  // ↑ Token localStorage'a yazılana kadar bekler
+}
+  /*
   login(credentials: LoginVM): Observable<void> {
     return this.http
       .post<JwtToken>(this.applicationConfigService.getEndpointFor('/api/authenticate'), credentials)
       .pipe(map(response => this.authenticateSuccess(response, credentials.rememberMe)));
-  }
+  }*/
 
   logout(): Observable<void> {
     return new Observable(observer => {
@@ -35,7 +50,8 @@ export class AuthServerProvider {
     });
   }
 
+  /*
   private authenticateSuccess(response: JwtToken, rememberMe: boolean): void {
     this.stateStorageService.storeAuthenticationToken(response.id_token, rememberMe);
-  }
+  }*/
 }

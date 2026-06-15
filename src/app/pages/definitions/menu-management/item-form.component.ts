@@ -9,6 +9,7 @@ import { icon } from 'leaflet';
 import { TranslatePipe } from 'src/app/services/TranslatePipe';
 import { LanguageService } from '../language/language-service';
 import { LanguageSelectorComponent } from '../language/language-selector.component';
+import { MenuGroupItemService } from '../../menu-grup/menu-group-item/menu-group-item-service';
  
  
  
@@ -28,11 +29,20 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'LABEL' | translate }}</ion-label>
           <ion-input formControlName="label" placeholder=" {{ 'PLACEHOLDER_LABEL' | translate }}"></ion-input>
-        </ion-item>
-        <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">{{ 'ICON_PATH' | translate }}</ion-label>
-          <ion-input formControlName="iconPath" placeholder=" {{ 'PLACEHOLDER_ICON_PATH' | translate }}"></ion-input>
-        </ion-item>
+        </ion-item> 
+
+        <ion-item fill="outline">
+          <ion-label position="stacked">{{ 'image_url' | translate }}</ion-label>
+          <div style="display: flex; align-items: center; gap: 10px; width: 100%; padding-top: 8px;">
+            <ion-input formControlName="iconPath" placeholder=" {{ 'PLACEHOLDER_ICON_PATH' | translate }}" style="flex: 1;"></ion-input>
+            
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+            <ion-button size="small" fill="solid" color="secondary" (click)="fileInput.click()">
+              <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+              Yükle
+            </ion-button>
+          </div>
+        </ion-item>     
  
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'LANGUAGE' | translate }}</ion-label>
@@ -59,6 +69,7 @@ export class ItemFormComponent implements OnInit {
   private modalCtrl = inject(ModalController);
   private categoryService=inject(CategoryService);
   private langService=inject(LanguageService);
+  private menuItemService = inject(MenuGroupItemService);
 
   item: IMenuGroupItem | null = null;
   menuGroupId!: number; // Üst grubun ID'si
@@ -107,6 +118,26 @@ export class ItemFormComponent implements OnInit {
   save() { this.modalCtrl.dismiss(this.itemForm.value); }
   cancel() { this.modalCtrl.dismiss(); }
 
- 
+     onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      // Spring Boot'a yazdığımız endpoint'e gönderiyoruz
+      this.menuItemService.uploadImage(formData).subscribe({
+        next: (responsePath) => {
+          // Gelen "/uploads/uuid.png" değerini formdaki imageUrl alanına set ediyoruz
+          this.itemForm.patchValue({ iconPath:responsePath });
+          console.log('Resim başarıyla yüklendi:', responsePath);
+        },
+        error: (err) => {
+          console.error('Resim yüklenirken hata oluştu:', err); 
+          // Burada kullanıcıya bir toast mesajı gösterebilirsin
+        }
+      });
+    }
+   
+  }
 
 }

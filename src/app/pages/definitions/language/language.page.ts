@@ -1,20 +1,34 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule, ModalController, AlertController } from '@ionic/angular';
+ 
 import { EntityArrayResponseType, LanguageService } from './language-service';
 import { ILanguage } from 'src/app/interfaces/interfaces';
 import { LanguageFormComponent } from './language-form.component';
  
 import { TranslationService } from 'src/app/services/translation-service';
 import { TranslatePipe } from 'src/app/services/TranslatePipe';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButtons, IonBackButton, IonButton, IonIcon, IonList, IonItem,
+   IonLabel,
+   IonBadge, 
+  IonItemSliding, IonItemOptions, IonItemOption, IonSearchbar,  ModalController, 
+  AlertController, IonText, IonNote, IonFooter } from '@ionic/angular/standalone';
 
 @Component({
   selector: 'app-language',
   templateUrl: './language.page.html',
   styleUrls: ['./language.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
+
+    imports: [IonFooter, IonNote, 
+    CommonModule, FormsModule, TranslatePipe,
+    IonHeader, IonToolbar, IonTitle, IonContent, IonButtons,
+    IonBackButton, IonButton, IonIcon, IonList, IonItem, IonLabel,
+    IonBadge, IonItemSliding, IonItemOptions, IonItemOption,
+    IonSearchbar,  
+    
+    IonText
+]
 })
 export class LanguagePage implements OnInit {
 

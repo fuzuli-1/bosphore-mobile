@@ -109,10 +109,16 @@ import { LanguageSelectorComponent } from '../definitions/language/language-sele
         </ion-item>
         
         <ion-item fill="outline">
-          <ion-label position="stacked">{{
-            'image_url' | translate
-          }}</ion-label>
-          <ion-input formControlName="imageUrl"></ion-input>
+          <ion-label position="stacked">{{ 'image_url' | translate }}</ion-label>
+          <div style="display: flex; align-items: center; gap: 10px; width: 100%; padding-top: 8px;">
+            <ion-input formControlName="imageUrl" placeholder="Resim URL veya Yüklenen Dosya" style="flex: 1;"></ion-input>
+            
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+            <ion-button size="small" fill="solid" color="secondary" (click)="fileInput.click()">
+              <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+              Yükle
+            </ion-button>
+          </div>
         </ion-item>
         
         <ion-item fill="outline">
@@ -174,8 +180,7 @@ export class ProductFormComponent implements OnInit {
   selectedCategoryName: string | null = null;
   selectedLanguageName = '';
   category: ICategory | null = null;
-  
-  badgeTypes: BadgeType[] = [
+    badgeTypes: BadgeType[] = [
     'NEW',
     'HOT',
     'SALE',
@@ -183,41 +188,6 @@ export class ProductFormComponent implements OnInit {
     'FEATURED',
     'BEST_SELLER'
   ];
-
-  // Hızlı emoji seçenekleri
-  quickEmojis: string[] = [
-    '🍎', '🍐', '🍌', '🍔', '🍕', '🥪', '🥗', '🍜', '🍚', '🍣',
-    '🍰', '🎂', '🍪', '☕', '🧃', '🥤', '🍺', '🍷', '🥩', '🐟'
-  ];
-
-  // Ürün adına göre emoji eşleme
-  EMOJI_MAP: Record<string, string> = {
-    'elma': '🍎',
-    'armut': '🍐',
-    'muz': '🍌',
-    'hamburger': '🍔',
-    'pizza': '🍕',
-    'sandwich': '🥪',
-    'salata': '🥗',
-    'çorba': '🍜',
-    'pirinç': '🍚',
-    'suşi': '🍣',
-    'pasta': '🍰',
-    'kek': '🎂',
-    'kurabiye': '🍪',
-    'kahve': '☕',
-    'çay': '🍵',
-    'ayran': '🥛',
-    'cola': '🥤',
-    'bira': '🍺',
-    'şarap': '🍷',
-    'et': '🥩',
-    'balık': '🐟',
-    'tavuk': '🍗',
-    'makarna': '🍝',
-    'tost': '🥪'
-  };
-
   // inject edilen servisler ve diğer bağımlılıklar
   private fb = inject(FormBuilder);
   private modalCtrl = inject(ModalController);
@@ -266,7 +236,29 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
-      findLanguage(id : any){ 
+ onFileSelected(event: any) {
+  const file: File = event.target.files[0];
+  if (file) {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    // Spring Boot'a yazdığımız endpoint'e gönderiyoruz
+    this.productService.uploadImage(formData).subscribe({
+      next: (responsePath) => {
+        // Gelen "/uploads/uuid.png" değerini formdaki imageUrl alanına set ediyoruz
+        this.editForm.patchValue({ imageUrl:responsePath });
+        console.log('Resim başarıyla yüklendi:', responsePath);
+      },
+      error: (err) => {
+        console.error('Resim yüklenirken hata oluştu:', err); 
+        // Burada kullanıcıya bir toast mesajı gösterebilirsin
+      }
+    });
+  }
+ 
+}
+
+ findLanguage(id : any){ 
      if (this.product != null && this.product != undefined) {
       this.languageService.find(id)
           .pipe(
@@ -384,4 +376,38 @@ export class ProductFormComponent implements OnInit {
       default: return badge;
     }
   }
+
+    // Hızlı emoji seçenekleri
+  quickEmojis: string[] = [
+    '🍎', '🍐', '🍌', '🍔', '🍕', '🥪', '🥗', '🍜', '🍚', '🍣',
+    '🍰', '🎂', '🍪', '☕', '🧃', '🥤', '🍺', '🍷', '🥩', '🐟'
+  ];
+
+  // Ürün adına göre emoji eşleme
+  EMOJI_MAP: Record<string, string> = {
+    'elma': '🍎',
+    'armut': '🍐',
+    'muz': '🍌',
+    'hamburger': '🍔',
+    'pizza': '🍕',
+    'sandwich': '🥪',
+    'salata': '🥗',
+    'çorba': '🍜',
+    'pirinç': '🍚',
+    'suşi': '🍣',
+    'pasta': '🍰',
+    'kek': '🎂',
+    'kurabiye': '🍪',
+    'kahve': '☕',
+    'çay': '🍵',
+    'ayran': '🥛',
+    'cola': '🥤',
+    'bira': '🍺',
+    'şarap': '🍷',
+    'et': '🥩',
+    'balık': '🐟',
+    'tavuk': '🍗',
+    'makarna': '🍝',
+    'tost': '🥪'
+  };
 }

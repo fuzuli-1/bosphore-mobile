@@ -1,52 +1,120 @@
-import { Component, inject, NgZone, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpResponse } from '@angular/common/http';
+import {
+  Component,
+  inject,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular';
-import { ToastController } from '@ionic/angular';
- 
-import { IMenuGroup, IMenuGroupItem, NewMenuGroup } from 'src/app/interfaces/interfaces';
-import { AccountService } from 'src/app/core/auth/account.service';
-import { TranslationService } from 'src/app/services/translation-service';
+import { combineLatest, Subscription, tap } from 'rxjs';
 import {
   ITEMS_PER_PAGE,
   PAGE_HEADER,
   TOTAL_COUNT_RESPONSE_HEADER,
 } from 'src/app/config/pagination.constants';
-import { SortService, SortState, sortStateSignal } from 'src/app/shared/sort';
-import { combineLatest, Subscription, tap } from 'rxjs';
-import { ActivatedRoute, Data, ParamMap, Router } from '@angular/router';
+import {
+  IMenuGroup,
+  IMenuGroupItem,
+  NewMenuGroup,
+} from 'src/app/interfaces/interfaces';
+import { TranslatePipe } from 'src/app/services/TranslatePipe';
+import { SortService, sortStateSignal } from 'src/app/shared/sort';
+import { MenuGroupService } from '../../menu-grup/menu-groups/menu-group-service';
+import { MenuGroupItemService } from '../../menu-grup/menu-group-item/menu-group-item-service';
+import { AccountService } from 'src/app/core/auth/account.service';
+import { TranslationService } from 'src/app/services/translation-service';
+
+import { ActivatedRoute, Router } from '@angular/router';
 import { DEFAULT_SORT_DATA, SORT } from 'src/app/config/navigation.constants';
-import { HttpResponse } from '@angular/common/http';
- 
-import { ModalController } from '@ionic/angular';
 import { GroupFormComponent } from './group-form.component';
 import { ItemFormComponent } from './item-form.component';
-import { AlertController } from '@ionic/angular';
-import { TranslatePipe } from 'src/app/services/TranslatePipe';
-import { MenuGroupItemService } from '../../menu-grup/menu-group-item/menu-group-item-service';
-import { MenuGroupService } from '../../menu-grup/menu-groups/menu-group-service';
- 
+import {
+  IonBackButton,
+  IonItemSliding,
+  IonToolbar,
+  IonIcon,
+  IonBadge,
+  IonSegment,
+  IonSegmentButton,
+  IonLabel,
+  IonChip,
+  IonContent,
+  IonCard,
+  IonCardContent,
+  IonCardTitle,
+  IonCardSubtitle,
+  IonMenuButton,
+  IonTitle,
+  IonList,
+  IonListHeader,
+  IonItem,
+  IonItemOption,
+  ModalController,
+  ToastController,
+  AlertController,
+  IonHeader,
+  IonButtons,
+  IonButton,
+  IonAvatar,
+  IonItemOptions,
+} from '@ionic/angular/standalone';
+import { ApplicationConfigService } from 'src/app/core/config/application-config.service';
+import { AppUtil } from 'src/app/shared/utils/app-util';
 
+// ✅ Temiz component
 @Component({
   selector: 'app-menu-management',
   templateUrl: './menu-management.page.html',
   styleUrls: ['./menu-management.page.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
+  imports: [
+    IonItemOptions,
+    IonAvatar,
+    IonBackButton,
+    IonButton,
+    IonButtons,
+    IonHeader,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    IonToolbar,
+    IonIcon,
+    IonItemOption,
+    IonBadge,
+    IonList,
+    IonItemSliding,
+    IonItem,
+    IonListHeader,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonChip,
+    IonContent,
+    IonCard,
+    IonCardContent,
+    IonCardTitle,
+    IonCardSubtitle,
+    IonHeader,
+    IonButtons,
+    IonMenuButton,
+    IonTitle,
+  ],
 })
-export class MenuManagementPage implements OnInit {
-
-  isLoading = false;
+export class MenuManagementPage implements OnInit, OnDestroy {
+  isLoading = signal(false); // ✅ signal'e çevir
   totalItems = 0;
   page = 1;
   itemsPerPage = ITEMS_PER_PAGE;
   sortState = sortStateSignal({});
   subscription: Subscription | null = null;
-  //injects
+
   protected ngZone = inject(NgZone);
   private toastc = inject(ToastController);
   private menuGroupService = inject(MenuGroupService);
-  private menuItemService=inject(MenuGroupItemService);
+  private menuItemService = inject(MenuGroupItemService);
   private account = inject(AccountService);
   private ts = inject(TranslationService);
   private modalCtrl = inject(ModalController);
@@ -55,26 +123,24 @@ export class MenuManagementPage implements OnInit {
   private alertCtrl = inject(AlertController);
 
   private router = inject(Router);
+  private readonly acfs = inject(ApplicationConfigService);
+  public url = this.acfs.getEndpointFor('');
+  public appUtil = inject(AppUtil);
 
-  //items
-  newGroup: IMenuGroup = {} as IMenuGroup;
-  selectedGroup:IMenuGroup= {} as IMenuGroup;
   allGroups = signal<IMenuGroup[]>([]);
-  //secilen gruptaki alt grup sayisi
- 
-
-  categoryItems =signal<IMenuGroupItem[]>([]);
-  selectedCategories =signal<IMenuGroupItem[]>([]);
-  selectedSubCategory:IMenuGroupItem={} as IMenuGroupItem;
-  selectedSubCategoryId=0;
-
-  constructor() {}
+  selectedGroup = signal<IMenuGroup | null>(null); // ✅ signal + null
+  selectedCategories = signal<IMenuGroupItem[]>([]);
 
   ngOnInit() {
     this.loadGroups();
   }
 
+  ngOnDestroy() {
+    this.subscription?.unsubscribe(); // ✅ memory leak önle
+  }
+
   loadGroups() {
+    this.subscription?.unsubscribe(); // ✅ öncekini temizle
     this.subscription = combineLatest([
       this.activatedRoute.queryParamMap,
       this.activatedRoute.data,
@@ -89,213 +155,202 @@ export class MenuManagementPage implements OnInit {
             ),
           );
         }),
-        tap(() => {
-          return this.load();
-        }),
+        tap(() => this.load()),
       )
       .subscribe();
   }
 
   load(): void {
-    const { page } = this;
-    this.isLoading = true;
-    const pageToLoad: number = page;
-    const queryObject: any = {
-      page: pageToLoad - 1,
+    this.isLoading.set(true);
+    const queryObject = {
+      page: this.page - 1,
       size: this.itemsPerPage,
       sort: this.sortService.buildSortParam(this.sortState()),
     };
 
-    this.menuGroupService
-      .query(queryObject)
-      .pipe(tap(() => (this.isLoading = false)))
-      .subscribe({
-        next: (res: HttpResponse<IMenuGroup[]>) => {
-          const headers = res.headers;
-          this.totalItems = Number(headers.get(TOTAL_COUNT_RESPONSE_HEADER));
-          const groups = res.body ?? [];
-          this.allGroups.set(groups);
-          if (groups.length > 0) {         
-            this.loadCategoryItems(groups[0].id);
-              // Sayfa açılınca ilk grubu seçili yap
-            this.selectGroup(groups[0])
-          }
-        },
-      });
+    this.menuGroupService.query(queryObject).subscribe({
+      next: (res: HttpResponse<IMenuGroup[]>) => {
+        this.totalItems = Number(res.headers.get(TOTAL_COUNT_RESPONSE_HEADER));
+        const groups = res.body ?? [];
+        this.allGroups.set(groups);
+        if (groups.length > 0) {
+          this.selectGroup(groups[0]);
+        }
+        this.isLoading.set(false);
+      },
+      error: () => this.isLoading.set(false), // ✅ hata durumunda da kapat
+    });
   }
 
   loadCategoryItems(groupId: number) {
-  const queryObject: any = {
-      menuGroupId:groupId,
+    const queryObject = {
+      menuGroupId: groupId,
       page: 0,
-      size: this.itemsPerPage+50,
+      size: this.itemsPerPage + 50,
       sort: this.sortService.buildSortParam(this.sortState()),
     };
-    this.menuItemService.query(queryObject).subscribe(items => {
-      const data=items.body??[];
-      this.categoryItems.set(data); 
-      this.selectedCategories.set(data);
-       this.selectedGroup.itemCount=data.length;
-    });
-  }
 
- selectGroup(group :IMenuGroup){
-   this.selectedGroup=group;
-   this.loadCategoryItems(group.id);
-  /*  let data: IMenuGroupItem[]=this.categoryItems().filter(t=>t.menuGroup?.id==group.id)??[];
-   this.selectedCategories.set(data);
-   this.selectedGroup.itemCount=data.length; */
- }
-
-  protected handleNavigation(page: number, sortState: SortState): void {
-    const queryParamsObj = {
-      page,
-      size: this.itemsPerPage,
-      sort: this.sortService.buildSortParam(sortState),
-    };
-
-    this.ngZone.run(() => {
-      this.router.navigate(['./'], {
-        relativeTo: this.activatedRoute,
-        queryParams: queryParamsObj,
-      });
-    });
-  }
-
-// GRUP EKLEME / DÜZENLEME MODALI
-// GRUP KAYDET
-async openGroupModal(group?: IMenuGroup) {
-  const modal = await this.modalCtrl.create({
-    component: GroupFormComponent,
-    componentProps: { group: group || null }
-  });
-
-  modal.onDidDismiss().then((result) => {
-    if (result.data) {
-      const groupData = result.data;
-      if (groupData.id) {
-        // Düzenleme
-        this.menuGroupService.update(groupData).subscribe(() => this.load());
-      } else {
-        // Yeni Kayıt
-        groupData.language={id:1};
-        this.menuGroupService.create(groupData).subscribe(() => this.load());
-      }
-    }
-  });
-  return await modal.present();
-}
-
-
-// ITEM KAYDET
-async openItemModal(item?: IMenuGroupItem) {
-  const modal = await this.modalCtrl.create({
-    component: ItemFormComponent,
-    componentProps: { 
-      item: item || null,
-      menuGroupId: this.selectedGroup.id 
-    }
-  });
-
-  modal.onDidDismiss().then((result) => {
-    if (result.data) {
-      const itemData = result.data;
-       let groupId=this.selectedGroup.id;
-      if (itemData.id) {
-         itemData.language={id:itemData.languageId}; 
-           itemData.menuGroup={...this.selectedGroup,groupId};        
-        this.menuItemService.update(itemData).subscribe(() => this.loadCategoryItems(this.selectedGroup.id));
-      } else {
-        // Yeni Kayıt (create metodu servisde yoksa eklemelisin kanki)
-       
-        itemData.language={id:itemData.languageId};
-        itemData.menuGroup={...this.selectedGroup,groupId};
-        this.menuItemService.create(itemData).subscribe(() => this.loadCategoryItems(this.selectedGroup.id));
-      }
-    }
-  });
-  return await modal.present();
-}
-
-deleteItem(item: any) {
-
-  this.alertCtrl.create({
-    header: this.ts.instant('DELETE_ITEM'),
-    message: this.ts.instant('CONFIRM_DELETE_ITEM'),
-    buttons: [
-      { text:  this.ts.instant('CANCEL'), role: 'cancel' },
-      { text: this.ts.instant('DELETE'), role: 'destructive', handler: () => {
-           this.menuItemService.delete(item.id).subscribe({
-            next:(res=>{ 
-              this.showToast(this.ts.instant('ITEM_DELETED_SUCCESSFULLY'), 'bottom');
-              this.loadCategoryItems(this.selectedGroup.id); // Listeyi yenile
-  
-            }),
-            error:(err=>{
-                  this.showToast(err.detail, 'bottom');
-            })
-           });
-      } }
-    ]
-  }).then(alert => alert.present());
-}
-
-editItem(item: any) {
-    this.openItemModal(item);
-}
-
-  editGroup(group:any){
-    this.openGroupModal(group);
-
-  }
-
-deleteGroup(group: any) {
-  this.alertCtrl.create({
-    header: this.ts.instant('DELETE_GROUP'),
-    message: this.ts.instant('CONFIRM_DELETE_GROUP'),
-    buttons: [
-      { text: this.ts.instant('CANCEL'), role: 'cancel' },
-      {
-        text: this.ts.instant('DELETE'),
-        role: 'destructive',
-        handler: () => {
-          this.menuGroupService.delete(group.id).subscribe({
-            next: () => {
-              this.showToast(this.ts.instant('GROUP_DELETED_SUCCESSFULLY'), 'bottom');
-              this.loadGroups();
-            },
-            error: (resp) => {
-              console.error(resp.error.detail);
-              this.showToast(this.ts.instant('DELETE_OPERATION_FAILED') + resp.error.detail, 'bottom');
-            }
-          });
+    this.menuItemService.query(queryObject).subscribe({
+      next: (res: any) => {
+        const data = res.body ?? [];
+        this.selectedCategories.set(data);
+        // ✅ selectedGroup'u immutable güncelle
+        const current = this.selectedGroup();
+        if (current) {
+          this.selectedGroup.set({ ...current, itemCount: data.length });
         }
-      }
-    ]
-  }).then(alert => alert.present());
-}
-  
-
-  // Örnek bir Save işlemi
-  saveMenuGrup() {
-    const ngp: NewMenuGroup = {
-      ...this.newGroup,
-      id: null,
-    };
-
-    this.menuGroupService.create(ngp).subscribe((res) => {
-      this.showToast('Grup başarıyla eklendi!', 'bottom');
-      this.loadGroups(); // Listeyi yenile
+      },
     });
   }
 
-  async showToast(msg: string, position: 'top' | 'middle' | 'bottom') {
+  selectGroup(group: IMenuGroup) {
+    this.selectedGroup.set(group);
+    this.loadCategoryItems(group.id);
+  }
+
+  async openGroupModal(group?: IMenuGroup) {
+    const modal = await this.modalCtrl.create({
+      component: GroupFormComponent,
+      componentProps: { group: group ?? null },
+    });
+
+    await modal.present();
+    const { data } = await modal.onDidDismiss(); // ✅ async/await daha temiz
+
+    if (!data) {
+      return;
+    }
+
+    if (data.id != null) {
+      const ent: IMenuGroup = {
+        id: data.id,
+        iconPath: data.iconPath,
+        language: {
+          id: data.languageId,
+        },
+        orderNo: data.orderNo,
+        itemCount: 0,
+        title: data.title,
+      };
+
+      this.menuGroupService.update(ent).subscribe(() => this.load());
+    } else {
+      const ent: NewMenuGroup = {
+        id: null,
+        iconPath: data.iconPath,
+        language: {
+          id: data.languageId,
+        },
+        orderNo: data.orderNo,
+        itemCount: 0,
+        title: data.title,
+      };
+
+      this.menuGroupService.create(ent).subscribe(() => this.load());
+    }
+  }
+
+  async openItemModal(item?: IMenuGroupItem) {
+    const group = this.selectedGroup();
+    if (!group) return; // ✅ null guard
+
+    const modal = await this.modalCtrl.create({
+      component: ItemFormComponent,
+      componentProps: { item: item ?? null, menuGroupId: group.id },
+    });
+
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+
+    if (data) {
+      const payload = {
+        ...data,
+        language: { id: data.languageId },
+        menuGroup: { ...group },
+      };
+      const action$ = data.id
+        ? this.menuItemService.update(payload)
+        : this.menuItemService.create(payload);
+
+      action$.subscribe(() => this.loadCategoryItems(group.id));
+    }
+  }
+
+  async confirmDelete(header: string, message: string, onConfirm: () => void) {
+    const alert = await this.alertCtrl.create({
+      header,
+      message,
+      buttons: [
+        { text: this.ts.instant('CANCEL'), role: 'cancel' },
+        {
+          text: this.ts.instant('DELETE'),
+          role: 'destructive',
+          handler: onConfirm,
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  deleteItem(item: IMenuGroupItem) {
+    this.confirmDelete(
+      this.ts.instant('DELETE_ITEM'),
+      this.ts.instant('CONFIRM_DELETE_ITEM'),
+      () => {
+        this.menuItemService.delete(item.id).subscribe({
+          next: () => {
+            this.showSuccess(this.ts.instant('ITEM_DELETED_SUCCESSFULLY'));
+            this.loadCategoryItems(this.selectedGroup()!.id);
+          },
+          error: (err) =>
+            this.showError(err?.error?.detail ?? 'Hata'),
+        });
+      },
+    );
+  }
+
+  deleteGroup(group: IMenuGroup) {
+    this.confirmDelete(
+      this.ts.instant('DELETE_GROUP'),
+      this.ts.instant('CONFIRM_DELETE_GROUP'),
+      () => {
+        this.menuGroupService.delete(group.id).subscribe({
+          next: () => {
+            this.showSuccess(
+              this.ts.instant('GROUP_DELETED_SUCCESSFULLY')
+            
+            );
+            this.selectedGroup.set(null);
+            this.load();
+          },
+          error: (resp) =>
+            this.showError(
+              this.ts.instant('DELETE_OPERATION_FAILED') +
+                (resp?.error?.detail ?? '') 
+            ),
+        });
+      },
+    );
+  }
+
+ 
+
+    async showError(msg: string) {
     const toast = await this.toastc.create({
       message: msg,
-      duration: 2500,
-      cssClass: 'custom-toast-success',
-      icon: 'checkmark-done-outline',
-      position: position,
+      duration: 3000,
+      color: 'danger',
+      position: 'bottom',
+    });
+    await toast.present();
+  }
+
+  async showSuccess(message: string) {
+    const toast = await this.toastc.create({
+      message: message,
+      duration: 3000,
+      color: 'success',
+      position: 'bottom',
     });
     await toast.present();
   }

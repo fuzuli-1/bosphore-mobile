@@ -144,6 +144,40 @@ export class CartPage implements OnInit {
       this.cartItems = Array.isArray(items) ? items : [];
       this.recalculateCart();
     });
+
+          // Deep link dinleme
+      App.addListener('appUrlOpen', async (event: any) => {
+        const url = event?.url || '';
+
+        console.log('Payment callback url:', url);
+
+        // Başarılı ödeme
+        if (url.includes('payment-success')) {
+          try {
+            const parsedUrl = new URL(url);
+
+            const orderId = parsedUrl.searchParams.get('orderId');
+
+            // Sepeti temizle
+           this.clearCart();
+
+            await this.navCtrl.navigateRoot(['/order-success'], {
+              queryParams: {
+                orderId,
+              },
+            });
+          } catch (err) {
+            console.error('payment-success parse error:', err);
+          }
+        }
+
+        // Başarısız ödeme
+        else if (url.includes('payment-failed')) {
+          this.presentToast(0, 'bottom', this.ts.instant('PAYMENT_FAILED'));
+        }
+      });
+
+
   }
 
   // -------------------------
@@ -392,37 +426,7 @@ export class CartPage implements OnInit {
         allowsBackForwardNavigationGestures: false,
       };
 
-      // Deep link dinleme
-      App.addListener('appUrlOpen', async (event: any) => {
-        const url = event?.url || '';
 
-        console.log('Payment callback url:', url);
-
-        // Başarılı ödeme
-        if (url.includes('payment-success')) {
-          try {
-            const parsedUrl = new URL(url);
-
-            const orderId = parsedUrl.searchParams.get('orderId');
-
-            // Sepeti temizle
-           this.clearCart();
-
-            await this.navCtrl.navigateRoot(['/order-success'], {
-              queryParams: {
-                orderId,
-              },
-            });
-          } catch (err) {
-            console.error('payment-success parse error:', err);
-          }
-        }
-
-        // Başarısız ödeme
-        else if (url.includes('payment-failed')) {
-          this.presentToast(0, 'bottom', this.ts.instant('PAYMENT_FAILED'));
-        }
-      });
 
       // WebView aç
       await InAppBrowser.openInWebView({
@@ -470,41 +474,41 @@ export class CartPage implements OnInit {
    * Kapıda ödeme / nakit / pos
    */
   private async executeStandardOrder(newOrder: any) {
-    try {
-      const res = await firstValueFrom(this.orderService.create(newOrder));
+ 
 
-      const savedOrder = res.body;
+      this.orderService.create(newOrder).subscribe({
+            next: (res) => {
+              // 1. Local sepeti hem behavior subject'ten hem storage'dan uçur
+              this.clearCart();
+              const savedOrder = res.body;
+              const orderId = savedOrder?.id;
+           if (!savedOrder?.id) {
+                  this.presentToast(
+                    0,
+                    'bottom',
+                    this.ts.instant('ORDER_PROCESS_ERROR') +
+                      ':' +
+                      this.ts.instant('ORDER_ID_NOT_RECEIVED'),
+                  );
+                  throw new Error('Sipariş ID alınamadı');
+             }
 
-      if (!savedOrder?.id) {
-        this.presentToast(
-          0,
-          'bottom',
-          this.ts.instant('ORDER_PROCESS_ERROR') +
-            ':' +
-            this.ts.instant('ORDER_ID_NOT_RECEIVED'),
-        );
-        throw new Error('Sipariş ID alınamadı');
-      }
+              console.log('Sipariş başarıyla oluşturuldu. Sipariş ID:', orderId);
 
-      // Başarılıysa sepet temizle  
-        this.clearCart();
-      console.log('Sipariş başarıyla oluşturuldu. Sipariş ID:', savedOrder.id);
-
-      // Success ekranı
-      await this.navCtrl.navigateRoot(['/order-success'], {
-        queryParams: {
-          orderId: savedOrder.id,
-        },
-      });
-    } catch (err: any) {
-      console.error('executeStandardOrder error:', err);
-
-      // Backend hata mesajı varsa göster
-      const backendMessage =
-        err?.error?.message || this.ts.instant('ORDER_PROCESS_ERROR');
-
-      this.presentToast(0, 'bottom', backendMessage);
-    }
+              // 2. Yönlendirmeyi garantiye alalım (Başında tek eğik çizgi olsun ve queryParams temiz gitsin)
+              this.navCtrl.navigateRoot(['/order-success'], {
+                queryParams: { orderId: orderId }
+              });
+            },
+            error: (err) => {
+               // Backend hata mesajı varsa göster
+               console.error('executeStandardOrder error:', err);
+               const backendMessage = err?.error?.message || this.ts.instant('ORDER_PROCESS_ERROR');
+               this.presentToast(0, 'bottom', backendMessage);
+            }
+    });
+    
+  
   }
 
   clearCart() {   

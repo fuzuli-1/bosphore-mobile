@@ -201,7 +201,6 @@ export class OptionManagementPage implements OnInit {
      });
 
      modal.onDidDismiss().then((result)=>{
-      debugger;
         if(result.data){
           const itemData=result.data;
           if(itemData.id){            

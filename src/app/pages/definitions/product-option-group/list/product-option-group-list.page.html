@@ -1,5 +1,12 @@
 <ion-header class="ion-no-border">
   <ion-toolbar class="main-toolbar">
+   <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/home"
+        text=""
+        class="custom-back">
+      </ion-back-button>
+    </ion-buttons>
     <ion-title>
       <div class="title-wrap">
         <ion-icon name="layers-outline" class="title-icon"></ion-icon>
@@ -59,14 +66,14 @@
     <h3>Kayıt Bulunamadı</h3>
     <p>Henüz ürün seçenek grubu eklenmemiş veya arama kriterinize uygun kayıt yok.</p>
     <ion-button class="add-btn-empty" (click)="goToAdd()">
-      <ion-icon slot="start" name="add"></ion-icon>
+      <ion-icon slot="start" name="add-outline"></ion-icon>
       İlk Kaydı Ekle
     </ion-button>
   </div>
 
   <!-- List -->
   <div class="list-container" *ngIf="!isLoading && filtered.length > 0">
-    <ion-item-sliding *ngFor="let item of filtered; let i = index" class="slide-item">
+    <ion-item-sliding *ngFor="let item of filtered; let i = index" class="slide-item" #slidingItem>
       <ion-item class="list-card" (click)="goToEdit(item.id!)" detail="false">
         <div class="item-avatar" slot="start"
              [style.background]="getAvatarColor(item.product?.name??'')">
@@ -95,7 +102,7 @@
       </ion-item-options>
 
       <ion-item-options side="end">
-        <ion-item-option color="danger" (click)="confirmDelete(item, slidingItem)" #slidingItem>
+        <ion-item-option color="danger" (click)="confirmDelete(item, slidingItem)" >
           <ion-icon slot="icon-only" name="trash"></ion-icon>
         </ion-item-option>
       </ion-item-options>
@@ -105,7 +112,7 @@
   <!-- FAB Add Button -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button class="main-fab" (click)="goToAdd()">
-      <ion-icon name="add"></ion-icon>
+      <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

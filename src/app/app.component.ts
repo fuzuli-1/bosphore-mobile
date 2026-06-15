@@ -126,6 +126,11 @@ async ngOnInit() {
       if (identity) {
         console.log('Kalıcı hafızadan kullanıcı başarıyla doğrulandı:', identity);
         this.isLoggedIn = true;
+
+        if (window.location.pathname.includes('order-success')) {
+            console.log('Stripe dönüş sayfasındayız, otomatik ana sayfa yönlendirmesi iptal edildi.');
+            return; 
+          }
         
         // Eğer kullanıcı login sayfasında takılı kaldıysa onu ana sayfaya fırlat
         if (this.router.url === '/' || this.router.url.includes('/login')) {

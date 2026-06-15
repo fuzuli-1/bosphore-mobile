@@ -85,7 +85,7 @@
             }
 
             @if (item.imageUrl) {
-               <img [src]="item.imageUrl" 
+               <img [src]=" appUtil.getImageUrl(apiUrl, item.imageUrl)" 
                 class="product-img"
                alt="product"/>
             } @else {
@@ -101,7 +101,7 @@
               <span class="price-tag price-tag--sm">{{ item.price | number:'1.2-2' }} </span>
               <ion-button fill="solid" color="dark" size="small"
                 (click)="quickAdd($event, item)">
-                <ion-icon slot="icon-only" name="add"></ion-icon>
+                <ion-icon slot="icon-only" name="add-outline"></ion-icon>
               </ion-button>
             </div>
           </ion-card-content>

@@ -21,6 +21,14 @@ export class MenuGroupService {
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/menu-groups');
 
+  uploadImage(formData: FormData){
+  return this.http.post(
+    `${this.resourceUrl}/upload-image`,
+    formData,
+    { responseType: 'text' }
+  );
+}
+
   create(menuGroup: NewMenuGroup): Observable<EntityResponseType> {
     return this.http.post<IMenuGroup>(this.resourceUrl, menuGroup, { observe: 'response' });
   }

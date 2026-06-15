@@ -6,6 +6,8 @@ import { ProductFormComponent } from './product-form';
 import { TranslationService } from 'src/app/services/translation-service';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from "../../services/TranslatePipe";
+import { GeneralSettings } from 'src/app/page';
+import { AppUtil } from 'src/app/shared/utils/app-util';
 
 @Component({
   selector: 'products',
@@ -18,6 +20,9 @@ export class ProductsPage implements OnInit {
   private modalCtrl = inject(ModalController);
   private alertCtrl = inject(AlertController);
   private translate = inject(TranslationService);
+  public apiUrl= GeneralSettings.url;
+  public appUtil = inject(AppUtil);
+  
 
   products = signal<IProduct[]>([]);
   searchTerm: string = '';
@@ -27,6 +32,7 @@ export class ProductsPage implements OnInit {
 
   ngOnInit() { 
     this.loadAll(); 
+     
   }
 
   loadAll(event?: any) {
@@ -118,4 +124,6 @@ export class ProductsPage implements OnInit {
     });
     await alert.present();
   }
+
+ 
 }

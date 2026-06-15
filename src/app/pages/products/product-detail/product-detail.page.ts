@@ -43,6 +43,7 @@ import {
   NavController, IonRow,IonCol } from '@ionic/angular/standalone';
 import { AppUtil } from 'src/app/shared/utils/app-util';
 import { AdresListPage } from '../../adres/adres-list/adres-list.page';
+import { ApplicationConfigService } from 'src/app/core/config/application-config.service';
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-detail.page.html',
@@ -102,6 +103,8 @@ export class ProductDetailPage implements OnInit {
   protected optionGroupService = inject(OptionGroupService);
   protected readonly cartService = inject(CartService);
   private storeageService = inject(StateStorageService);
+  apiUrl: string = inject(ApplicationConfigService).getEndpointFor('');
+  public appUtil = inject(AppUtil);
   //private translate = inject(TranslationService);
   trackId = (item: IProduct): number =>
     this.productService.getProductIdentifier(item);

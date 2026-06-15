@@ -12,13 +12,16 @@ export class AuthInterceptor implements HttpInterceptor {
   private readonly applicationConfigService = inject(ApplicationConfigService);
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    console.log("Auth inteceptor  icin giris yapildi. ");
     const serverApiUrl = this.applicationConfigService.getEndpointFor('');
     if (!request.url || (request.url.startsWith('http') && !(serverApiUrl && request.url.startsWith(serverApiUrl)))) {
+      console.log("Auth inteceptor direkt gecis ");
       return next.handle(request);
     }
 
     const token: string | null = this.stateStorageService.getAuthenticationToken();
-    if (token) {
+    if (token && token !== 'null' && token !== 'undefined') {
+       console.log("Auth inteceptor header ayari eklendi ");
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,

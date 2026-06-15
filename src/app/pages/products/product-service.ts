@@ -12,11 +12,13 @@ import { isPresent } from 'src/app/core/util/operators';
 
 export type PartialUpdateProduct = Partial<IProduct> & Pick<IProduct, 'id'>;
 
-type RestOf<T extends IProduct | NewProduct> = Omit<T, 'createdAt'> & {
+type RestOf<T extends IProduct | NewProduct|RestImage> = Omit<T, 'createdAt'> & {
   createdAt?: string | null;
 };
 
 export type RestProduct = RestOf<IProduct>;
+
+export type RestImage = RestOf<string>;
 
 export type NewRestProduct = RestOf<NewProduct>;
 
@@ -27,6 +29,16 @@ export type EntityArrayResponseType = HttpResponse<IProduct[]>;
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
+
+ 
+
+uploadImage(formData: FormData){
+  return this.http.post(
+    `${this.resourceUrl}/upload-image`,
+    formData,
+    { responseType: 'text' }
+  );
+}
  
   protected readonly http = inject(HttpClient);
   protected readonly applicationConfigService = inject(ApplicationConfigService);

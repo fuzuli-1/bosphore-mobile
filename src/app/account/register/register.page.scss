@@ -1,53 +1,239 @@
-.register-container {
-  max-width: 450px;
-  margin: 20px auto;
-  background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  padding: 30px;
+// ── REGISTER PAGE SCSS ───────────────────────────────
+// Ionic CSS variable'larını kullanır — tema uyumlu
 
-  .input-group {
-    margin-bottom: 15px;
-    label { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 5px; display: block; }
-    ion-input { --border-radius: 12px; --border-color: #eee; --padding-start: 15px; }
-  }
+:host { display: block; }
 
-  .agreement-box {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 12px;
-    margin: 20px 0;
-    .info-text { font-size: 12px; color: #666; }
-    .check-item { --background: transparent; font-size: 11px; --padding-start: 0; }
-  }
-
-  .main-btn { height: 50px; font-weight: bold; margin-top: 10px; }
+.register-content {
+  --background: var(--ion-background-color);
 }
 
- .password-wrapper {
-  position: relative;
-  
-  .password-toggle {
-    --color: var(--ion-color-medium);
-    margin-right: 10px;
-    height: 100%;
-    z-index: 10;
+.register-wrap {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px 40px;
+}
+
+// ── HERO ─────────────────────────────────────────────
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 0 32px;
+  gap: 10px;
+}
+
+.logo-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+  border: 2px solid rgba(var(--ion-color-primary-rgb), 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.logo-img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 28px;
+  color: var(--ion-text-color);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.hero-sub {
+  font-size: 14px;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+// ── FORM ─────────────────────────────────────────────
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+// ── FIELD GROUP ──────────────────────────────────────
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ion-color-medium);
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.optional-tag {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--ion-color-medium);
+  background: var(--ion-color-light);
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+// ── INPUT WRAP ───────────────────────────────────────
+.input-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--ion-item-background, var(--ion-color-light));
+  border: 1.5px solid var(--ion-border-color, var(--ion-color-light-shade));
+  border-radius: 14px;
+  padding: 0 14px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+    background: rgba(var(--ion-color-primary-rgb), 0.04);
+  }
+
+  &.input-error {
+    border-color: var(--ion-color-danger);
+    background: rgba(var(--ion-color-danger-rgb), 0.04);
   }
 }
 
-// Input gruplarının arasını biraz açalım
-.input-group {
-  margin-bottom: 15px;
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 500;
-    color: var(--ion-color-dark);
+.input-icon {
+  font-size: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.custom-input {
+  --background: transparent;
+  --color: var(--ion-text-color);
+  --placeholder-color: var(--ion-color-medium);
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  font-size: 15px;
+  flex: 1;
+}
+
+.eye-btn {
+  --color: var(--ion-color-medium);
+  --padding-start: 8px;
+  --padding-end: 0;
+  height: 36px;
+  margin: 0;
+}
+
+// ── 2 KOLON ──────────────────────────────────────────
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+// ── HATA MESAJI ──────────────────────────────────────
+.error-msg {
+  font-size: 12px;
+  color: var(--ion-color-danger);
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  &::before { content: '⚠'; font-size: 11px; }
+
+  &--check {
+    padding-left: 52px;
+    margin-top: -4px;
   }
 }
 
-.form-content .footer-links{
-  cursor: pointer;
-  color: var(--ion-color-primary);
+// ── ANLAŞMALAR ───────────────────────────────────────
+.agreements {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--ion-color-light);
+  border-radius: 14px;
+  padding: 8px 4px;
+  border: 1px solid var(--ion-color-light-shade);
+}
+
+.check-row {
+  --background: transparent;
+  --padding-start: 8px;
+  --inner-padding-end: 8px;
+  --min-height: 44px;
+
+  &.check-error {
+    --background: rgba(var(--ion-color-danger-rgb), 0.05);
+  }
+
+  ion-checkbox {
+    --checkbox-background-checked: var(--ion-color-primary);
+    --border-color: var(--ion-color-medium-shade);
+    --border-color-checked: var(--ion-color-primary);
+    --size: 20px;
+    --border-radius: 6px;
+    margin-inline-end: 10px;
+  }
+}
+
+.check-label {
+  font-size: 13px;
+  color: var(--ion-text-color);
+  white-space: normal;
+  line-height: 1.4;
+}
+
+.required-star {
+  color: var(--ion-color-danger);
+  margin-left: 2px;
+}
+
+// ── SUBMIT BUTONU ─────────────────────────────────────
+.submit-btn {
+  --background: var(--ion-color-primary);
+  --background-activated: var(--ion-color-primary-shade);
+  --background-hover: var(--ion-color-primary-tint);
+  --border-radius: 14px;
+  --box-shadow: 0 8px 24px rgba(var(--ion-color-primary-rgb), 0.35);
+  --color: var(--ion-color-primary-contrast);
+  height: 54px;
+  font-weight: 700;
+  font-size: 16px;
+  margin-top: 8px;
+
+  &[disabled] {
+    opacity: 0.5;
+    --box-shadow: none;
+  }
+}
+
+// ── GİRİŞ LİNKİ ──────────────────────────────────────
+.login-link {
+  text-align: center;
+  font-size: 14px;
+  color: var(--ion-color-medium);
+  margin: 4px 0 0;
+
+  .link-btn {
+    color: var(--ion-color-primary);
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 4px;
+  }
 }

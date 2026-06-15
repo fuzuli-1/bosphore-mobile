@@ -7,15 +7,13 @@ import {
   IonItem, IonLabel, IonSelect, IonSelectOption, IonButtons,
   IonSpinner, IonText, IonBackButton, IonNote,
   ToastController, LoadingController, NavController, ModalController, IonInput } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { checkmark, close, trash, saveOutline, arrowBack, cubeOutline, optionsOutline } from 'ionicons/icons';
 import { IOptionGroup, IProduct, IProductOptionGroup, NewProductOptionGroup } from 'src/app/interfaces/interfaces';
 import { ProductOptionGroupService } from './product-option-group.service';
 import { ProductService } from 'src/app/pages/products/product-service';
 import { OptionGroupService } from 'src/app/pages/menu-extra/option-group/option-group-service';
 import { Observable } from 'rxjs';
 import { ProductSelectorComponent } from 'src/app/pages/products/product-selector';
-import { Bosp } from 'src/app/shared/utils/Bosp';
+import { Location } from '@angular/common';
  
 
 @Component({
@@ -40,6 +38,7 @@ export class ProductOptionGroupFormPage implements OnInit {
   selectedProductId: number | null = null;
   productName: string = '';
   selectedOptionGroupId: number | null = null;
+  optionGroupName: string = '';
 
  
   optionGroups: IOptionGroup[] = [];
@@ -49,16 +48,16 @@ export class ProductOptionGroupFormPage implements OnInit {
   private optiongroupService = inject(OptionGroupService);
   private service=inject(ProductOptionGroupService);
   private modalCtrl= inject(ModalController);
-    private route= inject(ActivatedRoute);
-    private toastCtrl= inject(ToastController);
-    private loadingCtrl= inject(LoadingController);
-    private navCtrl= inject(NavController);
-
+  private route= inject(ActivatedRoute);
+  private toastCtrl= inject(ToastController);
+  private loadingCtrl= inject(LoadingController);
+  private navCtrl= inject(NavController);
+private location = inject(Location);
 
   constructor(
 
   ) {
-    addIcons({ checkmark, close, trash, saveOutline, arrowBack, cubeOutline, optionsOutline });
+    
   }
 
   ngOnInit() {
@@ -87,9 +86,12 @@ export class ProductOptionGroupFormPage implements OnInit {
 
     if (this.isEdit && this.editId) {
       this.service.find(this.editId).subscribe({
-        next: (data: any) => {
+        next: (res: any) => {
+            const data = res.body as IProductOptionGroup;
           this.selectedProductId = data.product?.id ?? null;
+          this.productName = data.product?.name ?? '';  
           this.selectedOptionGroupId = data.optionGroup?.id ?? null;
+          this.optionGroupName = data.optionGroup?.name ?? '';
           checkDone();
         },
         error: () => { this.showToast('Kayıt yüklenemedi', 'danger'); checkDone(); }
@@ -142,7 +144,7 @@ export class ProductOptionGroupFormPage implements OnInit {
   }
 
   goBack() {
-    this.navCtrl.navigateBack('/product-option-groups');
+    this.location.back();
   }
 
   private async showToast(message: string, color: string) {
@@ -166,7 +168,8 @@ export class ProductOptionGroupFormPage implements OnInit {
   } */
 
   getSelectedGroupName(): string {
-    return this.optionGroups.find(g => g.id === this.selectedOptionGroupId)?.name ?? '';
+    this.optionGroupName = this.optionGroups.find(g => g.id === this.selectedOptionGroupId)?.name ?? '';
+    return this.optionGroupName;
   }
 
 

@@ -128,7 +128,7 @@
         <div class="preview-arrow">→</div>
         <div class="preview-item">
           <ion-icon name="options-outline"></ion-icon>
-          <span>{{ selectedOptionGroupId ? getSelectedGroupName() : '' }}</span>
+          <span>{{ selectedOptionGroupId ? optionGroupName : '' }}</span>
         </div>
       </div>
     </div>
@@ -150,7 +150,7 @@
       fill="clear"
       class="cancel-btn"
       (click)="goBack()">
-      <ion-icon name="close" slot="start"></ion-icon>
+      <ion-icon name="close-circle" slot="start"></ion-icon>
       İptal
     </ion-button>
 

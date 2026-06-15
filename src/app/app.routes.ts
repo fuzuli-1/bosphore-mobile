@@ -1,134 +1,113 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth-guard';
 import { AdminGuard } from './guards/admin-guard';
+
 export const routes: Routes = [
+
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
+  // ── AUTH GEREKTİRMEYEN SAYFALAR ──────────────────
   {
     path: 'login',
-    loadComponent: () =>{
-      console.log('Login sayfası yükleniyor...'); // Debug için
-      return import('./pages/login/login.page').then((m) => m.LoginPage);
-    }
-    
-    },{
-    path: '',
-    canActivate: [AuthGuard],
-    canActivateChild: [AuthGuard],  // ✅ bunu ekle
-    children: [
-      {
-        path: 'home',
-        loadChildren: () => {
-          console.log('Home sayfası yükleniyor...'); // Debug için
-          return import('./home/home.routes').then((m) => m.default)
-        }
-      },
-      {
-        path: 'products',
-        loadChildren: () =>{
-          console.log('Products sayfası yükleniyor...'); // Debug için
-          return import('./pages/products/products.routes').then((m) => m.default)
-        }
-         
-      },
-      {
-        path: 'menus',
-        loadChildren: () =>{
-          console.log('Menus sayfası yükleniyor...'); // Debug için
-          return import('./pages/menu-grup/menu.routes').then((m) => m.default)
-        }
-      },
-      {
-        path: 'payments',
-        loadChildren: () =>{
-          console.log('Payments sayfası yükleniyor...'); // Debug için
-          return import('./pages/payments/payments.routes').then((m) => m.default)
-        }
-      },
-      {
-        path: 'order-history',
-        loadComponent: () =>{
-          console.log('Order History sayfası yükleniyor...'); // Debug için
-          return import('./pages/order-history/order-history.page').then(
-            (m) => m.OrderHistoryPage,
-          );
-        }
-      },
-            {
-        path: 'address',
-        loadComponent: () =>{
-          console.log('Address sayfası yükleniyor...'); // Debug için
-          return import('./pages/adres/address/address.page').then((m) => m.AddressPage)
-        } 
-      },
-      {
-        path: 'kitchen',
-        canActivate: [AdminGuard],
-        loadComponent: () =>  {
-          console.log('Kitchen sayfası yükleniyor...'); // Debug için
-          return import('./pages/kitchen/kitchen.page').then((m) => m.KitchenPage)
-        }
-         
-      },
-
-        {
-    path: 'menu-management',
-    loadComponent: () =>  {
-      console.log('Menu Management sayfası yükleniyor...'); // Debug için
-      return   import('./pages/definitions/menu-management/menu-management.page').then( m => m.MenuManagementPage)
-    }
+    loadComponent: () =>
+      import('./pages/login/login.page').then(m => m.LoginPage)
   },
-  
-       {
-        path: 'order-detail/:orderId',
-        loadComponent: () =>{
-          console.log('Order Detail sayfası yükleniyor...'); // Debug için
-          return import('./pages/order-detail/order-detail.page').then(
-            (m) => m.OrderDetailPage
-          )
-        }
-      },
-       {
-        path: 'order-success',
-        loadComponent: () =>{
-          console.log('Order Success sayfası yükleniyor...'); // Debug için
-          return import('./pages/order-success/order-success.page').then(
-            (m) => m.OrderSuccessPage,
-          )
-        }
-      },
-    ],
+  {
+    path: 'order-success',
+    loadComponent: () =>
+      import('src/app/pages/order-success/order-success.page').then(m => m.OrderSuccessPage)
   },
   {
     path: 'otp-verification',
-    loadComponent: () => {
-      console.log('OTP Verification sayfası yükleniyor...'); // Debug için
-      return import('./pages/otp-verification/otp-verification.page').then( m => m.OtpVerificationPage)
-    }
+    loadComponent: () =>
+      import('./pages/otp-verification/otp-verification.page').then(m => m.OtpVerificationPage)
   },
+
+  // ── KORUNAN SAYFALAR (AuthGuard) ─────────────────
   {
-    path: 'category',
-    loadComponent: () => {
-      console.log('Category sayfası yükleniyor...'); // Debug için
-      return import('./pages/definitions/category/category.page').then( m => m.CategoryPage)
-    }
+    path: '',
+    canActivate: [AuthGuard],
+    children: [
+
+      // Kullanıcı sayfaları
+      {
+        path: 'home',
+        loadChildren: () =>
+          import('src/app/home/home.routes').then(m => m.default)
+      },
+      {
+        path: 'products',
+        loadChildren: () =>
+          import('./pages/products/products.routes').then(m => m.default)
+      },
+      {
+        path: 'menus',
+        loadChildren: () =>
+          import('./pages/menu-grup/menu.routes').then(m => m.default)
+      },
+      {
+        path: 'payments',
+        loadChildren: () =>
+          import('./pages/payments/payments.routes').then(m => m.default)
+      },
+      {
+        path: 'order-history',
+        loadComponent: () =>
+          import('./pages/order-history/order-history.page').then(m => m.OrderHistoryPage)
+      },
+      {
+        path: 'order-detail/:orderId',
+        loadComponent: () =>
+          import('./pages/order-detail/order-detail.page').then(m => m.OrderDetailPage)
+      },
+      {
+        path: 'address',
+        loadComponent: () =>
+          import('./pages/adres/address/address.page').then(m => m.AddressPage)
+      },
+
+      // Admin sayfaları
+      {
+        path: 'kitchen',
+        canActivate: [AdminGuard],
+        loadComponent: () =>
+          import('./pages/kitchen/kitchen.page').then(m => m.KitchenPage)
+      },
+      {
+        path: 'menu-management',
+        canActivate: [AdminGuard],
+        loadComponent: () =>
+          import('./pages/definitions/menu-management/menu-management.page').then(m => m.MenuManagementPage)
+      },
+      {
+        path: 'category',
+        canActivate: [AdminGuard],
+        loadComponent: () =>
+          import('./pages/definitions/category/category.page').then(m => m.CategoryPage)
+      },
+      {
+        path: 'language',
+        canActivate: [AdminGuard],
+        loadComponent: () =>
+          import('./pages/definitions/language/language.page').then(m => m.LanguagePage)
+      },
+      {
+        path: 'option-management',
+        canActivate: [AdminGuard],
+        loadComponent: () =>
+          import('./pages/definitions/option-management/option-management.page').then(m => m.OptionManagementPage)
+      },
+      {
+        path: 'product-option-group',
+        canActivate: [AdminGuard],
+        loadChildren: () =>
+          import('./pages/definitions/product-option-group/product-option-group.routes').then(m => m.default)
+      },
+
+    ]
   },
-  {
-    path: 'language',
-    loadComponent: () => {
-      console.log('Language sayfası yükleniyor...'); // Debug için
-      return import('./pages/definitions/language/language.page').then( m => m.LanguagePage)
-    }
-  },
-  {
-    path: 'option-management',
-    loadComponent: () => {
-      console.log('Option Management sayfası yükleniyor...'); // Debug için
-      return import('./pages/definitions/option-management/option-management.page').then( m => m.OptionManagementPage)
-    }
-  },{
-  path: 'product-option-group',
-  loadChildren: () =>
-    import('./pages/definitions/product-option-group/product-option-group.routes')
-      .then(m => m.default)
-}];
+
+  // ── YÖNLENDİRME ──────────────────────────────────
+  { path: '**', redirectTo: 'login' }
+
+];

@@ -43,6 +43,7 @@ import {
   documentOutline,
   documentTextOutline,
   eye,
+  eyeOff,
   fastFood,
   fastFoodOutline,
   flameOutline,
@@ -86,6 +87,7 @@ import {
   removeCircleOutline,
   removeOutline,
   restaurantOutline,
+  saveOutline,
   searchOutline,
   settingsOutline,
   storefrontOutline,
@@ -171,8 +173,7 @@ addIcons({
   'fast-food-outline': fastFoodOutline, 
   'print-outline': printOutline,
   'grid-outline':gridOutline,
-  'add-circle-outline':addCircleOutline,
-  'add':addCircleOutline,
+  'add-circle-outline':addCircleOutline, 
   'grid-outline-outline':gridOutline,
   'star': 'star',
   'star-outline': 'star-outline',
@@ -196,9 +197,11 @@ addIcons({
   'car-outline':carOutline,
   'call-outline':callOutline,
   'basket-outline':basketOutline,
+  'save-outline':saveOutline,
+  'eye-off':eyeOff
 });
 
-import { Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TranslationService } from './app/services/translation-service';
 import { add } from 'ngx-bootstrap/chronos';
@@ -209,6 +212,7 @@ import { ApplicationConfigService } from './app/core/config/application-config.s
 import { GeneralSettings } from './app/page';
  // ... diğer importlar aynı kalsın ...
 import { APP_INITIALIZER } from '@angular/core';
+import { AccountService } from './app/core/auth/account.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -220,19 +224,43 @@ bootstrapApplication(AppComponent, {
     provideAuth(() => getAuth()),
 
     // APP_INITIALIZER ekleyerek uygulamanın dil dosyası yüklenene kadar açılmasını engelleyin:
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (ts: TranslationService, storageService: StateStorageService, configService: ApplicationConfigService) => {
-        return () => {
-          console.log('Uygulama başlatılıyor, dil yükleniyor...');
-          configService.setEndpointPrefix(GeneralSettings.url);
-          storageService.storeLocale('fr');
-          return ts.use('fr'); // Dil yüklenene kadar Angular bekler
-        };
-      },
-      deps: [TranslationService, StateStorageService, ApplicationConfigService],
-      multi: true
-    }
+ // APP_INITIALIZER
+{
+  provide: APP_INITIALIZER,
+  useFactory: (
+    ts: TranslationService,
+    storageService: StateStorageService,
+    configService: ApplicationConfigService,
+    accountService: AccountService  // ✅ ekle
+  ) => {
+    return async () => {
+      console.log('Uygulama başlatılıyor...');
+
+      // 1. URL ayarla
+      configService.setEndpointPrefix(GeneralSettings.url);
+
+      // 2. Kalıcı storage'dan token'ı web hafızasına eşitle
+      await storageService.getAuthenticationTokenMobile();
+
+      // 3. Token varsa kimliği bir kez fetch et → cache'e al
+      const token = storageService.getAuthenticationToken();
+      if (token) {
+        await firstValueFrom(
+          accountService.identity(true).pipe(catchError(() => of(null)))
+        );
+        console.log('✅ Kimlik cache\'e alındı');
+      }
+
+      // 4. Dil yükle
+      const locale = storageService.getLocale() || 'fr';
+      await ts.use(locale);
+
+      console.log('✅ Uygulama hazır');
+    };
+  },
+  deps: [TranslationService, StateStorageService, ApplicationConfigService, AccountService],  // ✅ ekle
+  multi: true
+}
   ],
 }).catch(err => { 
   console.error('Bootstrap Hatası:', err);

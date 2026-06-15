@@ -1,10 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, Input, input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { IMenuGroup } from 'src/app/interfaces/interfaces';
 import { TranslatePipe } from 'src/app/services/TranslatePipe';
 import { LanguageSelectorComponent } from '../language/language-selector.component';
+import { MenuGroupService } from '../../menu-grup/menu-groups/menu-group-service';
  
  
 
@@ -29,10 +30,23 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
           <ion-label position="stacked">{{ 'ORDER_NUMBER' | translate }}</ion-label>
           <ion-input type="number" formControlName="orderNo"></ion-input>
         </ion-item>
-        <ion-item fill="outline" mode="md" class="ion-margin-bottom">
-          <ion-label position="stacked">{{ 'ICON_PATH' | translate }}</ion-label>
-          <ion-input formControlName="iconPath" placeholder="Örn: beverage-icon"></ion-input>
-        </ion-item>
+
+        <ion-item fill="outline">
+          <ion-label position="stacked">{{ 'image_url' | translate }}</ion-label>
+          <div style="display: flex; align-items: center; gap: 10px; width: 100%; padding-top: 8px;">
+            <ion-input formControlName="iconPath" placeholder="Resim URL veya Yüklenen Dosya" style="flex: 1;"></ion-input>
+            
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+            <ion-button size="small" fill="solid" color="secondary" (click)="fileInput.click()">
+              <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+              Yükle
+            </ion-button>
+          </div>
+        </ion-item>        
+
+ 
+
+
         <ion-item fill="outline" mode="md" class="ion-margin-bottom">
           <ion-label position="stacked">{{ 'LANGUAGE_ID' | translate }}</ion-label>
           <ion-input type="number" formControlName="languageId"></ion-input>
@@ -52,8 +66,9 @@ export class GroupFormComponent implements OnInit {
 
   private fb = inject(FormBuilder);
   private modalCtrl = inject(ModalController);
+  private menuGroupService = inject(MenuGroupService);
   
-  group: IMenuGroup | null = null; // ComponentProps ile dışarıdan gelir
+ @Input()  group: IMenuGroup | null = null; // ComponentProps ile dışarıdan gelir
   groupForm!: FormGroup;
 
   selectLanguage() {
@@ -81,10 +96,34 @@ export class GroupFormComponent implements OnInit {
       title: [this.group?.title || '', [Validators.required]],
       orderNo: [this.group?.orderNo || 0],
       iconPath: [this.group?.iconPath || ''],
-      languageId: [1] // Şimdilik default 1
+      languageId: [this.group?.language?.id] // Şimdilik default 1
     });
   }
 
   save() { this.modalCtrl.dismiss(this.groupForm.value); }
   cancel() { this.modalCtrl.dismiss(); }
+
+    onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      // Spring Boot'a yazdığımız endpoint'e gönderiyoruz
+      this.menuGroupService.uploadImage(formData).subscribe({
+        next: (responsePath) => {
+          // Gelen "/uploads/uuid.png" değerini formdaki imageUrl alanına set ediyoruz
+          this.groupForm.patchValue({ iconPath:responsePath });
+          console.log('Resim başarıyla yüklendi:', responsePath);
+        },
+        error: (err) => {
+          console.error('Resim yüklenirken hata oluştu:', err); 
+          // Burada kullanıcıya bir toast mesajı gösterebilirsin
+        }
+      });
+    }
+   
+  }
+
+
 }

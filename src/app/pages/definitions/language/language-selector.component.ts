@@ -39,7 +39,7 @@ import { LanguageFormComponent } from './language-form.component';
         <ion-item *ngIf="results().length === 0 && searchTerm.length > 2" lines="none">
           <ion-label color="medium">Sonuç bulunamadı...</ion-label>
           <ion-button slot="end" fill="outline" (click)="addNewLanguage()">
-            <ion-icon name="add" slot="start"></ion-icon> Yeni Oluştur
+            <ion-icon name="add-outline" slot="start"></ion-icon> Yeni Oluştur
           </ion-button>
         </ion-item>
       </ion-list>

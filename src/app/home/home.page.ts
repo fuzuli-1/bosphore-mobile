@@ -47,6 +47,8 @@ import {
   ModalController,MenuController,ToastController, IonHeader, IonButtons, IonButton } from '@ionic/angular/standalone';
 import { CartService } from '../pages/cart/cart.service';
 import { CategoryService } from '../pages/definitions/category/category-service';
+import { ApplicationConfigService } from '../core/config/application-config.service';
+import {AppUtil } from '../shared/utils/app-util';
  
 
 @Component({
@@ -112,11 +114,13 @@ export class HomePage implements OnInit {
   private toast = inject(ToastController);
   private ts = inject(TranslationService);
   public cartService = inject(CartService);
+  apiUrl: string = inject(ApplicationConfigService).getEndpointFor('');
+  public appUtil = inject(AppUtil);
 
 constructor( ) {
    
 
-  console.log(JSON.stringify(this.router.config, null, 2));
+  //console.log(JSON.stringify(this.router.config, null, 2));
 }
   ngOnInit() {
     if (this.account.isAuthenticated()) {
@@ -330,5 +334,6 @@ constructor( ) {
     go(path: string) {
     this.router.navigateByUrl(path);
   }
+ 
 
 }
