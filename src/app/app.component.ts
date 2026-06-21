@@ -11,7 +11,7 @@ import { fontAwesomeIcons } from './config/font-awesome-icons';
 import dayjs from 'dayjs/esm';
 
 import { GeneralSettings } from './page';
-import { CartUtils } from './shared/utils/CartUtils';
+ 
 import { CommonModule } from '@angular/common';
 import { AccountService } from './core/auth/account.service';
 import { StateStorageService } from './core/auth/state-storage.service';
@@ -35,6 +35,7 @@ import { TranslatePipe } from './services/TranslatePipe';
 // 💡 Standalone ikon kaydı için importlar
 import { addIcons } from 'ionicons';
 import { logOutOutline } from 'ionicons/icons';
+import { CartService } from './pages/cart/cart.service';
 
 @Component({
   selector: 'app-root',
@@ -67,6 +68,7 @@ export class AppComponent implements OnInit {
   private readonly dpConfig = inject(BsDatepickerConfig);
   private readonly menuCtrl = inject(MenuController);
   private readonly navCtrl = inject(NavController);
+  private cartService =inject(CartService);
   public appPages: { title: string; url: string; icon: string }[] = [];
 
   isLoggedIn = false;
@@ -187,7 +189,7 @@ logout(): void {
 
   private cleanInvalidCart(): void {
     try {
-      CartUtils.clearCart();
+      this.cartService.clear();
     } catch (error) {
       console.warn('Invalid JSON in cart, clearing...');
       localStorage.removeItem('cart');

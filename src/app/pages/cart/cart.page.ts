@@ -20,7 +20,7 @@ import { OrderStateService } from 'src/app/services/order-state-service';
  
 
 import { PaymentMethod } from '../enumerations/payment-method.model';
-import { CartUtils } from 'src/app/shared/utils/CartUtils';
+ 
 import { AccountService } from 'src/app/core/auth/account.service';
 import { Account } from 'src/app/core/auth/account.model';
 import { OrderService } from 'src/app/services/order-service';
@@ -68,7 +68,7 @@ import {
   IonItemOptions,
 } from '@ionic/angular/standalone';
 import { AppUtil } from 'src/app/shared/utils/app-util';
-import { AdresListPage } from '../adres/adres-list/adres-list.page';
+import { AdresListPage } from '../adres/adres-list/adres-list.page'; 
 
 @Component({
   selector: 'app-cart',
@@ -209,22 +209,19 @@ export class CartPage implements OnInit {
   // -------------------------
   // QUANTITY
   // -------------------------
-  increase(item: CartItem) {
-    item.quantity++;
-    this.recalculateCart();
-  }
+increase(item: CartItem) {
+  this.cartService.updateQuantity(item.uuid, item.quantity + 1);  // ✅
+}
 
-  decrease(item: CartItem) {
-    if (item.quantity > 1) {
-      item.quantity--;
-      this.recalculateCart();
-    }
+decrease(item: CartItem) {
+  if (item.quantity > 1) {
+    this.cartService.updateQuantity(item.uuid, item.quantity - 1);  // ✅
   }
+}
 
-  remove(item: CartItem) {
-    this.cartItems = this.cartItems.filter((i) => i.uuid !== item.uuid);
-    this.recalculateCart();
-  }
+remove(item: CartItem) {
+  this.cartService.remove(item.uuid);  // ✅
+}
 
   // -------------------------
   // CHILD (EXTRA / PROMO)
@@ -322,7 +319,7 @@ export class CartPage implements OnInit {
       this.account = user || ({} as Account);
 
       // Güvenli cart
-      const cart = CartUtils.getSafeCart();
+       const cart = this.cartService.getCartSnapshot();
 
       // Frontend SADECE gerekli bilgileri göndersin
       // Fiyat hesaplamasını backend yapsın
@@ -357,6 +354,7 @@ export class CartPage implements OnInit {
 
           product: {
             id: item.product.id,
+            variantId:item.productVariation?.id??0
           },
           // Option isim değil ID gönder
           options: item.children,

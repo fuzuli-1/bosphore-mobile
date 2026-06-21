@@ -70,47 +70,90 @@
 
   <!-- ÜRÜN GRID -->
   <div class="product-grid">
+ <!-- home.page.html — sadece ürün kartı kısmı değişti -->
 
-    <!-- DİĞER ÜRÜNLER — 2'Lİ GRID -->
     <div class="two-col-grid">
-     <!--@for (item of products().slice(1); track item.id) {-->
       @for (item of products(); track item.id) {
         <ion-card class="product-card" (click)="addToCart(item)">
 
+          <!-- ÜRÜN RESMİ -->
           <div class="card-img-wrap card-img-wrap--sm">
             @if (item.badge === 'new') {
-              <ion-badge color="warning" class="img-badge">{{'NEW'|translate}}</ion-badge>
+              <ion-badge color="warning" class="img-badge">{{ 'NEW' | translate }}</ion-badge>
             } @else if (item.badge === 'HOT') {
-              <ion-badge color="primary" class="img-badge">{{'BEST_SELLER'|translate}}</ion-badge>
+              <ion-badge color="primary" class="img-badge">{{ 'BEST_SELLER' | translate }}</ion-badge>
             }
 
             @if (item.imageUrl) {
-               <img [src]=" appUtil.getImageUrl(apiUrl, item.imageUrl)" 
+              <img
+                [src]="appUtil.getImageUrl(apiUrl, item.imageUrl)"
                 class="product-img"
-               alt="product"/>
+                alt="{{ item.name }}" />
             } @else {
               <span class="food-emoji">{{ item.emoji }}</span>
             }
-
           </div>
 
+          <!-- KART İÇERİĞİ -->
           <ion-card-content class="card-content card-content--sm">
             <ion-card-title class="card-name card-name--sm">{{ item.name }}</ion-card-title>
-            <ion-card-subtitle class="card-desc card-desc--sm">{{ item.description }}</ion-card-subtitle>
-            <div class="card-footer card-footer--sm">
-              <span class="price-tag price-tag--sm">{{ item.price | number:'1.2-2' }} </span>
-              <ion-button fill="solid" color="dark" size="small"
-                (click)="quickAdd($event, item)">
-                <ion-icon slot="icon-only" name="add-outline"></ion-icon>
-              </ion-button>
-            </div>
+
+            @if (item.description) {
+              <ion-card-subtitle class="card-desc card-desc--sm">
+                {{ item.description }}
+              </ion-card-subtitle>
+            }
+
+            <!-- VARYANTLI ÜRÜN: fiyat aralığı + seçim ikonu -->
+            @if (item.variations && item.variations.length > 0) {
+              <div class="card-footer card-footer--sm">
+                <div class="price-range">
+                  <!-- En düşük fiyatı göster -->
+                  <span class="price-tag price-tag--sm">
+                    {{ item.price | number:'1.2-2' }} €
+                  </span>
+                  <!-- Fiyat aralığı varsa göster -->
+                  @if ((item.variations[item.variations.length - 1].additionalPrice??0) > 0) {
+                    <span class="price-up-to">
+                      – {{ ((item.price??0) + (item.variations[item.variations.length - 1].additionalPrice??0)) | number:'1.2-2' }} €
+                    </span>
+                  }
+                </div>
+                <!-- Seçim olduğunu belirten ikon -->
+                <div class="variant-indicator">
+                  <ion-icon name="chevron-forward" color="medium" style="font-size:14px"></ion-icon>
+                </div>
+              </div>
+
+              <!-- Variant sayısı badge -->
+              <div class="variant-chips">
+                @for (v of item.variations; track v.id) {
+                  <span class="variant-chip">{{ v.name }}</span>
+                }
+              </div>
+
+            } @else {
+              <!-- TEK FİYATLI ÜRÜN: direkt fiyat + sepet butonu -->
+              <div class="card-footer card-footer--sm">
+                <span class="price-tag price-tag--sm">
+                  {{ item.price | number:'1.2-2' }} €
+                </span>
+                <ion-button
+                  fill="solid"
+                  color="dark"
+                  size="small"
+                  (click)="quickAdd($event, item)">
+                  <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+                </ion-button>
+              </div>
+            }
+
           </ion-card-content>
 
         </ion-card>
       }
     </div>
-
-  </div>
+</div>
 
 </ion-content>
 

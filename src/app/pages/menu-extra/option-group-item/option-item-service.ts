@@ -33,6 +33,15 @@ export class OptionItemService {
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('/api/option-items');
 
+
+    uploadImage(formData: FormData){
+    return this.http.post(
+      `${this.resourceUrl}/upload-image`,
+      formData,
+      { responseType: 'text' }
+    );
+  }
+
   create(optionItem: NewOptionItem): Observable<EntityResponseType> {
     const copy = this.convertDateFromClient(optionItem);
     return this.http

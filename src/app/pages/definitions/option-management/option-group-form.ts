@@ -80,10 +80,10 @@ import { LanguageSelectorComponent } from '../language/language-selector.compone
         </ion-item>
 
         
-        <ion-item fill="outline" button (click)="selectProduct()" class="ion-margin-top">
+<!-- <ion-item fill="outline" button (click)="selectProduct()" class="ion-margin-top">
           <ion-label position="stacked">Ürün Seç</ion-label>
           <ion-input [value]="selectedProductName" readonly placeholder="Ürün Seçin"></ion-input>
-        </ion-item>
+        </ion-item>-->
 
         <ion-button expand="block" (click)="save()" [disabled]="editForm.invalid" class="ion-margin-top">
           Kaydet
@@ -116,7 +116,7 @@ export class OptionGroupFormComponent implements OnInit {
     maxSelect: [1],
     isActive: [true,[Validators.required]],
     requiredGroup: [true,[Validators.required]],
-    product: [null, [Validators.required]], // Parent ürün ID'si
+    //product: [null, [Validators.required]],  
     language: [null, [Validators.required]]
   });
 
@@ -125,7 +125,7 @@ export class OptionGroupFormComponent implements OnInit {
       let lang=this.optionGroup.language;
       let p=this.optionGroup.product;
       this.loadLanguage(lang.id);
-      this.loadProduct(p.id);
+      //this.loadProduct(p.id);
       this.editForm.patchValue(this.optionGroup);
     }
   }
@@ -142,7 +142,7 @@ export class OptionGroupFormComponent implements OnInit {
       });
   }
 
-    private loadProduct(id: any): void {
+   /* private loadProduct(id: any): void {
       this.isLoading = true;
   
       this.productService.find(id).subscribe({
@@ -156,7 +156,7 @@ export class OptionGroupFormComponent implements OnInit {
           this.isLoading = false;
         },
       });
-    } 
+    } */
 
   async selectLanguage() {
     const modal = await this.modalCtrl.create({ component: LanguageSelectorComponent });
@@ -169,7 +169,7 @@ export class OptionGroupFormComponent implements OnInit {
     await modal.present();
   }
 
-  async selectProduct(){
+ /* async selectProduct(){
     const modal=await this.modalCtrl.create({
       component:ProductSelectorComponent
       
@@ -183,7 +183,7 @@ export class OptionGroupFormComponent implements OnInit {
     });
    await modal.present();
 
-  }
+  }*/
 
   save() { this.modalCtrl.dismiss(this.editForm.value); }
 

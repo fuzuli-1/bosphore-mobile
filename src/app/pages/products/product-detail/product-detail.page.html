@@ -1,6 +1,5 @@
 <ion-header class="ion-no-border">
   <ion-toolbar color="primary">
-
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/menu" text="{{ 'GO_BACK' | translate }}" color="light"></ion-back-button>
     </ion-buttons>
@@ -33,7 +32,7 @@
 
 <ion-content [fullscreen]="true" class="detail-content">
 
-  @if (product; as p) {
+  @if (product(); as p) {
 
     <div class="hero-section">
       @if (p.badge === 'hot') {
@@ -68,7 +67,45 @@
           </div>
         }
       </div>
+<!-- Variation seçimi — option gruplarından ÖNCE -->
+@if (product()?.variations && product()!.variations!.length > 0) {
+  <h2 class="section-label">{{ 'CHOOSE_SIZE' | translate }}</h2>
+  <ion-list class="extras-list" lines="none">
+    @for (v of product()!.variations!; track v.id) {
+      <ion-item class="extra-item"
+        [class.extra-item--selected]="selectedVariation()?.id === v.id"
+        (click)="selectVariation(v)"
+        detail="false"
+        button>
 
+        <ion-label>
+          <h3 class="extra-name">{{ v.name }}</h3>
+          <p class="extra-sub">
+            @if (v.name === 'Seul'){
+                 {{ 'JUST_FOOD' | translate }}
+            }
+            @else if (v.name === 'Frites'){
+             +{{'FRIED_POTATOES'|translate}}
+            } @else if (v.name === 'Menu'){ 
+              {{'FRIED_POTATOES'|translate}}+ {{'DRINK'|translate}}
+            }
+          </p>
+        </ion-label>
+
+        <div slot="end" class="extra-end">
+          <span class="extra-price">
+            {{ getVariationPrice(v) | number:'1.2-2' }}
+          </span>
+          <!-- Radio circle — tek seçim -->
+          <div class="radio-circle" [class.radio-circle--on]="selectedVariation()?.id === v.id">
+          <div class="radio-dot" [class.radio-dot--on]="selectedVariation()?.id === v.id"></div>
+          </div>
+        </div>
+
+      </ion-item>
+    }
+  </ion-list>
+}
       @for(group of optionGroups(); track group.id) {
         <h2 class="section-label">{{group.name}}</h2>
         <ion-list class="extras-list" lines="none">
@@ -80,7 +117,7 @@
               button>
 
               <div slot="start" class="extra-icon">
-                <img [src]="extra.imageUrl" alt="">
+                <img [src]="appUtil.getImageUrl(apiUrl,extra.imageUrl??'')" alt="">
               </div>
 
               <ion-label>
@@ -89,9 +126,18 @@
               </ion-label>
 
               <div slot="end" class="extra-end">
-                <span class="extra-price">+{{ extra.additionalPrice | number:'1.2-2' }} TL</span>
+              
+                @if (group.requiredGroup === true && group.type === 'STANDARD') {
+                  <span class="extra-price">
+                    {{ getProductPriceExtra(extra) | number:'1.2-2' }} 
+                  </span>
+                } @else {
+                  <span class="extra-price">
+                    +{{ extra.additionalPrice | number:'1.2-2' }} 
+                  </span>
+                }
 
-                @if (group.type === 'STANDARD') {
+                @if (group.type === 'EXTRA') {
                   <div class="radio-circle" [class.radio-circle--on]="extra.selected">
                     <div class="radio-dot" [class.radio-dot--on]="extra.selected"></div>
                   </div>
@@ -102,7 +148,6 @@
                     }
                   </div>
                 }
-
               </div>
             </ion-item>
           }
@@ -120,7 +165,7 @@
           auto-grow="false">
         </ion-textarea>
       </ion-item>
-
+      <div #cartSuccessAnchor></div>
       @if (addedToCart()) {
         <div class="cart-success-delivery ion-padding-top animate__animated animate__fadeIn">
           <ion-row>
@@ -160,7 +205,7 @@
         <ion-icon slot="icon-only" name="add-outline"></ion-icon>
       </ion-button>
     </div>
-
+  
     <ion-button
       slot="end"
       expand="block"

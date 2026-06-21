@@ -1,43 +1,72 @@
- <ion-header [translucent]="true">  
-  <ion-toolbar color="primary">    
-     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/home"></ion-back-button>
-     </ion-buttons>
-     <ion-title>{{ 'PRODUCT_MANAGEMENT' | translate }}</ion-title>
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>{{ 'PRODUCT_MANAGEMENT' | translate }}</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="openForm()">
-        <ion-icon name="add-circle-outline" slot="start"></ion-icon>
-        {{ 'ADD_PRODUCT' | translate }}
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 
   <ion-toolbar>
     <ion-searchbar 
-      placeholder= "{{ 'SEARCH_PRODUCT' | translate }}" 
+      [placeholder]="'SEARCH' | translate" 
       (ionInput)="search($event)" 
       [debounce]="500">
     </ion-searchbar>
+    
+    <ion-grid class="ion-no-padding">
+      <ion-row>
+        <ion-col size="6">
+          <ion-item lines="none">
+            <ion-select 
+              [placeholder]="'MENU_GROUP' | translate" 
+              interface="popover"
+              [value]="selectedMenuGroupId"
+              (ionChange)="onMenuGroupChange($event)">
+              <ion-select-option [value]="null">{{ 'ALL' | translate }}</ion-select-option>
+              <ion-select-option *ngFor="let group of menuGroups()" [value]="group.id">
+                {{ group.title }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        
+        <ion-col size="6">
+          <ion-item lines="none">
+            <ion-select 
+              [placeholder]="'MENU_ITEM' | translate" 
+              interface="popover"
+              [value]="selectedMenuGroupItemId"
+              [disabled]="!selectedMenuGroupId"
+              (ionChange)="onMenuGroupItemChange($event)">
+              <ion-select-option [value]="null">{{ 'ALL' | translate }}</ion-select-option>
+              <ion-select-option *ngFor="let item of menuGroupItems()" [value]="item.id">
+                {{ item.label }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-list lines="full">
+  <ion-list>
     <ion-item-sliding *ngFor="let product of products()">
       <ion-item>
-        <ion-avatar slot="start">
+      <ion-avatar slot="start">
           <img [src]=" appUtil.getImageUrl(apiUrl, product.imageUrl??'')" 
                onerror="this.src='assets/menus/default.png'" />
         </ion-avatar>
-
         <ion-label>
           <h2>{{ product.name }}</h2>
           <p>
             <ion-text color="medium"> {{ 'CATEGORY' | translate }}: </ion-text> {{ product.category?.id || 'Belirtilmemiş' }} 
             | <ion-text color="medium"> {{ 'LANGUAGE' | translate }}: </ion-text> {{ product.language?.id || '-' }}
           </p>
-          <ion-badge color="success" mode="ios">{{ product.price | number:'1.2-2' }} TL</ion-badge>
+          <ion-badge color="success" mode="ios">{{ product.price | number:'1.2-2' }} </ion-badge>
         </ion-label>
 
         <ion-note slot="end" class="ion-text-center">
@@ -46,7 +75,9 @@
             [color]="product.isActive ? 'success' : 'danger'"
             size="large">
           </ion-icon>
-          <p style="font-size: 10px;">product.isActive ?  {{ 'ACTIVE' | translate }} : {{ 'INACTIVE' | translate }} </p>
+          <p style="font-size: 10px;">
+            {{ product.isActive ? ('ACTIVE' | translate) : ('INACTIVE' | translate) }}
+          </p>
         </ion-note>
       </ion-item>
 
@@ -63,16 +94,7 @@
     </ion-item-sliding>
   </ion-list>
 
-  <div *ngIf="products().length === 0" class="ion-padding ion-text-center">
-    <ion-text color="medium">
-      <p>{{ 'NO_PRODUCTS_FOUND' | translate }}</p>
-    </ion-text>
-  </div>
-
   <ion-infinite-scroll (ionInfinite)="loadAll($event)">
-    <ion-infinite-scroll-content 
-      loadingSpinner="bubbles" 
-      loadingText= "{{ 'LOADING_MORE_PRODUCTS' | translate }}">
-    </ion-infinite-scroll-content>
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

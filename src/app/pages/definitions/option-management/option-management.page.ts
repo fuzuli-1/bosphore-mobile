@@ -24,6 +24,8 @@ import { OptionItemFormComponent } from './option-item-form';
 import { OptionGroupService } from '../../menu-extra/option-group/option-group-service';
 import { OptionItemService } from '../../menu-extra/option-group-item/option-item-service';
 import { TranslatePipe } from 'src/app/services/TranslatePipe';
+import { ApplicationConfigService } from 'src/app/core/config/application-config.service';
+import { AppUtil } from 'src/app/shared/utils/app-util';
  
 
 @Component({
@@ -53,7 +55,11 @@ export class OptionManagementPage implements OnInit {
   private sortService = inject(SortService);
   private alertCtrl = inject(AlertController);
   private router = inject(Router);
-   
+  private readonly acfs = inject(ApplicationConfigService);
+  public url = this.acfs.getEndpointFor('');
+  public appUtil = inject(AppUtil);
+    
+    
     newGroup:IOptionGroup={} as IOptionGroup;
     selectedGroup:IOptionGroup= {} as IOptionGroup;
     allGroups = signal<IOptionGroup[]>([]);

@@ -121,8 +121,20 @@ calories?: any;
   badge?: string | null;
   emoji?: any|null;
   optionGroups?:IOptionGroup[]| undefined;
+  variations?:IProductVariation[]
 }
 export type NewProduct = Omit<IProduct, 'id'> & { id: null };
+
+
+export interface IProductVariation {
+  id: number;   
+  name?: string | null;
+  additionalPrice?: number | null;
+  createdAt?: dayjs.Dayjs | null;
+  product?: Pick<IProduct, 'id'> | null;
+}
+
+export type NewProductVariation = Omit<IProductVariation, 'id'> & { id: null };
 
 export interface ILanguage {
   id: number;
@@ -374,7 +386,8 @@ export type DeliveryType = 'delivery' | 'pickup' | 'scheduled';
 
 export interface CartItem {
   uuid: string;
-  product: IProduct;      // ana ürün
+  product: IProduct; 
+  productVariation?:IProductVariation
   quantity: number;
   children?: IOptionItem[]; // alt ürünler (promo, ekstra)
 

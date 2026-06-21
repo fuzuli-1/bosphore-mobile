@@ -30,6 +30,7 @@ export type EntityArrayResponseType = HttpResponse<IProduct[]>;
 @Injectable({ providedIn: 'root' })
 export class ProductService {
 
+
  
 
 uploadImage(formData: FormData){
@@ -69,6 +70,11 @@ uploadImage(formData: FormData){
   find(id: number): Observable<EntityResponseType> {
     return this.http
       .get<RestProduct>(`${this.resourceUrl}/${id}`, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+    findByVariationId(variationId: number): Observable<EntityResponseType> {
+      return this.http.get<RestProduct>(`${this.resourceUrl}/${variationId}`,{observe:'response'})
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 

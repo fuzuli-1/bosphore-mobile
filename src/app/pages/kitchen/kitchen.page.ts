@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule, ToastController } from '@ionic/angular';
@@ -18,13 +18,16 @@ import { TranslatePipe } from "../../services/TranslatePipe";
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, TranslatePipe],
 })
-export class KitchenPage implements OnInit {
+export class KitchenPage implements OnInit, OnDestroy {
 
-  private orderService = inject(OrderService); // OrderService'ı burada tanımlayın
+   private orderService = inject(OrderService);
   private toastController = inject(ToastController);
-  public activeOrders: IOrder[] = []; // Siparişleri tutacak dizi
-  private  userInteracted:boolean = false;
+  
+  public activeOrders: IOrder[] = [];
+  private userInteracted = false;
   private pollingSub?: Subscription;
+
+  processingOrderIds = new Set<number>(); // Hangi siparişler işleniyor
 
   constructor() {}
 
@@ -71,10 +74,13 @@ export class KitchenPage implements OnInit {
       });
   }
 
+
   playNotificationSound() {
-    const audio = new Audio('assets/sounds/notification.mp3');
-    audio.play();
+    if (!this.userInteracted) return; // Tarayıcı autoplay politikası
+    new Audio('assets/sounds/notification.mp3').play().catch(() => {});
   }
+
+
 
   ngOnDestroy() {
     // Sayfadan çıkınca arka planda istek atmaya devam etmesin (Hafıza yönetimi)
@@ -120,6 +126,11 @@ export class KitchenPage implements OnInit {
   }
 
   changeStatus(order: any, newStatus: string) {
+
+    if (this.processingOrderIds.has(order.id)) return;
+    
+    this.processingOrderIds.add(order.id);
+
     const partialOrder: Partial<IOrder> & { id: number } = {
       id: order.id,
       status: newStatus || order.status, // Eğer newStatus geçersizse mevcut durumu koru
@@ -129,7 +140,7 @@ export class KitchenPage implements OnInit {
       next: (res) => {
         // backend’den dönen güncel data varsa onu kullan
         const updatedOrder = res.body;
-
+        this.processingOrderIds.delete(order.id);
         if (updatedOrder) {
           order.status = updatedOrder.status;
         } else {
@@ -144,6 +155,7 @@ export class KitchenPage implements OnInit {
         );
       },
       error: () => {
+        this.processingOrderIds.delete(order.id);
         this.presentToast(0, 'top', `Sipariş durumu güncellenemedi ❌`);
       },
     });

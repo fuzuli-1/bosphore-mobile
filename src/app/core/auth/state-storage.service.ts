@@ -96,4 +96,17 @@ export class StateStorageService {
     sessionStorage.removeItem(this.localeKey);
     await Preferences.remove({ key: this.localeKey });
   }
+
+  isTokenExpired(): boolean {
+  const token = this.getAuthenticationToken();
+  if (!token) return true;
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const expMs = payload.exp * 1000; // saniye → milisaniye
+    return Date.now() >= expMs;
+  } catch {
+    return true; // decode edilemiyorsa geçersiz say
+  }
+}
 }

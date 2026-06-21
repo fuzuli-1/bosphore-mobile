@@ -22,7 +22,6 @@ import { body } from 'ionicons/icons';
 import { ProductService } from '../pages/products/product-service';
 import { MenuGroupService } from '../pages/menu-grup/menu-groups/menu-group-service';
 import { MenuGroupItemService } from '../pages/menu-grup/menu-group-item/menu-group-item-service';
-import { CartUtils } from '../shared/utils/CartUtils';
 import { forkJoin } from 'rxjs';
 import { TranslatePipe } from '../services/TranslatePipe';
 import { SortService } from '../shared/sort/sort.service';
@@ -49,7 +48,6 @@ import { CartService } from '../pages/cart/cart.service';
 import { CategoryService } from '../pages/definitions/category/category-service';
 import { ApplicationConfigService } from '../core/config/application-config.service';
 import {AppUtil } from '../shared/utils/app-util';
- 
 
 @Component({
   selector: 'app-home',
@@ -93,17 +91,15 @@ export class HomePage implements OnInit {
   //gercek productlara bagli olanlar.
   realCategories = signal<iface.ICategory[]>([]);
    excludedCategoryIds = [12, 13,14]; 
-  //claude dizayn için
   products = signal<iface.IProduct[]>([]);
   selectedSubCategoryId = signal<number | null>(null);
-
-  totalCount = computed(() => CartUtils.totalCount());
+ 
 
   private router = inject(Router);
   private modalCtrl = inject(ModalController);
   private account = inject(AccountService);
   private storeageService = inject(StateStorageService);
-  public orderService = inject(OrderStateService); // HTML'den erişmek için public
+  public orderService = inject(OrderStateService);
   private productService = inject(ProductService);
   private menuGroupService = inject(MenuGroupService);
   private menuGroupItemService = inject(MenuGroupItemService);
@@ -118,9 +114,7 @@ export class HomePage implements OnInit {
   public appUtil = inject(AppUtil);
 
 constructor( ) {
-   
-
-  //console.log(JSON.stringify(this.router.config, null, 2));
+    //console.log(JSON.stringify(this.router.config, null, 2));
 }
   ngOnInit() {
     if (this.account.isAuthenticated()) {
@@ -140,8 +134,6 @@ constructor( ) {
             this.menuGroups.set(groups.body ?? []);
             this.categories.set(items.body ?? []);
             this.realCategories.set(subCategories.body ?? []);
-
-            // 👇 artık ikisi de hazır
             this.initSelection();
           });
         }
@@ -176,48 +168,18 @@ constructor( ) {
       }
     });
   }
-
- /* async presentOrderTypeModal() {
-   
- const currentUser = this.account.trackCurrentAccount()();
-    const modal = await this.modalCtrl.create({
-      component: AdreseTeslimPage,
-      cssClass: 'delivery-selection-modal', // CSS ile resimdeki gibi yuvarlatılmış köşeler yapabiliriz
-      breakpoints: [0, 0.5, 0.8], // Mobil için sürükleyerek kapatma özelliği
-      backdropDismiss: true, // Dışarı tıklayınca kapanması için
-      initialBreakpoint: 0.5,
-      componentProps: {
-        // Modal içine veri göndermek isterseniz burayı kullanabilirsiniz
-        userName: currentUser?.firstName || 'Misafir',
-      },
-    });
-
-    await modal.present();
-
-    const { data } = await modal.onWillDismiss();
-    if (data) {
-      // 3. Eğer Adrese Teslim seçildiyse, Adres Listesi Modalını aç
-      if (data && data.type === 'delivery') {
-        this.openAddressListModal();
-      }
-    } 
-  }/** */
-
-  // Adres Listesi Modalını açan ayrı metod
-  // 2. CEPHE: Adres Listesi ve Seçimi
+ 
   async openAddressList() {
     const addressModal = await this.modalCtrl.create({
       component: AdresListPage,
-      cssClass: 'address-list-modal', // Görseldeki gibi tam ekran veya geniş modal
+      cssClass: 'address-list-modal',
     });
     await addressModal.present();
 
     const { data } = await addressModal.onWillDismiss();
     if (data) {
-      // Seçilen adresi merkezi servise (Savaş Merkezi) gönderiyoruz
       this.orderService.setAddress(data);
       console.log('Seçilen adres:', data);
-      // Burada seçilen adresle ne yapmak istediğinize karar verebilirsiniz
     }
   } 
 
@@ -297,17 +259,46 @@ constructor( ) {
       });
   }
 
-  addToCart(product: iface.IProduct) {
-    /*this.realCategories().forEach((cat) => {
-       if (cat.categoryId && !this.excludedCategoryIds.includes(cat.categoryId)) {
-        return;
-      }
-    });/* */
+ async addToCart(product: iface.IProduct) {
 
-    this.ngZone.run(() => {
-      this.router.navigate(['/products', product.id]);
+  this.ngZone.run(() => {
+    this.router.navigate(['/products', product.id],{
+     queryParams:{ fromVariation: false}
     });
-  }
+  });
+
+ /* if (product.variations && product.variations.length > 0) {
+    const modal = await this.modalCtrl.create({
+      component: VariationSelectorComponent,
+      componentProps: { product },
+      breakpoints: [0, 0.6, 0.85],
+      initialBreakpoint: 0.6,
+      backdropDismiss: true,
+      cssClass: 'variation-modal'
+    });
+
+    await modal.present();
+    const { data } = await modal.onDidDismiss();
+
+    if (data?.variation) {
+ 
+      this.ngZone.run(() => {
+        this.router.navigate(['/products', data.variation.id], {
+          queryParams: { fromVariation: true }
+        });
+      });
+    }
+    return;
+  }*/
+ 
+
+}
+
+async quickAdd(event: Event, product: iface.IProduct) {
+  event.stopPropagation();
+  await this.addToCart(product); // aynı mantığı kullan
+}
+ 
 
   EMOJI_MAP: Record<string, string> = {
     elma: '🍎',
@@ -323,15 +314,11 @@ constructor( ) {
     return this.EMOJI_MAP[name.toLowerCase()] ?? '🍽️';
   }
 
-  quickAdd($event: PointerEvent, arg1: iface.IProduct) {
-    throw new Error('Method not implemented.');
-  }
-
   toggleMenu() {
     this.menuCtrl.toggle();
   }
 
-    go(path: string) {
+  go(path: string) {
     this.router.navigateByUrl(path);
   }
  

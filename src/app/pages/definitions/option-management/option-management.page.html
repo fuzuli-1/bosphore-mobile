@@ -47,7 +47,11 @@
         <ion-list>
           <ion-item *ngFor="let item of optionItems()">
             <ion-avatar slot="start" *ngIf="item.imageUrl">
-              <img [src]="item.imageUrl" />
+             
+                      <img
+            [src]="appUtil.getImageUrl(url, item.imageUrl)"
+            alt="item"
+          />
             </ion-avatar>
             <ion-label>
               <h3>{{ item.name }}</h3>

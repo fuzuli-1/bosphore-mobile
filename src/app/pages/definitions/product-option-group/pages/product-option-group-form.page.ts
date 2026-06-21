@@ -134,7 +134,7 @@ private location = inject(Location);
       next: () => {
         this.isSaving = false;
         this.showToast(this.isEdit ? 'Başarıyla güncellendi' : 'Başarıyla eklendi', 'success');
-        this.navCtrl.navigateBack('/product-option-groups');
+        this.navCtrl.navigateBack('/product-option-group');
       },
       error: () => {
         this.isSaving = false;

@@ -7,49 +7,62 @@
 <ion-content class="ion-padding grey-bg">
   <ion-grid>
     <ion-row>
-      <ion-col size="12" size-md="6" *ngFor="let order of activeOrders">
-        <ion-card mode="ios">
-          <ion-card-header>
-            <ion-card-subtitle> {{ 'ORDER' | translate }} #{{order.id}} - {{ formatOrderDate(order.orderDate) }}</ion-card-subtitle>
-            <ion-card-title>{{order.customerName}}</ion-card-title>
-          </ion-card-header>
+      @for (order of activeOrders; track order.id) {
+        <ion-col size="12" size-md="6">
+          <ion-card mode="ios">
+            <ion-card-header>
+              <ion-card-subtitle>
+                {{ 'ORDER' | translate }} #{{ order.id }} - {{ formatOrderDate(order.orderDate) }}
+              </ion-card-subtitle>
+              <ion-card-title>{{ order.customerName }}</ion-card-title>
+            </ion-card-header>
 
-          <ion-card-content>
-            <ion-list lines="none">
-              <ion-item *ngFor="let item of order.orderItems">
-                <ion-label>
-                  <strong>{{item.quantity}}x</strong> {{item.product?.name}}
-                  <p *ngFor="let opt of item.options">· {{opt.name}}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
+            <ion-card-content>
+              <ion-list lines="none">
+                @for (item of order.orderItems; track item.id) {
+                  <ion-item>
+                    <ion-label>
+                      <strong>{{ item.quantity }}x</strong> {{ item.product?.name }}
+                      @for (opt of item.options; track opt.id) {
+                        <p>· {{ opt.name }}</p>
+                      }
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
 
-            <hr>
-            
-            <div class="ion-text-end">
-              <ion-badge [color]="getStatusColor(order.status)">
-                {{ getStatusLabel(order.status) }}
-              </ion-badge>
-              
-              <ion-button *ngIf="order.status === 'PREPARING'" color="warning" (click)="changeStatus(order, 'COOKING')">
-                {{ 'SEND_TO_OVEN' | translate }} 🔥
-              </ion-button>
-              
-              <ion-button *ngIf="order.status === 'COOKING'" color="success" (click)="changeStatus(order, 'ON_THE_WAY')">
-                {{ 'SEND_TO_DELIVERY' | translate }} 🛵
-              </ion-button>
-              <ion-buttons>
-                <ion-button fill="outline" color="dark" size="small" (click)="printOrder(order)">
-                  <ion-icon slot="start" name="print-outline"></ion-icon>
+              <hr>
+
+              <div class="ion-text-end">
+                <ion-badge [color]="getStatusColor(order.status)">
+                  {{ getStatusLabel(order.status) }}
+                </ion-badge>
+
+                @if (order.status === 'PREPARING') {
+                  <ion-button color="warning" 
+                  [disabled]="processingOrderIds.has(order.id)"
+                  (click)="changeStatus(order, 'COOKING')">
+                    {{ 'SEND_TO_OVEN' | translate }} 🔥
+                  </ion-button>
+                }
+
+                @if (order.status === 'COOKING') {
+                  <ion-button color="success" (click)="changeStatus(order, 'ON_THE_WAY')">
+                    {{ 'SEND_TO_DELIVERY' | translate }} 🛵
+                  </ion-button>
+                }
+
+                <ion-buttons>
+                  <ion-button fill="outline" color="dark" size="small" (click)="printOrder(order)">
+                    <ion-icon slot="start" name="print-outline"></ion-icon>
                     {{ 'PRINT' | translate }}
                   </ion-button>
-                  
-              </ion-buttons>
-
-            </div>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
+                </ion-buttons>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      }
     </ion-row>
   </ion-grid>
 </ion-content>

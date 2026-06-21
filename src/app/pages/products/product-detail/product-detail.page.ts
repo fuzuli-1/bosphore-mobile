@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, Signal, signal, ViewChild } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,7 +6,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   CartItem,
   IOptionGroupWithItems,
+  IOptionItem,
   IProduct,
+  IProductVariation,
 } from 'src/app/interfaces/interfaces';
 import { ProductService } from '../../products/product-service';
 
@@ -44,6 +46,7 @@ import {
 import { AppUtil } from 'src/app/shared/utils/app-util';
 import { AdresListPage } from '../../adres/adres-list/adres-list.page';
 import { ApplicationConfigService } from 'src/app/core/config/application-config.service';
+import { ProductVariationService } from '../../variation/variation-service';
 @Component({
   selector: 'app-product-detail',
   templateUrl: './product-detail.page.html',
@@ -89,9 +92,9 @@ export class ProductDetailPage implements OnInit {
   };
 
   isLoading = true;
-  product: IProduct | null = null;
-  product1: IProduct | null = null;
-
+  product = signal<IProduct | null>(null);
+  selectedVariation=signal<IProductVariation | null>(null);
+  variations = signal<IProductVariation[]>([]);
   // 1. Servisi public olarak inject et (HTML'den erişebilmek için)
   public readonly router = inject(Router);
   private navCtrl = inject(NavController);
@@ -105,20 +108,23 @@ export class ProductDetailPage implements OnInit {
   private storeageService = inject(StateStorageService);
   apiUrl: string = inject(ApplicationConfigService).getEndpointFor('');
   public appUtil = inject(AppUtil);
-  //private translate = inject(TranslationService);
+  private variationService=inject(ProductVariationService);
+ 
   trackId = (item: IProduct): number =>
     this.productService.getProductIdentifier(item);
 
+
+  @ViewChild(IonContent) ionContent!: IonContent;
+  @ViewChild('cartSuccessAnchor') cartSuccessAnchor!: ElementRef;
+
   constructor(private route: ActivatedRoute) {}
 
-  ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadProduct(id);
-    }
-  }
+ ngOnInit() {
+  const id = this.route.snapshot.paramMap.get('id');
+  this.loadProduct(+id!);
+}
 
- private loadProduct(id: any): void {
+private loadProduct(id: any): void {
   this.isLoading = true;
   const pageToLoad = {
     id: id,
@@ -127,41 +133,41 @@ export class ProductDetailPage implements OnInit {
 
   this.productService.getRecordsById(pageToLoad).subscribe({
     next: (res) => {
-      this.product = res.body;
+      this.product.set(res.body);
       this.isLoading = false;
 
-      if (this.product) {
-        // Kategori kontrolü: 
-        // 12 -> İçecekler, 13 -> Şişeler vb. gibi sabit kategori ID'lerini 
-        // bir "excludeList" içinde tutmak yönetimi kolaylaştırır.
-        const excludedCategoryIds = [12, 13,14]; // Seçenek grubu olmayan kategoriler
+      // ✅ Variation varsa ilkini default seç
+      this.variations.set(res.body?.variations ?? []);
+      if (this.variations().length > 0) {
+        this.selectedVariation.set(this.variations()[0]);
+      }
 
-        const currentCategoryId = this.product.category?.id; // Veya product.category.categoryId
+      const excludedCategoryIds = [12, 13, 14];
+      const currentCategoryId = this.product()?.category?.id;
+      if (currentCategoryId && !excludedCategoryIds.includes(currentCategoryId)) {
+        this.loadOptionGroups();
+      } else {
+        this.optionGroups.set([]);
+      }
 
-        // Sadece seçenek grubu olan kategoriler için yükle
-        if (currentCategoryId && !excludedCategoryIds.includes(currentCategoryId)) {
-            this.loadOptionGroups();
-        } else {
-            console.log("Bu kategori için seçenek grubu tanımlı değil.");
-            // İsterseniz burada optionGroups listesini temizleyin
-            this.optionGroups.set([]); 
-        }
+      this.calculateTotal();
 
-          this.orderDraft = {
-            id: 0,
-            quantity: 1,
-            basePrice: 0,
-            optionPrice: 0,
-            totalPrice: Bosp.getValue(this.product, 'price'),
-            productName: Bosp.valueFrom(this.product, 'name'),
-            createdAt: dayjs(),
-            productId: this.product.id,
-            options: [],
-          };
-        }
-      },
-    });
-  }
+      this.orderDraft = {
+        id: 0,
+        quantity: 1,
+        basePrice: res.body?.price ?? 0,
+        optionPrice: 0,
+        totalPrice: res.body?.price ?? 0,
+        productName: res.body?.name ?? '',
+        createdAt: dayjs(),
+        productId: res.body?.id ?? 0,
+        options: [],
+      };
+    },
+  });
+}
+ 
+ 
 
   increase() {
     if (!this.orderDraft.quantity) {
@@ -214,23 +220,22 @@ export class ProductDetailPage implements OnInit {
     this.calculateTotal();
   }
 
-  calculateTotal() {
-    const base = Bosp.getValue(this.product, 'price');
-    let optionTotal = 0;
-    for (const group of this.optionGroups()) {
-      const selectedItems = group.items?.filter((i) => i.selected) || [];
-      for (const item of selectedItems) {
-        optionTotal += Number(item.additionalPrice || 0);
-      }
+ calculateTotal() {
+  const base = (this.product()?.price ?? 0) 
+             + (this.selectedVariation()?.additionalPrice ?? 0); // ✅ variation ekle
+
+  let optionTotal = 0;
+  for (const group of this.optionGroups()) {
+    const selectedItems = group.items?.filter(i => i.selected) || [];
+    for (const item of selectedItems) {
+      optionTotal += Number(item.additionalPrice || 0);
     }
-
-    this.orderDraft.basePrice = base;
-    this.orderDraft.optionPrice = optionTotal;
-
-    const singleItemTotal = base + optionTotal;
-
-    this.orderDraft.totalPrice = singleItemTotal * this.orderDraft.quantity;
   }
+
+  this.orderDraft.basePrice = base;
+  this.orderDraft.optionPrice = optionTotal;
+  this.orderDraft.totalPrice = (base + optionTotal) * this.orderDraft.quantity;
+}
 
   async openAddressList(): Promise<number> {
     const addressModal = await this.modalCtrl.create({
@@ -250,29 +255,24 @@ export class ProductDetailPage implements OnInit {
 
     return 0;
   }
- async sepeteEkle() {
-    if (!this.product) return;
+ 
+  async sepeteEkle() {
+    if (!this.product()) return;
 
-    // CRITICAL FIX: Bu komut kaldırıldı, böylece eski sepet korunuyor.
-    // this.cartService.clear(); 
-
-    // 1. Teslimat ve Adres Kontrolleri (Mevcut mantığın, harika çalışıyor)
     const selectedAddress = this.orderService.selectedAddress(); 
     const deliveryType = this.orderService.deliveryType();
 
     if (deliveryType === 'delivery' && !selectedAddress) {
       const result = await this.openAddressList();
       if (result !== 1) {
-        return; // Adres seçilmediyse işlemi durdur
+        return; 
       }
     }
 
-    // CRITICAL FIX: Her fonksiyon çalıştığında orderDraft.options dizisini sıfırlamalıyız.
-    // Aksi takdirde, kullanıcı butona üst üste basarsa veya hata alıp tekrar denerse 
-    // opsiyonlar dizide mükerrer (double) birikir.
     this.orderDraft.options = [];
 
-    const basePrice = Number(Bosp.getValue(this.product, 'price'));
+    const basePrice = Number(Bosp.getValue(this.product(), 'price'));
+    const variant =  Number(this.selectedVariation()?.additionalPrice ?? 0);
     
     // 2. Seçili opsiyonları (ekstraları) topla
     for (const group of this.optionGroups()) {
@@ -282,26 +282,45 @@ export class ProductDetailPage implements OnInit {
           id: item.id,
           name: item.name,
           additionalPrice: item.additionalPrice,
-          quantity: 1, // Opsiyonun kendi adedi (örn: ekstra 1 adet et)
+          quantity: 1, 
           type: item.type,
         });
       }
     }
+
+    // ─── YENİ EKLEMELERİMİZ (DEĞİŞİKLİK BURADA) ───
+    // Tipi STANDARD ve Zorunlu olan gruptan seçilen varyasyon adını bulalım (Örn: Seul, Menu)
+    const selectedStandardOption = this.optionGroups()
+      .find(g => g.requiredGroup === true && g.type === 'STANDARD')
+      ?.items?.find(i => i.selected);
+
+    // Eğer bir varyasyon (Menu/Seul vb.) seçildiyse, ismini parantez içinde ekle
+    const variationSuffix = this.selectedVariation()
+  ? ` (${this.selectedVariation()!.name})`
+  : selectedStandardOption
+    ? ` (${selectedStandardOption.name})`
+    : '';
+    // ───────────────────────────────────────────────
 
     // 3. Fiyat Hesaplamaları
     let optionTotal = 0;
     for (const item of this.orderDraft.options) {
       optionTotal += Number(item.additionalPrice || 0);
     }
-    const singleItemTotal = basePrice + optionTotal;
+    const singleItemTotal = basePrice + optionTotal + variant;
     const totalPrice = singleItemTotal * this.orderDraft.quantity;
 
     // 4. CartItem Nesnesini Oluştur
     const cartItem: CartItem = {
-      uuid: AppUtil.generateUUID(), // Zaten benzersiz UUID üretiyorsun, harika!
-      product: this.product,
+      uuid: AppUtil.generateUUID(), 
+      product: {
+        ...this.product(),       
+        // YENİ: Sepette "Steak Haché (Menu)" veya "Steak Haché (Seul)" yazması için:
+        name: Bosp.valueFrom(this.product(), 'name') + variationSuffix 
+      } as any,
+      productVariation:this.selectedVariation() as any,
       quantity: this.orderDraft.quantity,
-      children: [...this.orderDraft.options], // Opsiyonları doğrudan referans kopararak ata
+      children: [...this.orderDraft.options], 
       totalPrice: totalPrice,
       createdAt: new Date().toISOString(),
       address: selectedAddress,
@@ -311,9 +330,10 @@ export class ProductDetailPage implements OnInit {
     this.cartService.add(cartItem);
     this.addedToCart.set(true);
 
-    // Eğer kullanıcının içecek/tatlı seçmeye devam etmesini istiyorsan bu yönlendirmeyi
-    // opsiyonel yapabilir veya kullanıcıya bir toast gösterip ana sayfaya atabilirsin.
-  //  this.navCtrl.navigateForward('/payments/cart');
+      // ✅ Butona scroll et
+  setTimeout(() => {
+    this.cartSuccessAnchor?.nativeElement?.scrollIntoView({ behavior: 'smooth' });
+  }, 100); // animate__fadeIn için kısa bekleme
   }
   
   go(path: string) {
@@ -322,8 +342,21 @@ export class ProductDetailPage implements OnInit {
 
   // product-detail.page.ts
   getProductPrice(): number {
-    return Bosp.getValue(this.product, 'price');
+     if(this.selectedVariation()?.id??0>0){
+       return Bosp.getValue(this.product(), 'price')+ Bosp.getValue(this.selectedVariation(),"additionalPrice");
+     }
+    return Bosp.getValue(this.product(), 'price');
   }
+
+    getProductPriceExtra(e:IOptionItem): number {
+    return Number(e.additionalPrice??0);
+  }
+
+
+  getVariationPrice(v: IProductVariation): number {
+  return Number(this.product()?.price ?? 0)
+       + Number(v.additionalPrice ?? 0);
+}
 
   toggleFavorite() {
     this.favorite = !this.favorite;
@@ -336,7 +369,7 @@ export class ProductDetailPage implements OnInit {
 
   loadOptionGroups() {
     const pageToLoad = {
-      productId: this.product?.id,
+      productId: this.product()?.id??0,
       optionType: 1,
     };
     this.isLoading = true;
@@ -369,10 +402,8 @@ export class ProductDetailPage implements OnInit {
     });
   }
 
-  /*toggleExtra(id: number): void {
-    
-    this.extras.update(list =>
-      list.map(e => e.id === id ? { ...e, selected: !e.selected } : e)
-    );
-  }*/
+ selectVariation(v: IProductVariation) {
+  this.selectedVariation.set(v);
+  this.calculateTotal();
+}
 }

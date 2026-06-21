@@ -290,3 +290,55 @@
   height: 100%;       /* container kadar uzar */
   object-fit: contain; /* resmi kırpmaz, sığdırır */
 }
+
+
+// home.page.scss'e eklenecek stiller
+
+.price-range {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.price-up-to {
+  font-size: 12px;
+  color: var(--ion-color-medium);
+  font-weight: 400;
+}
+
+.variant-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: var(--ion-color-light);
+  border-radius: 50%;
+}
+
+.variant-chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.variant-chip {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ion-color-primary);
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  border: 1px solid rgba(var(--ion-color-primary-rgb), 0.2);
+  border-radius: 4px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
+// Modal için global stil — global.scss veya home.page.scss'e ekle
+.variation-modal {
+  --border-radius: 20px 20px 0 0;
+
+  ion-backdrop {
+    --backdrop-opacity: 0.4;
+  }
+}

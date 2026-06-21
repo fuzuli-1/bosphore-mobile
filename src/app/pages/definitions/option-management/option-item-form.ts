@@ -1,9 +1,10 @@
 import { Component, inject, Input, OnInit } from "@angular/core";
-import {FormBuilder,Validators,ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder,Validators,ReactiveFormsModule, FormGroup} from '@angular/forms';
 import {ModalController,ToastController,IonicModule} from '@ionic/angular';
 import { TranslatePipe } from "src/app/services/TranslatePipe";
 import { LanguageService } from "../language/language-service";
 import { LanguageSelectorComponent } from "../language/language-selector.component";
+import { OptionItemService } from "../../menu-extra/option-group-item/option-item-service";
  
  
 
@@ -13,7 +14,7 @@ import { LanguageSelectorComponent } from "../language/language-selector.compone
       <ion-header>
       <ion-toolbar>
         <ion-title>{{
-          item ? ['edit_product' | translate] : ['new_product' | translate]
+          item ? ['EDIT' | translate] : ['NEW_RECORD' | translate]
         }}</ion-title>
         <ion-buttons slot="end">
           <ion-button (click)="cancel()">
@@ -30,32 +31,38 @@ import { LanguageSelectorComponent } from "../language/language-selector.compone
         </ion-item>
 
         <ion-item fill="outline" class="ion-margin-top">
-          <ion-label position="stacked">Ek Fiyat</ion-label>
+          <ion-label position="stacked">{{'ADDITIONAL_PRICE'|translate}}</ion-label>
           <ion-input type="number" formControlName="additionalPrice"></ion-input>
         </ion-item>
           <!--dil-->
         <ion-item fill="outline" button (click)="selectLanguage()" class="ion-margin-top">
-          <ion-label position="stacked">Dil</ion-label>
+          <ion-label position="stacked">{{'LANGUAGE'|translate}}</ion-label>
           <ion-input [value]="selectedLanguageName" readonly placeholder="Dil Seçin"></ion-input>
         </ion-item>
 
         <ion-list>
           <ion-item lines="none">
-            <ion-label>Varsayılan Seçili Gelsin</ion-label>
+            <ion-label>{{'DEFAULT_OPTION_SELECT'|translate}}</ion-label>
             <ion-toggle formControlName="isDefault"></ion-toggle>
           </ion-item>
           <ion-item lines="none">
-            <ion-label>Aktif</ion-label>
+            <ion-label>{{'ACTIVE'|translate}}</ion-label>
             <ion-toggle formControlName="isActive"></ion-toggle>
           </ion-item>
         </ion-list>
-
-  <ion-item fill="outline">
-          <ion-label position="stacked">{{
-            'image_url' | translate
-          }}</ion-label>
-          <ion-input formControlName="imageUrl"></ion-input>
-        </ion-item>
+        <ion-item fill="outline">
+          <ion-label position="stacked">{{ 'image_url' | translate }}</ion-label>
+          <div style="display: flex; align-items: center; gap: 10px; width: 100%; padding-top: 8px;">
+            <ion-input formControlName="imageUrl" placeholder=" {{ 'PLACEHOLDER_ICON_PATH' | translate }}" style="flex: 1;"></ion-input>
+            
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+            <ion-button size="small" fill="solid" color="secondary" (click)="fileInput.click()">
+              <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+              Yükle
+            </ion-button>
+          </div>
+        </ion-item>    
+ 
         <ion-button expand="block" (click)="save()">Seçeneği Ekle</ion-button>
       </form>
     </ion-content>
@@ -69,22 +76,17 @@ export class OptionItemFormComponent  implements OnInit{
   @Input() groupId:number=0;
   selectedLanguageName = '';
   //injec
+    private fb = inject(FormBuilder);
   private modalCtrl = inject(ModalController);
   private languageService=inject(LanguageService);
   private toastc = inject(ToastController);
+  private service=inject(OptionItemService);
+  itemForm!: FormGroup;
 
-  itemForm = inject(FormBuilder).group({
-    id: [null],
-    name: [null, [Validators.required]],
-    additionalPrice: [0],
-    isActive: [true,[Validators.required]],
-    isDefault: [false],
-    optionGroup: [null,[Validators.required]],
-    language: [null, [Validators.required]],
-    imageUrl: [null, [Validators.required]],
-  });
 
   ngOnInit() {
+    this.initForm();
+    
     if (this.item) {
       let lang=this.item.language;
       this.loadLanguage(lang.id) ;
@@ -95,6 +97,21 @@ export class OptionItemFormComponent  implements OnInit{
     }
 
 
+  }
+
+    private initForm() {
+ 
+
+      this.itemForm =  this.fb.group({
+    id: [null],
+    name: [null, [Validators.required]],
+    additionalPrice: [0],
+    isActive: [true,[Validators.required]],
+    isDefault: [false],
+    optionGroup: [null,[Validators.required]],
+    language: [null, [Validators.required]],
+    imageUrl: [null, [Validators.required]],
+  });
   }
 
 
@@ -139,5 +156,27 @@ export class OptionItemFormComponent  implements OnInit{
 
     cancel() {
     this.modalCtrl.dismiss();
+  }
+
+     onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append('file', file);
+  
+      // Spring Boot'a yazdığımız endpoint'e gönderiyoruz
+      this.service.uploadImage(formData).subscribe({
+        next: (responsePath) => {
+          // Gelen "/uploads/uuid.png" değerini formdaki imageUrl alanına set ediyoruz
+          this.itemForm.patchValue({ imageUrl:responsePath  });
+          console.log('Resim başarıyla yüklendi:', responsePath);
+        },
+        error: (err) => {
+          console.error('Resim yüklenirken hata oluştu:', err); 
+          // Burada kullanıcıya bir toast mesajı gösterebilirsin
+        }
+      });
+    }
+   
   }
 }

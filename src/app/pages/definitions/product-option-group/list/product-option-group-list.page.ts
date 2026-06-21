@@ -103,6 +103,11 @@ export class ProductOptionGroupListPage implements OnInit {
     this.load();
   }
 
+    // ✅ Detail'den geri dönünce listeyi yenile
+  ionViewWillEnter() {
+    this.load();
+  }
+
   async load(event?: any) {
     this.isLoading = !event;
     this.service.query().subscribe({

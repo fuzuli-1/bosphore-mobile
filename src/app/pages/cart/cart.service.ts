@@ -264,4 +264,10 @@ private areOptionsEqual(opts1?: any[], opts2?: any[]): boolean {
       body: res.body ? this.convertDateFromServer(res.body) : null,
     });
   }
+
+
+  // CartService'e ekle
+getCartSnapshot(): CartItem[] {
+  return this.cart$.value;
+}
 }

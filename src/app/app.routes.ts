@@ -103,11 +103,16 @@ export const routes: Routes = [
         loadChildren: () =>
           import('./pages/definitions/product-option-group/product-option-group.routes').then(m => m.default)
       },
-
+        {
+          path: 'variation',
+          loadComponent: () => import('./pages/variation/variation.page').then( m => m.VariationPage)
+        }
     ]
   },
 
   // ── YÖNLENDİRME ──────────────────────────────────
-  { path: '**', redirectTo: 'login' }
+  { path: '**', redirectTo: 'login' },
+
+
 
 ];

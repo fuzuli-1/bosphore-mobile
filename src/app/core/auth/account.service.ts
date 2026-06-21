@@ -55,6 +55,14 @@ export class AccountService {
       return of(null);
     }
 
+    // ✅ Süresi dolmuşsa token'ı temizle, null dön
+  if (this.stateStorageService.isTokenExpired()) {
+    this.stateStorageService.clearAuthenticationToken();
+    this.authenticate(null);
+    return of(null);
+  }
+
+
     if (!this.accountCache$ || force) {
       this.accountCache$ = this.fetch().pipe(
         tap((account: Account) => {
@@ -66,6 +74,8 @@ export class AccountService {
     }
     return this.accountCache$.pipe(catchError(() => of(null)));
   }
+
+ 
 
   isAuthenticated(): boolean {
     return this.userIdentity() !== null;
